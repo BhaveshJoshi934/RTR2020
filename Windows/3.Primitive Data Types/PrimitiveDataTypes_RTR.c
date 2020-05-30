@@ -5,6 +5,7 @@ int main()
 	//code
 	printf("Bhavesh Joshi.");
 	printf("\n\n");
+	printf("Size of char                      = %ld bytes\n", sizeof(char));
 	printf("Size of int                       = %ld bytes\n", sizeof(int));
 	printf("Size of unsigned int              = %ld bytes\n", sizeof(unsigned int));
 	printf("Size of long                      = %ld bytes\n", sizeof(long));
