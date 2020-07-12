@@ -1,0 +1,2 @@
+C:\MyProjects\RTR2020\Windows\Assignmnts By Sir\11.7.2020\Template\MyWindow\Debug\MyWindow.exe
+C:\MyProjects\RTR2020\Windows\Assignmnts By Sir\11.7.2020\Template\MyWindow\Debug\MyWindow.pdb
