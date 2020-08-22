@@ -252,7 +252,7 @@ void Initialize(void)
 	}
 
 	//SetClearColor
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//WarmUp Resize code
 	Resize(WIN_WIDTH, WIN_HEIGHT);

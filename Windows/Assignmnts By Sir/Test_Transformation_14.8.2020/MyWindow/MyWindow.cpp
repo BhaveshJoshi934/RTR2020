@@ -146,12 +146,12 @@ void MultiColoredTriangle(void)
 
 void WhiteColoredRectangle(void)
 {
-	glBegin(GL_QUARDS);
+	glBegin(GL_QUADS);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glVertex3f(-0.1f, 0.1f, 0.0f);
+	glVertex3f(0.1f, 0.1f, 0.0f);
 	glVertex3f(-0.1f, 0.1f, 0.0f);
 	glVertex3f(-0.1f, -0.1f, 0.0f);
-	glVertex3f(0.0f, -0.1f, 0.0f);
+	glVertex3f(0.1f, -0.1f, 0.0f);
 
 	glEnd();
 }
@@ -296,7 +296,7 @@ void Initialize(void)
 	}
 
 	//SetClearColor
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//WarmUp Resize code
 	Resize(WIN_WIDTH, WIN_HEIGHT);
