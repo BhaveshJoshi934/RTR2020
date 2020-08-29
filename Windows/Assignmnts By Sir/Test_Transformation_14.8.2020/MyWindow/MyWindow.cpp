@@ -321,12 +321,13 @@ void Display(void)
 	//code
 	glClear(GL_COLOR_BUFFER_BIT);
 	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();	
+
 	WhiteColoredTriangle();	
 	glTranslatef(0.5f,0.0f,0.0f);
-
 	MultiColoredTriangle();
 	glTranslatef(0.0f,0.5f,0.0f);
-
 	WhiteColoredRectangle();
 
 	//glFlush();
