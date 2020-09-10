@@ -402,6 +402,76 @@ void Display(void)
 
 	glEnd();
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glTranslatef(0.0f,0.0f,-3.0f);
+	
+	glBegin(GL_LINES);
+	
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(-0.5f,0.5f,0.0f);
+	glVertex3f(0.0f,0.5f,0.0f);
+
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glTranslatef(0.0f,0.0f,-3.0f);
+	
+	glBegin(GL_LINES);
+	
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(0.5f,-0.5f,0.0f);
+	glVertex3f(0.0f,-0.5f,0.0f);
+
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glTranslatef(0.0f,0.0f,-3.0f);
+	
+	glBegin(GL_LINES);
+	
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(-0.5f,-0.5f,0.0f);
+	glVertex3f(0.0f,-0.5f,0.0f);
+
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glTranslatef(0.0f,0.0f,-3.0f);
+	
+	glBegin(GL_LINES);
+	
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(0.5f,0.5f,0.0f);
+	glVertex3f(0.5f,-0.5f,0.0f);
+
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glTranslatef(0.0f,0.0f,-3.0f);
+	
+	glBegin(GL_LINES);
+	
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(-0.5f,-0.5f,0.0f);
+	glVertex3f(-0.5f,0.5f,0.0f);
+
+	glEnd();
+
 
 	//glFlush();
 	SwapBuffers(ghdc);
