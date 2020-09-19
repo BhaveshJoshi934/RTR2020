@@ -279,210 +279,99 @@ void Resize(int width, int height)
 
 void Display(void)
 {
+	
+	static GLfloat angle = 0.0f;
 	//code
 	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glMatrixMode(GL_MODELVIEW);               //RED
-	glLoadIdentity();
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(1.0f, 0.0f, 0.0f);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-1.0f, 0.0f, 0.0f);
-
-	glEnd();
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-
-	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
-	{
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(1.0f,v,0.0f);
-
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(-1.0f,v,0.0f);
-	}
-
-	glEnd();
+	//Circle Code Here...
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glTranslatef(0.0f,0.0f,-3.0f);
-
-	glBegin(GL_LINES);	
-
-	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
-	{
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(1.0f,-v,0.0f);
-
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(-1.0f,-v,0.0f);
-	}
-
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);     //GREEN
-	glLoadIdentity();
-
-	glTranslatef(0.0f,0.0f,-3.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
 	
-	glBegin(GL_LINES);
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, -1.0f, 0.0f);
-
-	glEnd();
-	
-	//First For Loop (Upper Lines)
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-
-	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
-	{
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(v,1.0f,0.0f);
-
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(v,-1.0f,0.0f);
-	}
-
-	glEnd();
-
-	//Second For Loop (Lower Lines)
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-
-	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
-	{
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(-v,1.0f,0.0f);
-
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(-v,-1.0f,0.0f);
-	}
-
-	glEnd();
-
-	//Triangle Code Here...
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(0.0f,1.0f,0.0f);
-	glVertex3f(-0.5f,0.0f,0.0f);
-	
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(0.0f,1.0f,0.0f);
-	glVertex3f(0.5f,0.0f,0.0f);
-	
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(-0.5f,0.0f,0.0f);
-	glVertex3f(-1.0f,-1.0f,0.0f);
-	
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(0.5f,0.0f,0.0f);
-	glVertex3f(1.0f,-1.0f,0.0f);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(0.0f,-1.0f,0.0f);
-	glVertex3f(1.0f,-1.0f,0.0f);
-	
-	glEnd();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0f,1.0f,0.0f);
-	glVertex3f(0.0f,-1.0f,0.0f);
-	glVertex3f(-1.0f,-1.0f,0.0f);
-	
-	glEnd();
-
-
-	//Circle Code	
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
-	glBegin(GL_POINTS);
+	glBegin(GL_LINE_LOOP);
 
 	for(GLfloat angle = 0.0f;angle <= 2 * pi ; angle = angle + 0.01f)
 	{
 		glColor3f(1.0f,1.0f,0.0f);
-		glVertex3f(cos(angle)/4,sin(angle)/4,0.0f);
+		glVertex3f(cos(angle)/2,sin(angle)/2,0.0f);
 	} 
 
 	glEnd();
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef(0.0f,0.0f,-3.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
+
+	glBegin(GL_LINES);
+
+	glColor3f(1.0f,1.0f,0.0f);
+	
+	glVertex3f(0.0f,0.92f,0.0f);
+	glVertex3f(0.0f,-0.5f,0.0f);
+	
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef(0.0f,0.0f,-3.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
+
+	glBegin(GL_LINES);
+
+	glColor3f(1.0f,1.0f,0.0f);
+	
+	glVertex3f(0.0f,0.92f,0.0f);
+	glVertex3f(-0.92f,-0.5f,0.0f);
+	
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef(0.0f,0.0f,-3.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
+
+	glBegin(GL_LINES);
+
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(-0.92f,-0.5f,0.0f);
+	glVertex3f(0.92f,-0.5f,0.0f);
+	
+	glEnd();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef(0.0f,0.0f,-3.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
+
+	glBegin(GL_LINES);
+
+	glColor3f(1.0f,1.0f,0.0f);
+
+	glVertex3f(0.92f,-0.5f,0.0f);
+	glVertex3f(0.0f,0.92f,0.0f);
+	
+	glEnd();
+
+	
+	angle = angle + 0.1f;
+	
+	if(angle >= 360.0f)
+	{
+		angle = 0.0f;
+	}
+
+	
+	
 	//glFlush();
 	SwapBuffers(ghdc);
 }

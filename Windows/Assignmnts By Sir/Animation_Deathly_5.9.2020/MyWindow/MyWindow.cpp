@@ -285,12 +285,20 @@ void Display(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	//Circle Code Here...
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+ 	static GLfloat i = 2.0f;
+	i = i - 0.0001f;
+	if(i > 0.1f)
+	{
+		glTranslatef(i,0.0f,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+	}
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	//glRotatef(angle,0.0f,1.0f,0.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
 	
 	glBegin(GL_LINE_LOOP);
 
@@ -302,10 +310,21 @@ void Display(void)
 
 	glEnd();
 
+	//Straight Line code
+
+	static GLfloat j = 2.0f;
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	j = j - 0.0001f;
+	if(j > 0.1f)
+	{
+		glTranslatef(0.0f,j,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+	}
 
-	glTranslatef(0.0f,0.0f,-3.0f);
 	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
@@ -316,12 +335,23 @@ void Display(void)
 	glVertex3f(0.0f,-0.5f,0.0f);
 	
 	glEnd();
+	
+	//Triangle code here
+	static GLfloat k = -2.0f;
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	k = k + 0.0001f;
+	if(k < -0.1f)
+	{
+		glTranslatef(k,0.0f,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+	}
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	//glRotatef(angle,0.0f,1.0f,0.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
 
@@ -334,9 +364,17 @@ void Display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	
+	if(k < -0.1f)
+	{
+		glTranslatef(k,0.0f,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+	}
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	//glRotatef(angle,0.0f,1.0f,0.0f);
+	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
 
@@ -350,8 +388,16 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	//glRotatef(angle,0.0f,1.0f,0.0f);
+	if(k < -0.1f)
+	{
+		glTranslatef(k,0.0f,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+	}
+
+	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
 
@@ -370,7 +416,7 @@ void Display(void)
 		angle = 0.0f;
 	}
 
-	
+
 	
 	//glFlush();
 	SwapBuffers(ghdc);
