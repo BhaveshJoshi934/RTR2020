@@ -5,6 +5,8 @@
 #include "MyWindow.h"
 #include<gl/gl.h>
 #include<math.h>
+#include<Mmsystem.h>
+#include<synchapi.h>
 
 #include<gl/glu.h>                // Graphic Library Utility . h
 
@@ -15,6 +17,9 @@
 #pragma comment(lib,"OpenGL32.lib")
 
 #pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"Winmm.lib")
+
+
 
 //Callback Function
 
@@ -80,6 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	Initialize();
 
+	PlaySound(TEXT("HP.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	ShowWindow(hwnd, iCmdShow);
 
 	SetForegroundWindow(hwnd);
@@ -279,23 +285,52 @@ void Resize(int width, int height)
 
 void Display(void)
 {
-	
 	static GLfloat angle = 0.0f;
+ 	static GLfloat i = 2.0f;
+ 	static GLfloat j = 2.5f;
+ 	static GLfloat k = -1.8f;
+	int flag = 0;
+	int flag_1 = 0;
 	//code
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//Circle Code Here...
+	//Straight Line code
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
- 	static GLfloat i = 2.0f;
 	i = i - 0.0001f;
-	if(i > 0.1f)
+	if(i >= 0.1f)
 	{
-		glTranslatef(i,0.0f,-3.0f);
+		glTranslatef(0.0f,i,-3.0f);
 	}
 	else
 	{
 		glTranslatef(0.0f,0.0f,-3.0f);
+		flag = 1;
+	}
+	glRotatef(angle,0.0f,1.0f,0.0f);
+
+	glBegin(GL_LINES);
+
+	glColor3f(1.0f,1.0f,0.0f);
+	
+	glVertex3f(0.0f,0.92f,0.0f);
+	glVertex3f(0.0f,-0.5f,0.0f);
+	
+	glEnd();
+
+if(flag == 1)
+{
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	j = j - 0.0001f;
+	if(j >= 0.1f)
+	{
+		glTranslatef(j,0.0f,-3.0f);
+	}
+	else
+	{
+		glTranslatef(0.0f,0.0f,-3.0f);
+		flag_1 = 1; 
 	}
 
 	glRotatef(angle,0.0f,1.0f,0.0f);
@@ -309,40 +344,14 @@ void Display(void)
 	} 
 
 	glEnd();
+}
 
-	//Straight Line code
-
-	static GLfloat j = 2.0f;
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	j = j - 0.0001f;
-	if(j > 0.1f)
-	{
-		glTranslatef(0.0f,j,-3.0f);
-	}
-	else
-	{
-		glTranslatef(0.0f,0.0f,-3.0f);
-	}
-
-	glRotatef(angle,0.0f,1.0f,0.0f);
-
-	glBegin(GL_LINES);
-
-	glColor3f(1.0f,1.0f,0.0f);
-	
-	glVertex3f(0.0f,0.92f,0.0f);
-	glVertex3f(0.0f,-0.5f,0.0f);
-	
-	glEnd();
-	
-	//Triangle code here
-	static GLfloat k = -2.0f;
-
+if(flag_1 == 1)
+{
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	k = k + 0.0001f;
-	if(k < -0.1f)
+	if(k <= -0.1f)
 	{
 		glTranslatef(k,0.0f,-3.0f);
 	}
@@ -350,7 +359,6 @@ void Display(void)
 	{
 		glTranslatef(0.0f,0.0f,-3.0f);
 	}
-
 	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
@@ -365,7 +373,7 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	if(k < -0.1f)
+	if(k <= -0.1f)
 	{
 		glTranslatef(k,0.0f,-3.0f);
 	}
@@ -373,7 +381,6 @@ void Display(void)
 	{
 		glTranslatef(0.0f,0.0f,-3.0f);
 	}
-
 	glRotatef(angle,0.0f,1.0f,0.0f);
 
 	glBegin(GL_LINES);
@@ -388,7 +395,7 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if(k < -0.1f)
+	if(k <= -0.1f)
 	{
 		glTranslatef(k,0.0f,-3.0f);
 	}
@@ -406,19 +413,15 @@ void Display(void)
 	glVertex3f(0.92f,-0.5f,0.0f);
 	glVertex3f(0.0f,0.92f,0.0f);
 	
-	glEnd();
-
-	
+	glEnd();	
+}	
 	angle = angle + 0.1f;
 	
 	if(angle >= 360.0f)
 	{
 		angle = 0.0f;
 	}
-
-
 	
-	//glFlush();
 	SwapBuffers(ghdc);
 }
 
