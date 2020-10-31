@@ -275,7 +275,7 @@ void Resize(int width, int height)
 	if (height == 0)
 		height = 1;
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -285,22 +285,24 @@ void Resize(int width, int height)
 
 void Display(void)
 {
-	
+
 	static GLfloat cube_angle = 0.0f;
 	//code
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.0f,0.0f,-3.0f);
-	
+	glTranslatef(0.0f,0.0f,-6.0f);
+
+    glScalef(0.75f,0.75f,0.75f);
+
 	glRotatef(cube_angle,1.0f,0.0f,0.0f);
 	glRotatef(cube_angle,0.0f,1.0f,0.0f);
 	glRotatef(cube_angle,0.0f,0.0f,1.0f);
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.0f,0.0f);
 	glVertex3f(0.5f,0.5f,0.5f);
 	glVertex3f(-0.5f,0.5f,0.5f);
@@ -378,5 +380,5 @@ void UnInitialize(void)
 		fclose(gpFile);
 		gpFile = NULL;
 	}
-	
+
 }

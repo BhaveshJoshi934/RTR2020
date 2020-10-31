@@ -14,6 +14,7 @@
 #pragma comment(lib,"OpenGL32.lib")
 
 #pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"Winmm.lib")
 
 //Callback Function
 
@@ -78,6 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	ghwnd = hwnd;
 
 	Initialize();
+    PlaySound(TEXT("Final.wav"),NULL,SND_ASYNC | SND_FILENAME);
 
 	ShowWindow(hwnd, iCmdShow);
 
@@ -268,7 +270,7 @@ void Resize(int width, int height)
 	if (height == 0)
 		height = 1;
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -286,7 +288,7 @@ void Display(void)
 	glLoadIdentity();
 
 	glTranslatef(0.0f,0.0f,-3.0f);
-	
+
 	glBegin(GL_LINES);
 
 	glColor3f(1.0f, 0.0f, 0.0f);
@@ -296,12 +298,12 @@ void Display(void)
 	glVertex3f(-1.0f, 0.0f, 0.0f);
 
 	glEnd();
-	
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glTranslatef(0.0f,0.0f,-3.0f);
-	
+
 	glBegin(GL_LINES);
 
 	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
@@ -320,7 +322,7 @@ void Display(void)
 
 	glTranslatef(0.0f,0.0f,-3.0f);
 
-	glBegin(GL_LINES);	
+	glBegin(GL_LINES);
 
 	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
 	{
@@ -337,7 +339,7 @@ void Display(void)
 	glLoadIdentity();
 
 	glTranslatef(0.0f,0.0f,-3.0f);
-	
+
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 1.0f, 0.0f);
 	glVertex3f(0.0f, 1.0f, 0.0f);
@@ -346,14 +348,14 @@ void Display(void)
 	glVertex3f(0.0f, -1.0f, 0.0f);
 
 	glEnd();
-	
+
 	//First For Loop (Upper Lines)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
+
 	glTranslatef(0.0f,0.0f,-3.0f);
-	
+
 	glBegin(GL_LINES);
 
 	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
@@ -371,9 +373,9 @@ void Display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
+
 	glTranslatef(0.0f,0.0f,-3.0f);
-	
+
 	glBegin(GL_LINES);
 
 	for(GLfloat v = 0.05f;v <= 1.05f; v = v + 0.05f)
@@ -388,26 +390,29 @@ void Display(void)
 	glEnd();
 
 */
+
+    int flag,flag_1,flag_2,flag_3,flag_4,flag_5,flag_6 = 0;
 	// I (Upper)
-	
+
 	static GLfloat x = -2.3f;
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
+
 	if(x <= -1.6f)
 	{
-		glTranslatef(x,0.0f,-3.0f);	
+		glTranslatef(x,0.0f,-3.0f);
 	}
-	else	
+	else
 	{
 		glTranslatef(-1.7f,0.0f,-3.0f);
+		flag = 1;
 	}
-	
-	x = x + 0.0001;
+
+	x = x + 0.0003f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.3,0.9,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
@@ -416,7 +421,7 @@ void Display(void)
 	glVertex3f(-0.3,0.8,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.3,0.8,0.0f);
-	
+
 	glEnd();
 
 
@@ -426,17 +431,18 @@ void Display(void)
 	glLoadIdentity();
 	if(x <= -1.6f)
 	{
-		glTranslatef(x,0.0f,-3.0f);	
+		glTranslatef(x,0.0f,-3.0f);
 	}
-	else	
+	else
 	{
 		glTranslatef(-1.7f,0.0f,-3.0f);
+		flag = 1;
 	}
-	
-	x = x + 0.0001;
+
+	x = x + 0.0003f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.8,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
@@ -445,7 +451,7 @@ void Display(void)
 	glVertex3f(-0.07,-0.8,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.8,0.0f);
-	
+
 	glEnd();
 
 	// I (Lower)
@@ -455,17 +461,18 @@ void Display(void)
 
 	if(x <= -1.6f)
 	{
-		glTranslatef(x,0.0f,-3.0f);	
+		glTranslatef(x,0.0f,-3.0f);
 	}
-	else	
+	else
 	{
 		glTranslatef(-1.7f,0.0f,-3.0f);
+		flag = 1;
 	}
-	
-	x = x + 0.0001;
+
+	x = x + 0.0003f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.3,-0.8,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
@@ -474,18 +481,29 @@ void Display(void)
 	glVertex3f(-0.3,-0.9,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.3,-0.9,0.0f);
-	
+
 	glEnd();
-
+if(flag == 1)
+{
 	// N(Left)
-
+	static GLfloat y = 1.8f;
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(-1.2f,0.0f,-3.0f);
+    if(y >= 0.1)
+    {
+        glTranslatef(-1.2f,y,-3.0f);
+    }
+    else
+    {
+        glTranslatef(-1.2f,0.0f,-3.0f);
+        flag_1 = 1;
+    }
+
+    y = y - 0.001f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.9,0.0f);
 
@@ -497,16 +515,27 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.9,0.0f);
-	
+
 	glEnd();
 
 	// N (Mid)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
-	glTranslatef(-0.95f,0.0f,-3.0f);
-	glRotatef(15.5f,0.0f,0.0f,1.0f);
+
+    if(y >= 0.1)
+    {
+        glTranslatef(-0.95f,y,-3.0f);
+        glRotatef(15.5f,0.0f,0.0f,1.0f);
+    }
+    else
+    {
+        glTranslatef(-0.95f,0.0f,-3.0f);
+        glRotatef(15.5f,0.0f,0.0f,1.0f);
+        flag_1 = 1;
+    }
+
+    y = y - 0.001f;
 
 	glBegin(GL_QUADS);
 
@@ -521,18 +550,28 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.8,0.0f);
-	
+
 	glEnd();
 
 	// N(Right)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
-	glTranslatef(-0.7f,0.0f,-3.0f);
+
+    if(y >= 0.1)
+    {
+        glTranslatef(-0.7f,y,-3.0f);
+    }
+    else
+    {
+        glTranslatef(-0.7f,0.0f,-3.0f);
+        flag_1 = 1;
+    }
+
+    y = y - 0.001f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.9,0.0f);
 
@@ -544,10 +583,12 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.9,0.0f);
-	
+
 	glEnd();
+}
 
-
+if(flag_1 == 1)
+{
 	//  D (Left)
 
 	glMatrixMode(GL_MODELVIEW);
@@ -556,30 +597,75 @@ void Display(void)
 	glTranslatef(-0.2f,0.0f,-3.0f);
 
 	glBegin(GL_QUADS);
-	
-	glColor3f(1.0f,0.5f,0.0f);
-	glVertex3f(0.07,0.8,0.0f);
 
-	glColor3f(1.0f,0.5f,0.0f);
-	glVertex3f(-0.07,0.8,0.0f);
+    GLfloat k = 0.0f;
+    GLfloat k1 = 0.0f;
 
-	glColor3f(0.0f,1.0f,0.0f);
+    if(k1 <= 0.4f && k <= 0.9f)
+    {
+        glColor3f(k,k1,0.0f);
+        	glVertex3f(0.07,0.8,0.0f);
+    }
+    else
+    {
+       	glColor3f(1.0f,0.5f,0.0f);
+        glVertex3f(0.07,0.8,0.0f);
+        flag_2 = 1;
+    }
+
+
+    if(k1 <= 0.4f && k <= 0.9f )
+    {
+        glColor3f(k,k1,0.0f);
+        	glVertex3f(-0.07,0.8,0.0f);
+    }
+    else
+    {
+       	glColor3f(1.0f,0.5f,0.0f);
+        glVertex3f(-0.07,0.8,0.0f);
+        flag_2 = 1;
+    }
+
+
+	static GLfloat p = 0.0f;
+
+    if(p <= 0.9f)
+    {
+       	glColor3f(0.0f,p,0.0f);
+    }
+    else
+    {
+       	glColor3f(0.0f,1.0f,0.0f);
+       	flag_2 = 1;
+    }
 	glVertex3f(-0.07,-0.8,0.0f);
 
-	glColor3f(0.0f,1.0f,0.0f);
+    if(p <= 0.9f)
+    {
+       	glColor3f(0.0f,p,0.0f);
+    }
+    else
+    {
+       	glColor3f(0.0f,1.0f,0.0f);
+       	flag_2 = 1;
+    }
 	glVertex3f(0.07,-0.8,0.0f);
-	
+
+    k = k + 0.001f;
+    k1 = k1 + (0.001f/2.0f);
+    p = p + 0.001f;
+
 	glEnd();
 
 	// D (Upper)
-	
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glTranslatef(-0.2f,0.0f,-3.0f);
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.4,0.9,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
@@ -588,7 +674,7 @@ void Display(void)
 	glVertex3f(-0.3,0.8,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.4,0.8,0.0f);
-	
+
 	glEnd();
 
 
@@ -600,7 +686,7 @@ void Display(void)
 	glTranslatef(0.2f,0.0f,-3.0f);
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.9,0.0f);
 
@@ -612,7 +698,7 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.9,0.0f);
-	
+
 	glEnd();
 
 
@@ -624,7 +710,7 @@ void Display(void)
 	glTranslatef(-0.2f,0.0f,-3.0f);
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.4,-0.8,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
@@ -633,18 +719,31 @@ void Display(void)
 	glVertex3f(-0.3,-0.9,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.4,-0.9,0.0f);
-	
-	glEnd();
 
+	glEnd();
+}
+
+if(flag_2 == 1)
+{
 	// I (2nd : Upper)
-	
+    static GLfloat a = -1.8f;
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.7f,0.0f,-3.0f);
+    if(a <= 0.1f)
+    {
+      	glTranslatef(0.7f,a,-3.0f);
+    }
+    else
+    {
+        glTranslatef(0.7f,0.0f,-3.0f);
+        flag_3 = 1;
+    }
+    a = a + 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.3,0.9,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
@@ -653,7 +752,7 @@ void Display(void)
 	glVertex3f(-0.3,0.8,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.3,0.8,0.0f);
-	
+
 	glEnd();
 
 
@@ -662,10 +761,19 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.7f,0.0f,-3.0f);
+    if(a <= 0.1f)
+    {
+      	glTranslatef(0.7f,a,-3.0f);
+    }
+    else
+    {
+        glTranslatef(0.7f,0.0f,-3.0f);
+        flag_3 = 1;
+    }
+    a = a + 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.8,0.0f);
 	glColor3f(1.0f,0.5f,0.0f);
@@ -674,7 +782,7 @@ void Display(void)
 	glVertex3f(-0.07,-0.8,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.8,0.0f);
-	
+
 	glEnd();
 
 	// I (2nd : Lower)
@@ -682,10 +790,19 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0.7f,0.0f,-3.0f);
+    if(a <= 0.1f)
+    {
+      	glTranslatef(0.7f,a,-3.0f);
+    }
+    else
+    {
+        glTranslatef(0.7f,0.0f,-3.0f);
+        flag_3 = 1;
+    }
+    a = a + 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.3,-0.8,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
@@ -694,19 +811,34 @@ void Display(void)
 	glVertex3f(-0.3,-0.9,0.0f);
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.3,-0.9,0.0f);
-	
-	glEnd();
 
+	glEnd();
+}
+
+if(flag_3 == 1)
+{
 	// A (Left)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(1.8f,0.0f,-3.0f);
-	glRotatef(15.5f,0.0f,0.0f,1.0f);
+    static GLfloat b = 2.73;
+
+    if(b >= 1.7f)
+    {
+       	glTranslatef(b,0.0f,-3.0f);
+        glRotatef(15.5f,0.0f,0.0f,1.0f);
+    }
+    else
+    {
+     	glTranslatef(1.8f,0.0f,-3.0f);
+        glRotatef(15.5f,0.0f,0.0f,1.0f);
+        flag_4 = 1;
+    }
+    b = b - 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.95,0.0f);
 
@@ -718,19 +850,26 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.9,0.0f);
-	
+
 	glEnd();
 
 
 	// A (Mid)
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(1.5f,0.0f,-3.0f);
+    if(b >= 1.4f)
+    {
+       	glTranslatef(b,0.0f,-3.0f);
+    }
+    else
+    {
+     	glTranslatef(1.5f,0.0f,-3.0f);
+    }
+    b = b - 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.20,0.1,0.0f);
 
@@ -742,21 +881,29 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.26,-0.1,0.0f);
-	
-	glEnd();
 
-	
+	glEnd();
 
 	// A (Right)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(1.3f,0.0f,-3.0f);
-	glRotatef(-15.5f,0.0f,0.0f,1.0f);
+    if(b >= 1.2f)
+    {
+       	glTranslatef(b,0.0f,-3.0f);
+        glRotatef(-15.5f,0.0f,0.0f,1.0f);
+    }
+    else
+    {
+     	glTranslatef(1.3f,0.0f,-3.0f);
+        glRotatef(-15.5f,0.0f,0.0f,1.0f);
+        flag_4 = 1;
+    }
+    b = b - 0.0005f;
 
 	glBegin(GL_QUADS);
-	
+
 	glColor3f(1.0f,0.5f,0.0f);
 	glVertex3f(0.07,0.95,0.0f);
 
@@ -768,10 +915,265 @@ void Display(void)
 
 	glColor3f(0.0f,1.0f,0.0f);
 	glVertex3f(0.07,-0.9,0.0f);
-	
-	glEnd();
 
-	
+	glEnd();
+}
+
+if(flag_4 == 1)
+{
+    static GLfloat j = -3.5f;
+    static GLfloat i = -3.5f;
+    static GLfloat angle =  45.0f;
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+    if(j <= -0.1f)
+    {
+       	glTranslatef(i,j,-5.0f);
+        glRotatef(angle,0.0f,0.0f,1.0f);
+    }
+    else
+    {
+        glTranslatef(i,0.0f,-5.0f);
+        glRotatef(0.0f,0.0f,0.0f,0.0f);
+    }
+
+    i = i + 0.002f;
+    j = j + 0.002f;
+    angle = angle - 0.01f;
+
+	glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,0.1f,0.0f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+	glBegin(GL_TRIANGLES);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+	glVertex3f(0.4f,0.0f,0.0f);
+	glVertex3f(0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,0.1f,0.0f);
+	glVertex3f(-0.3f,0.4f,0.0f);
+	glVertex3f(-0.4f,0.4f,0.0f);
+	glVertex3f(-0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,-0.1f,0.0f);
+	glVertex3f(-0.3f,-0.4f,0.0f);
+	glVertex3f(-0.4f,-0.4f,0.0f);
+	glVertex3f(-0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.8f,0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(-0.8f,-0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+
+    static GLfloat j1 = 3.5f;
+    static GLfloat i1 = -3.5f;
+    static GLfloat angle0 = 45.0f;
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+    if(j1 >= 0.1f)
+    {
+       	glTranslatef(i1,j1,-5.0f);
+        glRotatef(angle0,0.0f,0.0f,-1.0f);
+    }
+    else
+    {
+        glTranslatef(i1,0.0f,-5.0f);
+        glRotatef(0.0f,0.0f,0.0f,0.0f);
+    }
+
+    i1 = i1 + 0.002f;
+    j1 = j1 - 0.002f;
+    angle0 = angle0 - 0.01f;
+
+	glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,0.1f,0.0f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+	glBegin(GL_TRIANGLES);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+	glVertex3f(0.4f,0.0f,0.0f);
+	glVertex3f(0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,0.1f,0.0f);
+	glVertex3f(-0.3f,0.4f,0.0f);
+	glVertex3f(-0.4f,0.4f,0.0f);
+	glVertex3f(-0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,-0.1f,0.0f);
+	glVertex3f(-0.3f,-0.4f,0.0f);
+	glVertex3f(-0.4f,-0.4f,0.0f);
+	glVertex3f(-0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.8f,0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(-0.8f,-0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+
+    //static GLfloat j2 = 0f;
+    static GLfloat i2 = -3.5f;
+    //static GLfloat angle_2 = 45.0f;
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+    glTranslatef(i2,0.0f,-5.0f);
+
+    i2 = i2 + 0.002f;
+   // j2 = j2 + 0.001f;
+   // angle_2 = angle_2 - 0.01f;
+
+	glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,0.1f,0.0f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+	glBegin(GL_TRIANGLES);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.3f,-0.1f,0.0f);
+	glVertex3f(0.4f,0.0f,0.0f);
+	glVertex3f(0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,0.1f,0.0f);
+	glVertex3f(-0.3f,0.4f,0.0f);
+	glVertex3f(-0.4f,0.4f,0.0f);
+	glVertex3f(-0.3f,0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(0.0f,-0.1f,0.0f);
+	glVertex3f(-0.3f,-0.4f,0.0f);
+	glVertex3f(-0.4f,-0.4f,0.0f);
+	glVertex3f(-0.3f,-0.1f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,0.1f,0.0f);
+	glVertex3f(-0.8f,0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,0.5f);
+	glVertex3f(-0.7f,-0.1f,0.0f);
+	glVertex3f(-0.8f,-0.2f,0.0f);
+	glVertex3f(-0.75f,0.0f,0.0f);
+	glVertex3f(-0.7f,0.0f,0.0f);
+
+    glEnd();
+}
+/*
+if(flag_6 == 1)
+{
+    static GLfloat b = 2.73;
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+    if(b >= 1.4f)
+    {
+       	glTranslatef(b,0.0f,-3.0f);
+    }
+    else
+    {
+     	glTranslatef(1.5f,0.0f,-3.0f);
+    }
+    b = b - 0.001f;
+    glEnd();
+}
+*/
 	//glFlush();
 	SwapBuffers(ghdc);
 }
@@ -809,5 +1211,5 @@ void UnInitialize(void)
 		fclose(gpFile);
 		gpFile = NULL;
 	}
-	
+
 }

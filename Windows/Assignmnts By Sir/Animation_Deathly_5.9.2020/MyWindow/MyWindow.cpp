@@ -275,7 +275,7 @@ void Resize(int width, int height)
 	if (height == 0)
 		height = 1;
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -287,8 +287,8 @@ void Display(void)
 {
 	static GLfloat angle = 0.0f;
  	static GLfloat i = 2.0f;
- 	static GLfloat j = 2.5f;
- 	static GLfloat k = -1.8f;
+ 	static GLfloat j = 4.5f;
+ 	static GLfloat k = -3.5f;
 	int flag = 0;
 	int flag_1 = 0;
 	//code
@@ -297,7 +297,7 @@ void Display(void)
 	//Straight Line code
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	i = i - 0.0001f;
+	i = i - 0.001f;
 	if(i >= 0.1f)
 	{
 		glTranslatef(0.0f,i,-3.0f);
@@ -312,17 +312,17 @@ void Display(void)
 	glBegin(GL_LINES);
 
 	glColor3f(1.0f,1.0f,0.0f);
-	
+
 	glVertex3f(0.0f,0.92f,0.0f);
 	glVertex3f(0.0f,-0.5f,0.0f);
-	
+
 	glEnd();
 
 if(flag == 1)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	j = j - 0.0001f;
+	j = j - 0.001f;
 	if(j >= 0.1f)
 	{
 		glTranslatef(j,0.0f,-3.0f);
@@ -330,18 +330,18 @@ if(flag == 1)
 	else
 	{
 		glTranslatef(0.0f,0.0f,-3.0f);
-		flag_1 = 1; 
+		flag_1 = 1;
 	}
 
 	glRotatef(angle,0.0f,1.0f,0.0f);
-	
+
 	glBegin(GL_LINE_LOOP);
 
 	for(GLfloat angle = 0.0f;angle <= 2 * pi ; angle = angle + 0.01f)
 	{
 		glColor3f(1.0f,1.0f,0.0f);
 		glVertex3f(cos(angle)/2,sin(angle)/2,0.0f);
-	} 
+	}
 
 	glEnd();
 }
@@ -350,7 +350,7 @@ if(flag_1 == 1)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	k = k + 0.0001f;
+	k = k + 0.001f;
 	if(k <= -0.1f)
 	{
 		glTranslatef(k,0.0f,-3.0f);
@@ -364,15 +364,15 @@ if(flag_1 == 1)
 	glBegin(GL_LINES);
 
 	glColor3f(1.0f,1.0f,0.0f);
-	
+
 	glVertex3f(0.0f,0.92f,0.0f);
 	glVertex3f(-0.92f,-0.5f,0.0f);
-	
+
 	glEnd();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
+
 	if(k <= -0.1f)
 	{
 		glTranslatef(k,0.0f,-3.0f);
@@ -389,7 +389,7 @@ if(flag_1 == 1)
 
 	glVertex3f(-0.92f,-0.5f,0.0f);
 	glVertex3f(0.92f,-0.5f,0.0f);
-	
+
 	glEnd();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -412,16 +412,16 @@ if(flag_1 == 1)
 
 	glVertex3f(0.92f,-0.5f,0.0f);
 	glVertex3f(0.0f,0.92f,0.0f);
-	
-	glEnd();	
-}	
-	angle = angle + 0.1f;
-	
+
+	glEnd();
+}
+	angle = angle + 0.5f;
+
 	if(angle >= 360.0f)
 	{
 		angle = 0.0f;
 	}
-	
+
 	SwapBuffers(ghdc);
 }
 
@@ -458,5 +458,5 @@ void UnInitialize(void)
 		fclose(gpFile);
 		gpFile = NULL;
 	}
-	
+
 }
