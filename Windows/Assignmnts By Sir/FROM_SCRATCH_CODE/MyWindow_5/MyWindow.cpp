@@ -2,9 +2,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "MyWindow.h"
+#include<gl/gl.h>
 
 #define WIN_WIDTH  800
 #define WIN_HEIGHT 600
+
+#pragma comment(lib,"OpenGL32.lib")
 
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 
@@ -16,6 +19,9 @@ DWORD dwStyle;
 bool gbFullScreen = false;
 WINDOWPLACEMENT wpPrev = {sizeof(WINDOWPLACEMENT)};
 HWND ghwnd = NULL;
+
+HDC ghdc   = NULL;
+HGLRC ghrc = NULL;
 
 bool gbActiveWindow = false;
 
@@ -116,12 +122,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
     void ToggleFullScreen(void);
     void Resize(int,int);
     void UnInitialize();
-
+/*
     HDC hdc;
     PAINTSTRUCT ps;
     RECT rc;
     TCHAR str[] = TEXT("Dhruv!!!");
-
+*/
     switch(iMsg)
     {
     case WM_CREATE:
@@ -143,7 +149,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
     case WM_CLOSE:
         DestroyWindow(hwnd);
         break;
-
+/*
     case WM_PAINT:
         GetClientRect(hwnd,&rc);
         hdc = BeginPaint(hwnd,&ps);
@@ -152,7 +158,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
         DrawText(hdc,str,-1,&rc,DT_SINGLELINE|DT_VCENTER|DT_CENTER);
         EndPaint(hwnd,&ps);
         break;
-
+*/
     case WM_KEYDOWN:
         switch(wParam)
         {
@@ -212,12 +218,60 @@ void Initialize()
 {
     void Resize(int,int);
 
+    PIXELFORMATDESCRIPTOR pfd;
+    int iPixelFormatIndex;
+
+    ghdc = GetDC(ghwnd);
+    ZeroMemory(&pfd,sizeof(PIXELFORMATDESCRIPTOR));;
+
+    pfd.nSize = { sizeof(PIXELFORMATDESCRIPTOR) };
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+    pfd.cRedBits = 8;
+    pfd.cBlueBits = 8;
+    pfd.cGreenBits = 8;
+    pfd.cAlphaBits = 8;
+
+    iPixelFormatIndex = ChoosePixelFormat(ghdc,&pfd);
+
+    if(iPixelFormatIndex == 0)
+    {
+        fprintf(gpFile,"Choose Failed!!\n\n");;
+        DestroyWindow(ghwnd);
+    }
+
+    if(SetPixelFormat(ghdc,iPixelFormatIndex,&pfd) == FALSE)
+    {
+        fprintf(gpFile,"Set Failed!!\n\n");;
+        DestroyWindow(ghwnd);
+    }
+
+    ghrc = wglCreateContext(ghdc);
+
+    if(ghrc == NULL)
+    {
+        fprintf(gpFile,"ghrc Failed!!\n\n");;
+        DestroyWindow(ghwnd);
+    }
+
+    if(wglMakeCurrent(ghdc,ghrc) == FALSE)
+    {
+        fprintf(gpFile,"WgMake Failed!!\n\n");;
+        DestroyWindow(ghwnd);
+    }
+
+    glClearColor(1.0f,0.0f,0.0f,0.0f);
+
     Resize(WIN_WIDTH,WIN_HEIGHT);
 }
 
 void Display()
 {
+    glClear(GL_COLOR_BUFFER_BIT);
 
+    glFlush();
 }
 
 void Resize(int width,int height)
@@ -226,10 +280,27 @@ void Resize(int width,int height)
     {
         height = 1;
     }
+    glViewport(0,0,(GLsizei)width,(GLsizei)height);
 }
 
 void UnInitialize()
 {
+    if(wglGetCurrentContext() == ghrc)
+    {
+        wglMakeCurrent(NULL,NULL);
+    }
+
+    if(ghrc)
+    {
+        wglDeleteContext(ghrc);
+    }
+
+    if(ghdc)
+    {
+        ReleaseDC(ghwnd,ghdc);
+        ghdc = NULL;
+    }
+
     if(gpFile)
     {
         fprintf(gpFile,"Code End Here!!!\n\n");
