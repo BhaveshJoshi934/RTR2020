@@ -316,10 +316,10 @@ bool LoadGLTexture(GLuint *Texture,TCHAR resourceID[])
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
 
-        //Atta Data Tkaycha ahe Graphics card side la with the help og Graphic driver
+        //Atta Data Tkaycha ahe Graphics card side la with the help of Graphic driver
         gluBuild2DMipmaps(GL_TEXTURE_2D,3,bmp.bmWidth,bmp.bmHeight,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
 
-        DeleteObject(hBitmap);  // This is OS Fuction
+        DeleteObject(hBitmap);  // This is OS Fuction  : AApan texture use kela pn nahiye tari delete kela karan to load zalay...
     }
 
     return bResult;

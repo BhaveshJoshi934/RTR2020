@@ -287,8 +287,8 @@ void Display(void)
 {
 	static GLfloat angle = 0.0f;
  	static GLfloat i = 2.0f;
- 	static GLfloat j = 4.5f;
- 	static GLfloat k = -3.5f;
+ 	static GLfloat j = 5.5f;
+ 	static GLfloat k = -4.0f;
 	int flag = 0;
 	int flag_1 = 0;
 	//code
