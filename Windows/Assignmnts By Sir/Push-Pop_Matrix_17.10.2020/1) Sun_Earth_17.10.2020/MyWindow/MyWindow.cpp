@@ -30,7 +30,6 @@ HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 bool gbActiveWindow = false;
 
-int day_M = 0;
 int day = 0;
 int year = 0;
 
@@ -190,14 +189,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
         case 'y':
             year = (year - 3) % 360;
-            break;
-
-        case 'M':
-            day_M = (day_M + 9) % 360;
-            break;
-
-        case 'm':
-            day_M = (day_M - 9) % 360;
             break;
 
         default:
@@ -365,6 +356,16 @@ void Display(void)
     quadric = gluNewQuadric();
 
 	gluSphere(quadric,0.2f,20,20);
+
+	glTranslatef(0.5f,0.0f,0.0f);
+
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+	glColor3f(1.0f,1.0f,1.0f);
+
+	quadric = gluNewQuadric();
+
+	gluSphere(quadric,0.1f,10,10);
 
 	glPopMatrix();
 

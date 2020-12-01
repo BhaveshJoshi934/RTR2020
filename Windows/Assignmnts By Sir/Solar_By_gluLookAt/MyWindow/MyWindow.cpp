@@ -16,7 +16,7 @@
 #pragma comment(lib,"glu32.lib")
 
 GLfloat x,y = 0;
-GLfloat z = 3.0f;
+GLfloat z = 5.0f;
 //Callback Function
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -172,33 +172,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             {
             case 'A':
                 x = x - 0.1f;
-                if(x <= -3.0f)
+                if(x <= -5.0f)
                 {
-                    x = -3.0f;
+                    x = -5.0f;
                 }
                 break;
 
             case 'a':
                 x = x + 0.1f;
-                if(x >= 3.0f)
+                if(x >= 5.0f)
                 {
-                    x = 3.0f;
+                    x = 5.0f;
                 }
                 break;
 
             case 'B':
                 y = y - 0.1f;
-                if(y <= -3.0f)
+                if(y <= -5.0f)
                 {
-                    y = -3.0f;
+                    y = -5.0f;
                 }
                 break;
 
             case 'b':
                 y = y + 0.1f;
-                if(y >= 3.0f)
+                if(y >= 5.0f)
                 {
-                    y = 3.0f;
+                    y = 5.0f;
                 }
                 break;
 
@@ -212,9 +212,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
             case 'c':
                 z = z + 0.1f;
-                if(z >= 3.0f)
+                if(z >= 5.0f)
                 {
-                    z = 3.0f;
+                    z = 5.0f;
                 }
                 break;
             }
@@ -340,7 +340,7 @@ void Resize(int width, int height)
 
 void Display(void)
 {
-
+/*
 	static GLfloat cube_angle = 0.0f;
 	static GLfloat pyramid_angle = 0.0f;
 	//code
@@ -391,6 +391,63 @@ void Display(void)
 	glVertex3f(0.5f,-0.5f,0.5f);
 
 	glEnd();
+
+	//glFlush();
+	SwapBuffers(ghdc);
+*/
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+	glPushMatrix();
+
+	//WE NEED TO WRITE CODE HERE
+
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL); //Adhi GL_LINE hota
+
+	glColor3f(1.0f,1.0f,0.0f);
+
+	quadric = gluNewQuadric();
+
+	gluSphere(quadric,0.75f,30,30);
+
+	glPopMatrix();
+
+//EARTH
+
+	glPushMatrix();
+
+	glRotatef((GLfloat)year,0.0f,1.5f,0.0f);
+
+	glTranslatef(1.5f,0.0f,0.0f);
+
+	glRotatef(90.0f,1.0f,0.0f,0.0f);
+
+    glRotatef((GLfloat)day,0.0f,0.0f,1.5f);
+
+	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+	glColor3f(0.4f,0.9f,1.0f);
+
+    quadric = gluNewQuadric();
+
+	gluSphere(quadric,0.2f,20,20);
+
+	glTranslatef(0.5f,0.0f,0.0f);
+
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+	glColor3f(1.0f,1.0f,1.0f);
+
+	quadric = gluNewQuadric();
+
+	gluSphere(quadric,0.1f,10,10);
+
+	glPopMatrix();
 
 	//glFlush();
 	SwapBuffers(ghdc);
