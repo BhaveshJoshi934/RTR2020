@@ -2,6 +2,7 @@
 
 #include<Windows.h>
 #include<stdio.h>
+#include<math.h>
 #include "MyWindow.h"
 #include<gl/gl.h>
 
@@ -31,10 +32,21 @@ HGLRC ghrc = NULL;
 bool gbActiveWindow = false;
 
 
-int sholder = 0;
-int elbow = 0;
-int palm = 0;
-int fingure = 0;
+int Rsholder = 0;
+int Relbow = 0;
+int Rpalm = 0;
+int Rfingure = 0;
+
+int Lsholder = 0;
+int Lelbow = 0;
+int Lpalm = 0;
+int Lfingure = 0;
+
+int RsholderFeet = 0;
+int RelbowFeet = 0;
+
+
+
 
 GLfloat x,y = 0;
 GLfloat z = 12.0f;
@@ -176,10 +188,58 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+
     case WM_CHAR:
-            switch(wParam)
-            {
-            case 'A':
+        switch(wParam)
+        {
+        case 'S':
+            Rsholder = (Rsholder + 3) % 360;
+            Lsholder = (Lsholder - 3) % 360;
+            RsholderFeet = (RsholderFeet + 3) % 45;
+            break;
+
+        case 's':
+            Rsholder = (Rsholder - 3) % 360;
+            Lsholder = (Lsholder + 3) % 360;
+            RsholderFeet = (RsholderFeet - 3) % 45;
+            break;
+
+        case 'E':
+            Relbow = (Relbow + 3) % 360;
+            Lelbow = (Lelbow - 3) % 360;
+            RelbowFeet = (RelbowFeet + 3) % 45;
+            break;
+
+        case 'e':
+            Relbow = (Relbow - 3) % 360;
+            Lelbow = (Lelbow + 3) % 360;
+            RelbowFeet = (RelbowFeet - 3) % 45;
+            break;
+
+        case 'P':
+            Rpalm = (Rpalm + 3) % 360;
+            Lpalm = (Lpalm - 3) % 360;
+            break;
+
+        case 'p':
+            Rpalm = (Rpalm - 3) % 360;
+            Lpalm = (Lpalm + 3) % 360;
+            break;
+
+        case 'M':
+            Rfingure = (Rfingure + 3) % 360;
+            Lfingure = (Lfingure - 3) % 360;
+            break;
+
+        case 'm':
+            Rfingure = (Rfingure - 3) % 360;
+            Lfingure = (Lfingure + 3) % 360;
+            break;
+
+        case 'A':
                 x = x - 0.1f;
                 if(x <= -12.0f)
                 {
@@ -226,50 +286,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     z = 12.0f;
                 }
                 break;
-            }
-            break;
-
-    case WM_CLOSE:
-        DestroyWindow(hwnd);
-        break;
-/*
-    case WM_CHAR:
-        switch(wParam)
-        {
-        case 'S':
-            sholder = (sholder + 3) % 360;
-            break;
-
-        case 's':
-            sholder = (sholder - 3) % 360;
-            break;
-
-        case 'E':
-            elbow = (elbow + 3) % 360;
-            break;
-
-        case 'e':
-            elbow = (elbow - 3) % 360;
-            break;
-
-        case 'P':
-            palm = (palm + 3) % 360;
-            break;
-
-        case 'p':
-            palm = (palm - 3) % 360;
-            break;
-
-        case 'M':
-            fingure = (fingure + 3) % 360;
-            break;
-
-        case 'm':
-            fingure = (fingure - 3) % 360;
-            break;
         }
         break;
-*/
+
 	case WM_DESTROY:
 		fprintf(gpFile, "Jai Hind");
 		UnInitialize();
@@ -396,11 +415,20 @@ void Display(void)
 	glLoadIdentity();
 
     gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
-    //glTranslatef(3.0f,0.0f,-12.0f);
+    //glTranslatef(0.0f,0.0f,-12.0f);
+/*
+    glBegin(GL_QUADS);
+    glColor3f(1.0f,1.0f,0.0f);
+    glVertex3f(1.5f,1.5f,0.0f);
+    glVertex3f(-1.5f,1.5f,0.0f);
+    glVertex3f(-1.5f,-1.5f,0.0f);
+    glVertex3f(1.5f,-1.5f,0.0f);
+    glEnd();
+*/
 /*
     glPushMatrix();
 
-    glRotatef((GLfloat)sholder,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rsholder,0.0f,1.0f,0.0f);
     glTranslatef(1.0f,0.0f,0.0f);
 
     glPushMatrix();
@@ -411,7 +439,7 @@ void Display(void)
     glPopMatrix();
 
     glTranslatef(1.0f,0.0f,0.0f);
-    glRotatef((GLfloat)elbow,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Relbow,0.0f,1.0f,0.0f);
     glTranslatef(1.0f,0.0f,0.0f);
 
     glPushMatrix();
@@ -422,7 +450,7 @@ void Display(void)
     glPopMatrix();
 
     glTranslatef(1.0f,0.0f,0.0f);
-    glRotatef((GLfloat)palm,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rpalm,0.0f,1.0f,0.0f);
     glTranslatef(0.3f,0.0f,0.0f);
 
     glPushMatrix();
@@ -433,8 +461,8 @@ void Display(void)
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(0.3f,0.00f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glTranslatef(0.3f,0.0f,0.0f);
+    glRotatef((GLfloat)Rfingure,0.0f,1.0f,0.0f);
     glTranslatef(0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -446,7 +474,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(0.2f,0.10f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rfingure,0.0f,1.0f,0.0f);
     glTranslatef(0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -458,7 +486,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(0.25f,-0.10f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rfingure,0.0f,1.0f,0.0f);
     glTranslatef(0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -470,7 +498,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(0.15f,-0.20f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rfingure,0.0f,1.0f,0.0f);
     glTranslatef(0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -482,7 +510,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(0.1f,0.20f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Rfingure,0.0f,1.0f,0.0f);
     glTranslatef(0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -495,22 +523,11 @@ void Display(void)
     glPopMatrix();
 
     //Left
-    glTranslatef(-3.0f,0.0f,0.0f);
+    glTranslatef(-1.5f,0.0f,0.0f);
 
     glPushMatrix();
 
-    glRotatef((GLfloat)sholder,0.0f,0.0f,1.0f);
-    glTranslatef(-1.0f,0.0f,0.0f);
-
-    glPushMatrix();
-    glScalef(2.0f,0.4f,1.0f);
-    glColor3f(1.0f,1.0f,0.0f);
-    quadric = gluNewQuadric();
-    gluSphere(quadric,0.5f,20,20);
-    glPopMatrix();
-
-    glTranslatef(-1.0f,0.0f,0.0f);
-    glRotatef((GLfloat)elbow,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lsholder,0.0f,1.0f,0.0f);
     glTranslatef(-1.0f,0.0f,0.0f);
 
     glPushMatrix();
@@ -521,7 +538,18 @@ void Display(void)
     glPopMatrix();
 
     glTranslatef(-1.0f,0.0f,0.0f);
-    glRotatef((GLfloat)palm,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lelbow,0.0f,1.0f,0.0f);
+    glTranslatef(-1.0f,0.0f,0.0f);
+
+    glPushMatrix();
+    glScalef(2.0f,0.4f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.5f,20,20);
+    glPopMatrix();
+
+    glTranslatef(-1.0f,0.0f,0.0f);
+    glRotatef((GLfloat)Lpalm,0.0f,1.0f,0.0f);
     glTranslatef(-0.3f,0.0f,0.0f);
 
     glPushMatrix();
@@ -533,7 +561,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(-0.3f,0.00f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lfingure,0.0f,1.0f,0.0f);
     glTranslatef(-0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -545,7 +573,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(-0.2f,0.10f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lfingure,0.0f,1.0f,0.0f);
     glTranslatef(-0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -557,7 +585,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(-0.25f,-0.10f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lfingure,0.0f,1.0f,0.0f);
     glTranslatef(-0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -569,7 +597,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(-0.15f,-0.20f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lfingure,0.0f,1.0f,0.0f);
     glTranslatef(-0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -581,7 +609,7 @@ void Display(void)
 
     glPushMatrix();
     glTranslatef(-0.1f,0.20f,0.0f);
-    glRotatef((GLfloat)fingure,0.0f,0.0f,1.0f);
+    glRotatef((GLfloat)Lfingure,0.0f,1.0f,0.0f);
     glTranslatef(-0.2f,0.0f,0.0f);
     glPushMatrix();
     glScalef(1.2f,0.1f,0.0f);
@@ -592,11 +620,38 @@ void Display(void)
     glPopMatrix();
 
     glPopMatrix();
+*/
+// FEET
 
-  */
+   // gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+    glPushMatrix();
+
+    glRotatef((GLfloat)RsholderFeet,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glPushMatrix();
+    glScalef(1.0f,4.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
     quadric = gluNewQuadric();
-    gluCylinder(quadric,1.0f,1.0f,4.0f,20,20);
+    gluSphere(quadric,0.2f,20,20);
+    glPopMatrix();
 
+    glTranslatef(0.0f,-0.6f,0.0f);
+    glRotatef((GLfloat)RelbowFeet,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glPushMatrix();
+    glScalef(1.0f,4.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.2f,20,20);
+    glPopMatrix();
+    glPopMatrix();
+
+/*
+    quadric = gluNewQuadric();
+    gluCylinder(quadric,1.5f,1.0f,4.0f,20,20);
+    glColor3f(1.0f,1.0f,0.0f);
+
+*/
 
 	SwapBuffers(ghdc);
 }
