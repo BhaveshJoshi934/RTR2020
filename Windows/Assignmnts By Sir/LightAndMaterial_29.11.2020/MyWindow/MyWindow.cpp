@@ -48,8 +48,8 @@ GLfloat lightDiffused[] = {1.0f,1.0f,1.0f,1.0f}; //White Light
 GLfloat lightPosition[] = {100.0f,100.0f,100.0f,1.0f};  //Z ais madhun aat yetoy
 GLfloat lightSpecular[] = {1.0f,1.0f,1.0f,1.0f};
 
-GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};  //Gray Light
-GLfloat materialDiffused[] = {0.5f,0.2f,0.7f,1.0f}; //White Light
+GLfloat materialAmbient[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat materialDiffused[] = {0.5f,0.2f,0.7f,1.0f};
 GLfloat materialSpecular[] = {0.7f,0.7f,0.7f,1.0f};
 GLfloat materialShinyness = 128.0f;
 

@@ -44,12 +44,14 @@ int Lfingure = 0;
 
 int RsholderFeet = 0;
 int RelbowFeet = 0;
+int LsholderFeet = 0;
+int LelbowFeet = 0;
 
-
+int Neck = 0;
 
 
 GLfloat x,y = 0;
-GLfloat z = 12.0f;
+GLfloat z = 24.0f;
 
 
 GLUquadric *quadric = NULL;
@@ -196,27 +198,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         switch(wParam)
         {
         case 'S':
-            Rsholder = (Rsholder + 3) % 360;
-            Lsholder = (Lsholder - 3) % 360;
+            Rsholder = (Rsholder + 3) % 45;
+            Lsholder = (Lsholder - 3) % 45;
             RsholderFeet = (RsholderFeet + 3) % 45;
+            LsholderFeet = (LsholderFeet - 3) % 45;
             break;
 
         case 's':
-            Rsholder = (Rsholder - 3) % 360;
-            Lsholder = (Lsholder + 3) % 360;
+            Rsholder = (Rsholder - 3) % 45;
+            Lsholder = (Lsholder + 3) % 45;
             RsholderFeet = (RsholderFeet - 3) % 45;
+            LsholderFeet = (LsholderFeet + 3) % 45;
             break;
 
         case 'E':
             Relbow = (Relbow + 3) % 360;
             Lelbow = (Lelbow - 3) % 360;
             RelbowFeet = (RelbowFeet + 3) % 45;
+            LelbowFeet = (LelbowFeet - 3) % 45;
             break;
 
         case 'e':
             Relbow = (Relbow - 3) % 360;
             Lelbow = (Lelbow + 3) % 360;
             RelbowFeet = (RelbowFeet - 3) % 45;
+            LelbowFeet = (LelbowFeet + 3) % 45;
             break;
 
         case 'P':
@@ -237,6 +243,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case 'm':
             Rfingure = (Rfingure - 3) % 360;
             Lfingure = (Lfingure + 3) % 360;
+            break;
+
+        case 'N':
+            Neck = (Neck - 3) % 35;
+            break;
+
+        case 'n':
+            Neck = (Neck + 3) % 35;
             break;
 
         case 'A':
@@ -408,24 +422,135 @@ void Resize(int width, int height)
 
 void Display(void)
 {
+
+    void Head();
+    void Right_Hand();
+    void Left_Hand();
+    void Right_Feet();
+    void Left_Feet();
+    void Bird();
+
 	//code
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+/*
+    gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    Head();
+    Right_Hand();
+    Left_Hand();
+
+    Right_Feet();
+    Left_Feet();
+    //Bird();
+*/
 
     gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
-    //glTranslatef(0.0f,0.0f,-12.0f);
+
+    glPushMatrix();
+
+    glRotatef((GLfloat)Rsholder,1.0f,0.0f,0.0f);
+    glTranslatef(3.5f,1.0f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.4f,2.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.5f,20,20);
+    glPopMatrix();
+
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glRotatef((GLfloat)Relbow,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-1.0f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.4f,2.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.5f,20,20);
+    glPopMatrix();
+
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glRotatef((GLfloat)Rpalm,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-0.3f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.6f,0.8f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.35f,20,20);
+    glPopMatrix();
+    glPopMatrix();
+
+    //------------------------------------------------
+    glPushMatrix();
+
+    glRotatef((GLfloat)Lsholder,1.0f,0.0f,0.0f);
+    glTranslatef(-1.5f,1.0f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.4f,2.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.5f,20,20);
+    glPopMatrix();
+
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glRotatef((GLfloat)Lelbow,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-1.0f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.4f,2.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.5f,20,20);
+    glPopMatrix();
+
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glRotatef((GLfloat)Lpalm,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-0.3f,0.0f);
+
+    glPushMatrix();
+    glScalef(0.6f,0.8f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.35f,20,20);
+    glPopMatrix();
+    glPopMatrix();
+
+    Right_Feet();
+    Left_Feet();
+    Head();
+
+
+    SwapBuffers(ghdc);
+}
+
+void Head()
+{
+    glTranslatef(1.0f,0.0f,0.0f);
 /*
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.0f,1.0f,0.0f);
+    glVertex3f(1.5f,-1.5f,0.0f);
+    glVertex3f(-1.5f,-1.5f,0.0f);
+    glVertex3f(0.0f,2.0f,0.0f);
+    glEnd();
+    */
     glBegin(GL_QUADS);
     glColor3f(1.0f,1.0f,0.0f);
-    glVertex3f(1.5f,1.5f,0.0f);
-    glVertex3f(-1.5f,1.5f,0.0f);
+    glVertex3f(2.5f,2.5f,0.0f);
+    glVertex3f(-2.5f,2.5f,0.0f);
     glVertex3f(-1.5f,-1.5f,0.0f);
     glVertex3f(1.5f,-1.5f,0.0f);
     glEnd();
-*/
-/*
+}
+
+void Right_Hand()
+{
+    glTranslatef(0.5f,0.0f,0.0f);
     glPushMatrix();
 
     glRotatef((GLfloat)Rsholder,0.0f,1.0f,0.0f);
@@ -521,9 +646,38 @@ void Display(void)
     glPopMatrix();
 
     glPopMatrix();
+}
 
-    //Left
-    glTranslatef(-1.5f,0.0f,0.0f);
+void Right_Feet()
+{
+// FEET
+    glPushMatrix();
+
+    glRotatef((GLfloat)RsholderFeet,1.0f,0.0f,0.0f);
+    glTranslatef(0.5f,-2.3f,0.0f);
+    glPushMatrix();
+    glScalef(1.0f,4.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.2f,20,20);
+    glPopMatrix();
+
+    glTranslatef(0.0f,-0.6f,0.0f);
+    glRotatef((GLfloat)RelbowFeet,1.0f,0.0f,0.0f);
+    glTranslatef(0.0f,-1.0f,0.0f);
+    glPushMatrix();
+    glScalef(1.0f,4.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.2f,20,20);
+    glPopMatrix();
+    glPopMatrix();
+}
+
+void Left_Hand()
+{
+//Left
+    glTranslatef(-1.3f,0.0f,0.0f);
 
     glPushMatrix();
 
@@ -620,14 +774,14 @@ void Display(void)
     glPopMatrix();
 
     glPopMatrix();
-*/
-// FEET
+}
 
-   // gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+void Left_Feet()
+{
     glPushMatrix();
 
-    glRotatef((GLfloat)RsholderFeet,1.0f,0.0f,0.0f);
-    glTranslatef(0.0f,-1.0f,0.0f);
+    glRotatef((GLfloat)LsholderFeet,1.0f,0.0f,0.0f);
+    glTranslatef(1.5f,-2.3f,0.0f);
     glPushMatrix();
     glScalef(1.0f,4.0f,1.0f);
     glColor3f(1.0f,1.0f,0.0f);
@@ -636,7 +790,7 @@ void Display(void)
     glPopMatrix();
 
     glTranslatef(0.0f,-0.6f,0.0f);
-    glRotatef((GLfloat)RelbowFeet,1.0f,0.0f,0.0f);
+    glRotatef((GLfloat)LelbowFeet,1.0f,0.0f,0.0f);
     glTranslatef(0.0f,-1.0f,0.0f);
     glPushMatrix();
     glScalef(1.0f,4.0f,1.0f);
@@ -645,15 +799,31 @@ void Display(void)
     gluSphere(quadric,0.2f,20,20);
     glPopMatrix();
     glPopMatrix();
+}
 
-/*
-    quadric = gluNewQuadric();
-    gluCylinder(quadric,1.5f,1.0f,4.0f,20,20);
+void Bird()
+{
+    glPushMatrix();
+
+    glRotatef((GLfloat)Neck,0.0f,0.0f,1.0f);
+    glTranslatef(0.45f,0.0f,0.0f);
     glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.15f,20,20);
 
-*/
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.0f,1.0f,0.0f);
+    glVertex3f(0.1f,0.0f,0.0f);
+    glVertex3f(-0.1f,0.1f,0.0f);
+    glVertex3f(-0.1f,-0.1f,0.0f);
+    glEnd();
 
-	SwapBuffers(ghdc);
+    glPopMatrix();
+
+    glScalef(2.0f,1.0f,1.0f);
+    glColor3f(1.0f,1.0f,0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric,0.2f,20,20);
 }
 
 void UnInitialize(void)
