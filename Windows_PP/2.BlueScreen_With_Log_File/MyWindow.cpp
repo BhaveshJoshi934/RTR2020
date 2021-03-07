@@ -50,8 +50,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	if (fopen_s(&gpFile, "Log.txt", "w") != 0)
 	{
 		fprintf(gpFile,"Can't Open \n\n");
-		exit(0);
+		exit(1);
 	}
+	fprintf(gpFile,"Code Start Here!!!\n\n");
 
 	X = GetSystemMetrics(SM_CXSCREEN) / 2 - WIN_WIDTH / 2;
 	Y = GetSystemMetrics(SM_CYSCREEN) / 2 - WIN_HEIGHT / 2;
@@ -75,7 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	//CreateWindow
 
-	hwnd = CreateWindowEx(WS_EX_APPWINDOW, szAppName, TEXT("BlueScreen in PP : BHAVESH JOSHI!!!"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE, X, Y, WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
+	hwnd = CreateWindowEx(WS_EX_APPWINDOW, szAppName, TEXT("BlueScreen with Log in PP : BHAVESH JOSHI!!!"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE, X, Y, WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
 
 	ghwnd = hwnd;
 
@@ -121,7 +122,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	{
 
 	case WM_CREATE:
-		fprintf(gpFile, "Window Created... \n\n");
+		MessageBox(hwnd,"Window Created","My Message",MB_OK);
 		break;
 
 	case WM_SETFOCUS:
@@ -157,7 +158,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
-		fprintf(gpFile, "Destroyed!!!\n\n");
 		UnInitialize();
 		PostQuitMessage(0);
 		break;
@@ -256,6 +256,21 @@ void Initialize(void)
         ghdc = NULL;
     }
 
+    fprintf(gpFile,"OpenGL Vendor : %s\n\n",glGetString(GL_VENDOR));
+    fprintf(gpFile,"OpenGL Render : %s\n\n",glGetString(GL_RENDERER));
+    fprintf(gpFile,"OpenGL Version : %s\n\n",glGetString(GL_VERSION));
+    fprintf(gpFile,"GLSL Version : %s\n\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    GLint numExtension;
+
+    glGetIntegerv(GL_NUM_EXTENSIONS,&numExtension);
+
+    for(int i = 0 ; i < numExtension ; i++)
+    {
+        fprintf(gpFile,"%s\n\n",glGetStringi(GL_EXTENSIONS,i));
+    }
+
+
 	glShadeModel(GL_SMOOTH);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -316,8 +331,8 @@ void UnInitialize(void)
 	}
 	if (gpFile)
 	{
-		fclose(gpFile);
 		fprintf(gpFile,"Code Ended Here !!!\n\n");
+		fclose(gpFile);
 		gpFile = NULL;
 	}
 
