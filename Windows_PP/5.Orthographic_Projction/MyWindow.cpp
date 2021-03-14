@@ -7,11 +7,23 @@
 #include<gl/glew.h>
 #include<gl/gl.h>
 
+#include"vmath.h"
+
 #define       WIN_WIDTH      800
 #define       WIN_HEIGHT     600
 
 #pragma comment(lib,"glew32.lib")
 #pragma comment(lib,"OpenGL32.lib")
+
+using namespace vmath;
+
+enum
+{
+    BDJ_ATTRIBUTE_POSITION = 0,
+    BDJ_ATTRIBUTE_COLOR,
+    BDJ_ATTRIBUTE_NORMAL,
+    BDJ_ATTRIBUTE_TEXTURE0
+};
 
 FILE* gpFile = NULL;
 
@@ -28,6 +40,14 @@ HGLRC ghrc = NULL;
 GLuint gVertexShaderObject;
 GLuint gFragmentShaderObject;
 GLuint gShaderProgramObject;
+
+
+GLuint vao;
+GLuint vbo_Position;
+GLuint mvpUniform;
+
+mat4 orthographicProjectionMatrix;
+
 
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 
@@ -71,7 +91,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("BlueScreen With Empty Shaders !!"),
+                          TEXT("Orthographic Projection in PP : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -275,16 +295,40 @@ void Initialize()
 
     //Feed Shader
     const GLchar *vertexShaderSourceCode =
-            "#version 440" \
+            "#version 440 core" \
             "\n" \
+            "in vec4 vPosition;" \
+            "uniform mat4 u_mvp_matrix;" \
             "void main(void)" \
             "{" \
+            "gl_Position = u_mvp_matrix * vPosition;" \
             "}";
 
     glShaderSource(gVertexShaderObject,1,(const GLchar **)&vertexShaderSourceCode,NULL);
 
     //Compile Shader
     glCompileShader(gVertexShaderObject);
+
+    GLint infoLogLength = 0;
+    GLint shaderCompiledStatus = 0;
+    char *szInfoLog = NULL;
+    glGetShaderiv(gVertexShaderObject,GL_COMPILE_STATUS,&shaderCompiledStatus);
+    if(shaderCompiledStatus == GL_FALSE)
+    {
+        glGetShaderiv(gVertexShaderObject,GL_INFO_LOG_LENGTH,&infoLogLength);
+        if(infoLogLength > 0)
+        {
+            szInfoLog = (char*)malloc(sizeof(char) * infoLogLength);
+            if(szInfoLog != NULL)
+            {
+                GLsizei written;
+                glGetShaderInfoLog(gVertexShaderObject,infoLogLength,&written,szInfoLog);
+                fprintf(gpFile,"Vertex Shader Compilation Log = %s\n\n",szInfoLog);
+                free(szInfoLog);
+                DestroyWindow(ghwnd);
+            }
+        }
+    }
 
     /*--------------------------------------------FRAGMENT SHADER-------------------------------------------------------------*/
 
@@ -293,10 +337,12 @@ void Initialize()
 
     //Feed Shader
     const GLchar *fragmentShaderSourceCode =
-        "#version 440" \
+        "#version 440 core" \
         "\n" \
+        "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
+        "FragColor = vec4(1.0f,1.0f,1.0f,1.0f);"
         "}";
 
     glShaderSource(gFragmentShaderObject,1,(const char **)&fragmentShaderSourceCode,NULL);
@@ -304,7 +350,26 @@ void Initialize()
     //Compile
     glCompileShader(gFragmentShaderObject);
 
-    /*--------------------------------------------SHADER LINKING CODE-------------------------------------------------------------*/
+    glGetShaderiv(gFragmentShaderObject,GL_COMPILE_STATUS,&shaderCompiledStatus);
+    if(shaderCompiledStatus == GL_FALSE)
+    {
+        glGetShaderiv(gFragmentShaderObject,GL_INFO_LOG_LENGTH,&infoLogLength);
+        if(infoLogLength > 0)
+        {
+            szInfoLog = (char*)malloc(sizeof(char) * infoLogLength);
+            if(szInfoLog != NULL)
+            {
+                GLsizei written;
+                glGetShaderInfoLog(gFragmentShaderObject,infoLogLength,&written,szInfoLog);
+                fprintf(gpFile,"Fragment Shader Compilation Log = %s\n\n",szInfoLog);
+                free(szInfoLog);
+                DestroyWindow(ghwnd);
+            }
+        }
+    }
+
+
+    /*--------------------------------------------SHADER PROGRAM-------------------------------------------------------------*/
 
     //Create
     gShaderProgramObject = glCreateProgram();
@@ -313,8 +378,50 @@ void Initialize()
     glAttachShader(gShaderProgramObject,gVertexShaderObject);
     glAttachShader(gShaderProgramObject,gFragmentShaderObject);
 
+    glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_POSITION,"vPosition");
+
     //Link
     glLinkProgram(gShaderProgramObject);
+
+    GLint shaderProgramLinkStatus = 0;
+    glGetProgramiv(gShaderProgramObject,GL_LINK_STATUS,&shaderProgramLinkStatus);
+    if(shaderProgramLinkStatus == GL_FALSE)
+    {
+        glGetProgramiv(gShaderProgramObject,GL_INFO_LOG_LENGTH,&infoLogLength);
+        if(infoLogLength > 0)
+        {
+            szInfoLog = (char*)malloc(sizeof(char) * infoLogLength);
+            if(szInfoLog != NULL)
+            {
+                GLsizei written;
+                glGetProgramInfoLog(gFragmentShaderObject,infoLogLength,&written,szInfoLog);
+                fprintf(gpFile,"Shader Program Link Log = %s\n\n",szInfoLog);
+                free(szInfoLog);
+                DestroyWindow(ghwnd);
+            }
+        }
+    }
+
+    mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
+
+    const GLfloat triangleVertices[] =
+            {
+                0.0f,50.0f,0.0f,
+                -50.0f,-50.0f,0.0f,
+                50.0f,-50.0f,0.0f
+            };
+
+    glGenVertexArrays(1,&vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(1,&vbo_Position);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(triangleVertices),triangleVertices,GL_STATIC_DRAW);
+    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
+
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+    glBindVertexArray(0);
 
     glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
@@ -322,7 +429,9 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-    glClearColor(0.0f,0.0f,1.0f,0.0f);
+    glClearColor(0.0f,0.0f,0.0f,0.0f);
+
+    orthographicProjectionMatrix = mat4::identity();
 
     Resize(WIN_WIDTH,WIN_HEIGHT);
 }
@@ -333,6 +442,25 @@ void Resize(int width,int height)
         height = 1;
 
     glViewport(0,0,(GLsizei)width,(GLsizei)height);
+
+    if(width <= height)
+    {
+        orthographicProjectionMatrix = vmath::ortho(-100.0f,
+                                                    100.0f,
+                                                    (-100.0f * (height/width)),
+                                                    (100.0f * (height/width)),
+                                                    -100.0f,
+                                                    100.0f);
+    }
+    else
+    {
+        orthographicProjectionMatrix = vmath::ortho(-100.0f,
+                                                    100.0f,
+                                                    (-100.0f * (width/height)),
+                                                    (100.0f * (width/height)),
+                                                    -100.0f,
+                                                    100.0f);
+    }
 }
 
 void Display()
@@ -341,6 +469,19 @@ void Display()
 
     //Start Using OpenGL Program
     glUseProgram(gShaderProgramObject);
+
+    mat4 modelViewMatrix = mat4::identity();
+    mat4 modelViewProjectionMatrix = mat4::identity();
+
+    modelViewProjectionMatrix = orthographicProjectionMatrix * modelViewMatrix;
+
+    glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
+
+    glBindVertexArray(vao);
+
+    glDrawArrays(GL_TRIANGLES,0,3);
+
+    glBindVertexArray(0);
 
     //Stop OpenGL Program
     glUseProgram(0);
@@ -358,7 +499,7 @@ void uninitialize()
 		SetWindowPos(ghwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
 		ShowCursor(TRUE);
 	}
-
+    /*
     glDetachShader(gShaderProgramObject,gVertexShaderObject);
     glDetachShader(gShaderProgramObject,gFragmentShaderObject);
 
@@ -369,6 +510,50 @@ void uninitialize()
     gFragmentShaderObject = 0;
 
     glUseProgram(0);
+    */
+
+    if(vao)
+    {
+        glDeleteVertexArrays(1,&vao);
+        vao = 0;
+    }
+
+    if(vbo_Position)
+    {
+        glDeleteVertexArrays(1,&vbo_Position);
+        vbo_Position = 0;
+    }
+
+    if(gShaderProgramObject)
+    {
+        glUseProgram(gShaderProgramObject);
+        GLsizei shaderCount;
+
+        glGetProgramiv(gShaderProgramObject,GL_ATTACHED_SHADERS,&shaderCount);
+
+        GLuint *pShaders = NULL;
+
+        pShaders = (GLuint*)malloc(shaderCount * sizeof(GLuint));
+        if(pShaders == NULL)
+        {
+            printf("Malloc Failed!!!Exitting Now!!\n\n");
+            exit(0);
+        }
+
+        glGetAttachedShaders(gShaderProgramObject,shaderCount,&shaderCount,pShaders);
+
+        for(GLsizei i = 0 ; i < shaderCount ; i++)
+        {
+            glDetachShader(gShaderProgramObject,pShaders[i]);
+            glDeleteShader(pShaders[i]);
+            pShaders[i] = 0;
+            free(pShaders);
+
+            glDeleteProgram(gShaderProgramObject);
+            gShaderProgramObject = 0;
+            glUseProgram(0);
+        }
+    }
 
 	if (wglGetCurrentContext() == ghrc)
 	{
