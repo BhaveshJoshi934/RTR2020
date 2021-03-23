@@ -18,12 +18,17 @@
 #pragma comment(lib,"OpenGL32.lib")
 
 #pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"Winmm.lib")
 
 //Callback Function
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global Variables
+
+bool flag_silly_bird = 0;
+bool flag_chase = 0;
+bool flag_chirp = 0;
 
 FILE* gpFile = NULL;
 DWORD dwStyle;
@@ -112,6 +117,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	ghwnd = hwnd;
 
 	Initialize();
+
+   // if(flag_silly_bird == 1)
+    //{
+        PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
+   // }
+
+    //if(flag_chase == 1)
+    //{
+    //   PlaySound(TEXT("Chase.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    //}
+
+    if(flag_chirp == 1)
+    {
+        PlaySound(TEXT("Chirp.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    }
 
 	ShowWindow(hwnd, iCmdShow);
 
@@ -450,7 +470,7 @@ void Initialize(void)
 	}
 
 	//SetClearColor
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
@@ -479,7 +499,7 @@ void Resize(int width, int height)
 void Display(void)
 {
     static GLfloat delay_bdj = 50.0f;
-
+    static GLfloat x = 4.0f;
     static GLfloat t1 = 25.0f;
     static GLfloat t2 = 60.0f;
     static GLfloat t3 = 90.0f;
@@ -505,12 +525,10 @@ void Display(void)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f,0.0f,-5.0f);
     Loading();
-
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -551,11 +569,20 @@ void Display(void)
     if(delay_bdj <= 10.0f)
     {
         Loading_Filled_five();
+         flag_silly_bird = 1;
     }
 
     if(delay_bdj <= 0.0f)
     {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(0.0f,0.0f,-5.0f);
+
         Loading_Null();
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(0.0f,0.0f,-5.0f);
         Loading_Filled_Null();
 
         glMatrixMode(GL_MODELVIEW);
@@ -575,24 +602,25 @@ void Display(void)
     }
     Humanoid();
 
-    glMatrixMode(GL_MODELVIEW);
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if(bird >= -25.0f)   // -25
+	if(bird >= -40.0f)
     {
         glTranslatef(bird,8.0f,-30.0f);
     }
 
     bird = bird - 0.05f;
 
-    Bird_one();
-
-/*
-    if(bird <= -26.0f);  // -26
+    if(bird <= -40.0f)
     {
-        bird = 26.0f;
+        bird = 41.0f;
     }
-*/
+
+    Bird_one();
+//---------------------------------------------------------------------------------------------------------------------
+//CHRISMAS TREE
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	if(t1 >= -60.0f)
@@ -610,6 +638,7 @@ void Display(void)
     }
 
 //---------------------------------------------------------------------------------------------------------------------
+//PROPER TREE
 
     glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -627,6 +656,8 @@ void Display(void)
         t3 = 90.0f;
     }
 //---------------------------------------------------------------------------------------------------------------------
+
+//CACTUS
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -652,16 +683,21 @@ void Display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if(thr2 >= -40.0f)
+	if(thr2 >= -50.0f)
     {
         glTranslatef(thr2,thr1 - 4.0f,-30.0f);
     }
 	thr1 = thr1 + 0.05f;
-	if(thr1 >= 3.5f)
+	if(thr1 >= 4.5f)
     {
         thr1 = 0.0f;
     }
 	thr2 = thr2 - 0.05f;
+
+	if(thr2 <= -51.0f)
+    {
+        thr2 = 60.0f;
+    }
 
 	Tree_Throne();
     }
@@ -671,7 +707,7 @@ void Display(void)
 
 void Loading()
 {
-   glColor3f(0.0f,0.0f,0.0f);
+   glColor3f(1.0f,1.0f,1.0f);
    glLineWidth(3.0f);
 
    glBegin(GL_LINES);
@@ -705,8 +741,8 @@ void Loading()
 
 void Loading_Null()
 {
-   glColor3f(1.0f,1.0f,1.0f);
-   /*
+   glColor3f(0.0f,0.0f,0.0f);
+
    glLineWidth(3.0f);
 
    glBegin(GL_LINES);
@@ -736,22 +772,21 @@ void Loading_Null()
    glVertex3f(1.0f,0.125f,0.0f);
 
    glEnd();
-   */
 }
 
 void Loading_Filled_Null()
 {
-    glColor3f(1.0f,1.0f,1.0f);
-/*
+    glColor3f(0.0f,0.0f,0.0f);
+
     glBegin(GL_QUADS);
 
-    glVertex3f(-0.88f,0.125f,0.0f);
+    glVertex3f(1.0f,0.125f,0.0f);
     glVertex3f(-1.0f,0.125f,0.0f);
     glVertex3f(-1.0f,-0.125f,0.0f);
-    glVertex3f(-.88f,-0.125f,0.0f);
+    glVertex3f(1.0f,-0.125f,0.0f);
 
     glEnd();
-    */
+
 }
 
 void Loading_Filled_one()

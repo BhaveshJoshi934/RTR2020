@@ -18,12 +18,17 @@
 #pragma comment(lib,"OpenGL32.lib")
 
 #pragma comment(lib,"glu32.lib")
+#pragma comment(lib,"Winmm.lib")
 
 //Callback Function
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global Variables
+
+bool flag_silly_bird = 0;
+bool flag_chase = 0;
+bool flag_chirp = 0;
 
 FILE* gpFile = NULL;
 DWORD dwStyle;
@@ -85,6 +90,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	ghwnd = hwnd;
 
 	Initialize();
+
+    if(flag_Silly_Bird == 1)
+    {
+        PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    }
+
+    if(flag_chase == 1)
+    {
+        PlaySound(TEXT("Chase.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    }
+
+    if(flag_chirp == 1)
+    {
+        PlaySound(TEXT("Chirp.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    }
+
 
 	ShowWindow(hwnd, iCmdShow);
 
@@ -286,10 +307,10 @@ void Display(void)
 
     static GLfloat delay_bdj = 50.0f;
 
-    /*
-    static GLfloat x = 5.0f;
+
+    static GLfloat x = 24.0f;
     void Bird_one(void);
-    */
+
     void Loading(void);
     void Loading_Filled_one(void);
     void Loading_Filled_two(void);
@@ -300,36 +321,35 @@ void Display(void)
 
 	//code
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if(x >= -8.0f)
+	if(x >= -24.0f)
     {
         glTranslatef(x,8.0f,-30.0f);
     }
 
-    x = x - 0.01f;
+    x = x - 0.1f;
 
-    if(x <= -8.0f)
+    if(x <= -25.0f)
     {
-        x = 5.0f;
+        x = 24.0f;
     }
 
     Bird_one();
-*/
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f,0.0f,-5.0f);
-    Loading();
+    //Loading();
 
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0f,0.0f,-5.0f);
 
-    Loading_Filled_one();
+    //Loading_Filled_one();
 
     delay_bdj = delay_bdj - 0.01f;
 
@@ -339,7 +359,7 @@ void Display(void)
     glTranslatef(0.0f,0.0f,-5.0f);
     if(delay_bdj <= 40.0f)
     {
-        Loading_Filled_two();
+//        Loading_Filled_two();
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -347,7 +367,7 @@ void Display(void)
     glTranslatef(0.0f,0.0f,-5.0f);
     if(delay_bdj <= 30.0f)
     {
-        Loading_Filled_three();
+//        Loading_Filled_three();
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -355,7 +375,7 @@ void Display(void)
     glTranslatef(0.0f,0.0f,-5.0f);
     if(delay_bdj <= 20.0f)
     {
-        Loading_Filled_four();
+//        Loading_Filled_four();
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -363,7 +383,7 @@ void Display(void)
     glTranslatef(0.0f,0.0f,-5.0f);
     if(delay_bdj <= 10.0f)
     {
-        Loading_Filled_five();
+//        Loading_Filled_five();
     }
 
 	SwapBuffers(ghdc);
