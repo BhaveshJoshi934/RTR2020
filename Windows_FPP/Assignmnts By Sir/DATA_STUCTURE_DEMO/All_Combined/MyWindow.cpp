@@ -1,3 +1,5 @@
+//DS ALL COMBINED
+
 //Header Files
 
 #include<Windows.h>
@@ -26,9 +28,8 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 //Global Variables
 
-bool flag_silly_bird = 0;
-bool flag_chase = 0;
-bool flag_chirp = 0;
+GLfloat time = 0.01;
+GLfloat time2 = 0.5f;
 
 FILE* gpFile = NULL;
 DWORD dwStyle;
@@ -38,6 +39,10 @@ HWND ghwnd = NULL;
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 bool gbActiveWindow = false;
+
+bool bDone_Credit = 0;
+
+
 
 int O = 0;
 int Rsholder = 0;
@@ -61,6 +66,11 @@ static GLfloat Up = 1.0f;
 static GLfloat Down = -1.0f;
 bool bUp = 0;
 bool bDown = 0;
+
+HFONT hVertexFont;
+GLuint uiFontList;
+GLYPHMETRICSFLOAT agmf[128];
+bool DeleteFont = 0;
 
 GLfloat x,y = 0;
 GLfloat z = 5.0f;
@@ -88,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		exit(0);
 	}
 
-	fprintf(gpFile,"COde Start here!!!\n\n");
+	fprintf(gpFile,"Code Start here!!!\n\n");
 
 	X = GetSystemMetrics(SM_CXSCREEN) / 2 - WIN_WIDTH / 2;
 	Y = GetSystemMetrics(SM_CYSCREEN) / 2 - WIN_HEIGHT / 2;
@@ -112,32 +122,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	//CreateWindow
 
-	hwnd = CreateWindowEx(WS_EX_APPWINDOW, szAppName, TEXT("Humanoid!!"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE, X, Y, WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
+	hwnd = CreateWindowEx(WS_EX_APPWINDOW, szAppName, TEXT("DS Project : Bhavesh Joshi!!"), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE, X, Y, WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
 
 	ghwnd = hwnd;
 
 	Initialize();
 
-   // if(flag_silly_bird == 1)
-    //{
-        PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
-   // }
-
-    //if(flag_chase == 1)
-    //{
-    //   PlaySound(TEXT("Chase.wav"),NULL,SND_ASYNC | SND_FILENAME);
-    //}
-
-    if(flag_chirp == 1)
-    {
-        PlaySound(TEXT("Chirp.wav"),NULL,SND_ASYNC | SND_FILENAME);
-    }
+    //PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
 
 	ShowWindow(hwnd, iCmdShow);
 
 	SetForegroundWindow(hwnd);
 	SetFocus(hwnd);
-
 
 	while (bDone == false)
 	{
@@ -235,36 +231,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     case WM_CHAR:
         switch(wParam)
         {
-        /*
-        case 'S':
-            Rsholder = (Rsholder + 3) % 45;
-            Lsholder = (Lsholder - 3) % 45;
-            RsholderFeet = (RsholderFeet + 3) % 45;
-            LsholderFeet = (LsholderFeet - 3) % 45;
-            break;
-
-        case 's':
-            Rsholder = (Rsholder - 3) % 45;
-            Lsholder = (Lsholder + 3) % 45;
-            RsholderFeet = (RsholderFeet - 3) % 45;
-            LsholderFeet = (LsholderFeet + 3) % 45;
-            break;
-
-        case 'E':
-            Relbow = (Relbow + 3) % 360;
-            Lelbow = (Lelbow - 3) % 360;
-            RelbowFeet = (RelbowFeet + 3) % 45;
-            LelbowFeet = (LelbowFeet - 3) % 45;
-            break;
-
-        case 'e':
-            Relbow = (Relbow - 3) % 360;
-            Lelbow = (Lelbow + 3) % 360;
-            RelbowFeet = (RelbowFeet - 3) % 45;
-            LelbowFeet = (LelbowFeet + 3) % 45;
-            break;
-            */
-
         case 'S':
             Rsholder = (Rsholder + 3) % 360;
             Lsholder = (Lsholder - 3) % 360;
@@ -376,6 +342,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     z = 12.0f;
                 }
                 break;
+
+            case 'Q':
+            case 'q':
+                bDone_Credit = 1;
+                break;
         }
         break;
 
@@ -421,6 +392,8 @@ void Initialize(void)
 {
 	//Function Declaration
 	void Resize(int, int);
+
+	//bool LoadGLTexture(GLuint*,TCHAR[]);
 
 	//Variable Declaration
 	PIXELFORMATDESCRIPTOR pfd;
@@ -469,17 +442,82 @@ void Initialize(void)
 		DestroyWindow(ghwnd);
 	}
 
-	//SetClearColor
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
     glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
+    LOGFONT logFont;
+	logFont.lfHeight = 60;
+	logFont.lfWidth = 30;
+	logFont.lfEscapement = 0;
+	logFont.lfOrientation = 0;
+	logFont.lfWeight = FW_BOLD;
+	logFont.lfItalic = FALSE;
+	logFont.lfUnderline = FALSE;
+	logFont.lfStrikeOut = FALSE;
+	logFont.lfCharSet = ANSI_CHARSET;
+	logFont.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	logFont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	logFont.lfQuality = DEFAULT_QUALITY;
+	logFont.lfPitchAndFamily = DEFAULT_PITCH;
+	strcpy(logFont.lfFaceName,"Optima");
+
+	//create the font and display list
+	hVertexFont = CreateFontIndirect(&logFont);
+
+	SelectObject(ghdc, hVertexFont);
+	uiFontList = glGenLists(128);
+	//wglUseFontOutlines(ghdc, 0, 128, uiFontList, 0.0f, 0.5f, WGL_FONT_POLYGONS, agmf);
+	wglUseFontBitmaps(ghdc, 0, 128, uiFontList);
+
+	//SetClearColor
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
 	//WarmUp Resize code
 	Resize(WIN_WIDTH, WIN_HEIGHT);
+}
+
+bool LoadGLTexture(GLuint *Texture,TCHAR resourceID[])
+{
+    //Variable Declartions
+    bool bResult = false;
+    HBITMAP hBitmap = NULL;    // OS Image Lading
+    BITMAP bmp;                // OS Image Lading
+
+    //code  :  Real Texture Code : Very Important
+
+    hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+                                 resourceID,
+                                 IMAGE_BITMAP,
+                                 0,
+                                 0,
+                                 LR_CREATEDIBSECTION); // KARAN he function handel return karat, : GetModuleHandel Hinstance deto...
+
+    if(hBitmap)
+    {
+        bResult = true;
+        GetObject(hBitmap,sizeof(BITMAP),&bmp);   // Ithe Image loading code sampla
+
+        //From Here Start OpenGl code
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+
+        glGenTextures(1,Texture);   // GPU side la ek target pointer tayar zala; ani aplyala gattu milala : Ithe Address aahe
+        glBindTexture(GL_TEXTURE_2D,*Texture); // Ithe Value aahe
+
+        //Setting of Texture Param
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+
+        //Atta Data Tkaycha ahe Graphics card side la with the help of Graphic driver
+        gluBuild2DMipmaps(GL_TEXTURE_2D,3,bmp.bmWidth,bmp.bmHeight,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
+
+        DeleteObject(hBitmap);  // This is OS Fuction  : AApan texture use kela pn nahiye tari delete kela karan to load zalay...
+    }
+
+    return bResult;
 }
 
 void Resize(int width, int height)
@@ -499,6 +537,7 @@ void Resize(int width, int height)
 void Display(void)
 {
     static GLfloat delay_bdj = 50.0f;
+    static GLfloat delay_2 = 30.0f;
     static GLfloat x = 4.0f;
     static GLfloat t1 = 25.0f;
     static GLfloat t2 = 60.0f;
@@ -523,66 +562,115 @@ void Display(void)
     void Tree_circle(void);
     void Tree_Throne(void);
 
+    void DrawFont_AMC(void);
+	void DrawFont_FRAG(void);
+	void DrawFont_AMC_Disable(void);
+	void DrawFont_FRAG_Disable(void);
+	void DrawFont_Credit(void);
+	void DrawFont_Credit_Disable(void);
+	void DrawFont_Credit_Special(void);
+	void DrawFont_Credit_Special_Disable(void);
+	void DrawFont_Technical_Details(void);
+	void DrawFont_Technical_Details_Disable(void);
+	void DrawFont_Name(void);
+	void DrawFont_Name_Disable(void);
+	void DrawFont_Start(void);
+	void DrawFont_Start_Disable(void);
+
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
     Loading();
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
 
     Loading_Filled_one();
+    DrawFont_AMC();
 
-    delay_bdj = delay_bdj - 0.01f;
+    delay_bdj = delay_bdj - time;
 
+    if(delay_bdj <= 45.0f)
+    {
+        DrawFont_AMC_Disable();
+    }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
     if(delay_bdj <= 40.0f)
     {
         Loading_Filled_two();
+        DrawFont_Technical_Details();
+    }
+    if(delay_bdj <= 35.0f)
+    {
+        DrawFont_Technical_Details_Disable();
     }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
-    if(delay_bdj <= 30.0f)
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
+    if(delay_bdj <= 33.0f)    // 30
     {
         Loading_Filled_three();
+        DrawFont_FRAG();
+    }
+    if(delay_bdj <= 31.0f)   // 25
+    {
+        DrawFont_FRAG_Disable();
     }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
-    if(delay_bdj <= 20.0f)
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
+    if(delay_bdj <= 29.0f)     //20
     {
         Loading_Filled_four();
+        DrawFont_Name();
+    }
+    if(delay_bdj <= 27.0f)    //15
+    {
+        DrawFont_Name_Disable();
     }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f,0.0f,-5.0f);
-    if(delay_bdj <= 10.0f)
+    glTranslatef(0.0f,0.0f,-30.0f);
+    glScalef(6.0f,6.0f,6.0f);
+    if(delay_bdj <= 25.0f)     //10
     {
         Loading_Filled_five();
-         flag_silly_bird = 1;
+        DrawFont_Start();
     }
 
-    if(delay_bdj <= 0.0f)
+    if(delay_bdj <= 23.0f)    //5
+    {
+        DrawFont_Start_Disable();
+    }
+
+    if(delay_bdj <=21.0f)    //0
     {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0f,0.0f,-5.0f);
+        glTranslatef(0.0f,0.0f,-30.0f);
+        glScalef(6.0f,6.0f,6.0f);
 
         Loading_Null();
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0f,0.0f,-5.0f);
+        glTranslatef(0.0f,0.0f,-30.0f);
+        glScalef(6.0f,6.0f,6.0f);
         Loading_Filled_Null();
 
         glMatrixMode(GL_MODELVIEW);
@@ -610,7 +698,7 @@ void Display(void)
         glTranslatef(bird,8.0f,-30.0f);
     }
 
-    bird = bird - 0.05f;
+    bird = bird - time2;
 
     if(bird <= -40.0f)
     {
@@ -628,7 +716,7 @@ void Display(void)
         glTranslatef(t1,-2.0f,-15.0f);
     }
 
-    t1 =  t1 - 0.05f;
+    t1 =  t1 - time2;
 
 	Tree_one();
 
@@ -647,7 +735,7 @@ void Display(void)
         glTranslatef(t3,-6.0f,-30.0f);
     }
 
-    t3 = t3 - 0.05f;
+    t3 = t3 - time2;
 
 	Tree_two();
 
@@ -666,7 +754,7 @@ void Display(void)
     {
         glTranslatef(t2,-6.0f,-30.0f);
     }
-    t2 = t2 - 0.05f;
+    t2 = t2 - time2;
 
 	Tree_three();
 
@@ -687,12 +775,12 @@ void Display(void)
     {
         glTranslatef(thr2,thr1 - 4.0f,-30.0f);
     }
-	thr1 = thr1 + 0.05f;
+	thr1 = thr1 + time2;
 	if(thr1 >= 4.5f)
     {
         thr1 = 0.0f;
     }
-	thr2 = thr2 - 0.05f;
+	thr2 = thr2 - time2;
 
 	if(thr2 <= -51.0f)
     {
@@ -701,6 +789,28 @@ void Display(void)
 
 	Tree_Throne();
     }
+
+    if(bDone_Credit == 1)
+    {
+        if(delay_2 <= 30.0f)
+        {
+            DrawFont_Credit();
+        }
+        if(delay_2 <= 27.0f)
+        {
+            DrawFont_Credit_Disable();
+        }
+        if(delay_2 <= 24.0f)
+        {
+            DrawFont_Credit_Special();
+        }
+        if(delay_2 <= 20.0f)
+        {
+            DrawFont_Credit_Special_Disable();
+        }
+
+        delay_2 = delay_2 - time;
+}
 
     SwapBuffers(ghdc);
 }
@@ -798,7 +908,7 @@ void Loading_Filled_one()
     glVertex3f(-0.88f,0.125f,0.0f);
     glVertex3f(-1.0f,0.125f,0.0f);
     glVertex3f(-1.0f,-0.125f,0.0f);
-    glVertex3f(-.88f,-0.125f,0.0f);
+    glVertex3f(-0.88f,-0.125f,0.0f);
 
     glEnd();
 }
@@ -1194,247 +1304,7 @@ void Tree_Throne()
 
     glEnd();
 }
-/*
-void Bird_one()
-{
-    glPushMatrix();
 
-    //-------------------------------------Body-----------------------------------------
-/*
-    glPushMatrix();
-
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    glColor3f(1.0f,1.0f,0.0f);
-    quadric = gluNewQuadric();
-    gluSphere(quadric,2.0f,30,30);
-
-    glPopMatrix();
-*/
-/*
-    glPushMatrix();
-    glColor3f(1.0f,0.0f,0.0f);
-    glBegin(GL_TRIANGLE_FAN);
-
-    for(GLfloat angle = 0.0f ; angle <= 2 * PI ; angle = angle + 0.001f)
-    {
-        glVertex3f(2*sin(angle),2*cos(angle),0.0f);
-    }
-    glEnd();
-
-    glPopMatrix();
-    //-------------------------------------Sheput-----------------------------------------
-/*
-    glPushMatrix();
-    glTranslatef(2.0f,0.0f,0.0f);
-    glColor3f(0.9f,0.1f,0.9f);
-    glRotatef(90,0.0f,1.0f,0.0f);
-    quadric = gluNewQuadric();
-    gluCylinder(quadric,0.2f,0.5f,0.8f,20,20);
-    glPopMatrix();
-*/
-/*
-    glPushMatrix();
-
-    glBegin(GL_QUADS);
-    glColor3f(0.9f,0.1f,0.9f);
-    glVertex3f(3.0f,0.5f,0.0f);
-    glVertex3f(2.0f,0.25f,0.0f);
-    glVertex3f(2.0f,-0.25f,0.0f);
-    glVertex3f(3.0f,-0.5f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-    //-------------------------------------Beak-----------------------------------------
-
-
-    glPushMatrix();
-
-    glTranslatef(-2.0f,0.0f,0.0f);
-
-    //glTranslatef(0.0f,0.0f,2.5f);
-
-    glBegin(GL_TRIANGLES);
-    glColor3f(0.9f,0.1f,0.9f);
-    glVertex3f(0.0f,0.3f,0.0f);
-    glVertex3f(-0.3f,0.1f,0.0f);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glEnd();
-
-    glBegin(GL_TRIANGLES);
-    glColor3f(0.9f,0.1f,0.9f);
-    glVertex3f(0.0f,-0.3f,0.0f);
-    glVertex3f(-0.3f,-0.1f,0.0f);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    //-------------------------------------Right_Leg-----------------------------------------
-
-    glPushMatrix();
-
-    glTranslatef(0.0f,-2.0f,0.0f);
-
-    glRotatef(90,1.0f,0.0f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    quadric = gluNewQuadric();
-    gluCylinder(quadric,0.05f,0.05f,0.5f,20,20);
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.05f,-2.5f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(-0.4f,-0.4f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.05f,-2.5f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(0.4f,-0.4f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.05f,-2.5f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(0.0f,-0.5f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    //-------------------------------------Left_Leg-----------------------------------------
-
-    glPushMatrix();
-
-    glTranslatef(0.3f,-1.8f,0.0f);
-
-    glRotatef(90,1.0f,0.0f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    quadric = gluNewQuadric();
-    gluCylinder(quadric,0.05f,0.05f,0.5f,20,20);
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.35f,-2.3f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(-0.4f,-0.4f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.35f,-2.3f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(0.4f,-0.4f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(0.35f,-2.3f,0.0f);
-    glColor3f(0.7f,0.4f,0.1f);
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.0f,0.0f,0.0f);
-    glVertex3f(0.0f,-0.5f,0.0f);
-    glVertex3f(-0.1f,0.0f,0.0f);
-    glEnd();
-
-    glPopMatrix();
-
-    //-------------------------------------Wing-----------------------------------------
-
-    static GLfloat t = 1.0f;
-
-    glPushMatrix();
-
-    //glTranslatef(0.0f,0.0f,2.0f);
-
-    glColor3f(0.7f,0.4f,0.1f);
-    glRotatef(90,0.0f,0,t);
-    t = t - 0.01f;
-    if(t <= -1.0f)
-    {
-        t = 1.0f;
-    }
-
-    glBegin(GL_TRIANGLE_FAN);
-
-        for(GLfloat i = 0.0f ; i <=  PI ; i = i + 0.001f)
-        {
-            glVertex3f(sin(i),cos(i),0.0f);
-        }
-
-    glEnd();
-
-    glPopMatrix();
-
-    //-------------------------------------EYE-----------------------------------------
-
-    glPushMatrix();
-
-    glTranslatef(-1.0f,1.0f,0.0f);
-
-    glColor3f(1.0f,1.0f,1.0f);
-
-    glBegin(GL_TRIANGLE_FAN);
-
-    for(GLfloat j = 0.0f ; j <= 2* PI ; j = j + 0.001f)
-    {
-        glVertex3f(sin(j)*0.20,cos(j)*0.20,0.0f);
-    }
-
-    glEnd();
-
-    glPopMatrix();
-
-    glPushMatrix();
-
-    glTranslatef(-1.1f,1.0f,0.0f);
-
-    glColor3f(0.0f,0.0f,0.0f);
-
-    glBegin(GL_TRIANGLE_FAN);
-
-    for(GLfloat j = 0.0f ; j <= 2* PI ; j = j + 0.001f)
-    {
-        glVertex3f(sin(j)*0.10,cos(j)*0.10,0.0f);
-    }
-
-    glEnd();
-
-
-    glPopMatrix();
-
-
-    glPopMatrix();
-}
-*/
 void Bird_one()
 {
    // glScalef(0.3f,0.3f,0.3f);
@@ -1676,7 +1546,6 @@ void Bird_one()
     glPopMatrix();
 }
 
-
 void Humanoid()
 {
     glRotatef((GLfloat)O,0.0f,1.0f,0.0f);
@@ -1829,6 +1698,359 @@ void Humanoid()
     glPopMatrix();
 
     glPopMatrix();
+}
+
+void DrawFont_AMC(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f,1.0f,1.0f);
+
+	glRasterPos3f(-3.5f, 3.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "ASTROMEDICOMP");
+
+        DeleteObject(hVertexFont);
+}
+
+void DrawFont_AMC_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-3.5f, 3.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "ASTROMEDICOMP'S");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_FRAG(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-3.5f, -4.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP");
+
+	glRasterPos3f(-0.0f, -6.0f, 0.0f);
+
+    glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS");
+
+        DeleteObject(hVertexFont);
+}
+
+void DrawFont_FRAG_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-3.5f, -4.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP");
+
+	glRasterPos3f(-0.0f, -6.0f, 0.0f);
+    glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Technical_Details(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-8.0f, 10.0f, 0.0f);
+
+    glCallLists(19, GL_UNSIGNED_BYTE, "Technical Details -");
+
+	glRasterPos3f(-6.0f, 8.0f, 0.0f);
+
+    glCallLists(26, GL_UNSIGNED_BYTE, "Programming Language - C++");
+
+	glRasterPos3f(-6.0f, 6.0f, 0.0f);
+
+    glCallLists(29, GL_UNSIGNED_BYTE, "Rendering Technology - OpenGL");
+
+	glRasterPos3f(-6.0f, 4.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Platform - Windows");
+
+	glRasterPos3f(-8.0f, -6.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Music Credits - ");
+
+	glRasterPos3f(-6.0f, -8.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Silly Chicken");
+
+	glRasterPos3f(-6.0f, -10.0f, 0.0f);
+
+    glCallLists(43, GL_UNSIGNED_BYTE, "https://www.youtube.com/watch?v=W16EsK4JCKM");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Technical_Details_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-8.0f, 10.0f, 0.0f);
+
+    glCallLists(19, GL_UNSIGNED_BYTE, "Technical Details -");
+
+	glRasterPos3f(-6.0f, 8.0f, 0.0f);
+
+    glCallLists(26, GL_UNSIGNED_BYTE, "Programming Language - C++");
+
+	glRasterPos3f(-6.0f, 6.0f, 0.0f);
+
+    glCallLists(29, GL_UNSIGNED_BYTE, "Rendering Technology - OpenGL");
+
+	glRasterPos3f(-6.0f, 4.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Platform - Windows");
+
+	glRasterPos3f(-8.0f, -6.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Music Credits - ");
+
+	glRasterPos3f(-6.0f, -8.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Silly Chicken");
+
+	glRasterPos3f(-6.0f, -10.0f, 0.0f);
+
+    glCallLists(43, GL_UNSIGNED_BYTE, "https://www.youtube.com/watch?v=W16EsK4JCKM");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-8.0f,3.3f,0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Developed By  -");
+
+	glRasterPos3f(6.0f, 3.3f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Bhavesh Joshi");
+
+	glRasterPos3f(-8.0f, 1.3f, 0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Group Leader  -");
+
+	glRasterPos3f(6.0f, 1.3f, 0.0f);
+
+    glCallLists(11, GL_UNSIGNED_BYTE, "Ajay Ambure");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-8.0f,3.3f,0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Developed By  -");
+
+	glRasterPos3f(6.0f, 3.3f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Bhavesh Joshi");
+
+	glRasterPos3f(-8.0f, 1.3f, 0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Group Leader  -");
+
+	glRasterPos3f(6.0f, 1.3f, 0.0f);
+
+    glCallLists(11, GL_UNSIGNED_BYTE, "Ajay Ambure");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Special(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-8.0f, 6.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "Dedicated To -");
+
+	glRasterPos3f(-4.0f, 2.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Sharada Joshi(Mom)");
+
+	glRasterPos3f(-1.9f, 0.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Dilip Joshi(Dad)");
+
+	glRasterPos3f(2.0f, -2.0f, 0.0f);
+
+    glCallLists(3, GL_UNSIGNED_BYTE, "AND");
+
+	glRasterPos3f(-4.0f, -4.0f, 0.0f);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Dr. Vijay Gokhale Sir");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Special_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-8.0f, 6.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "Dedicated To -");
+
+	glRasterPos3f(-4.0f, 2.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Sharada Joshi(Mom)");
+
+	glRasterPos3f(-1.9f, 0.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Dilip Joshi(Dad)");
+
+	glRasterPos3f(2.0f, -2.0f, 0.0f);
+
+    glCallLists(3, GL_UNSIGNED_BYTE, "AND");
+
+	glRasterPos3f(-4.0f, -4.0f, 0.0f);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Dr. Vijay Gokhale Sir");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Name(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-4.0f, 4.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Catch Me If You Can!!");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Name_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-4.0f, 4.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Catch Me If You Can!!");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Start(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-1.5f, -5.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(17, GL_UNSIGNED_BYTE, "Let's Start . . .");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Start_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -30.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-1.5f, -5.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(17, GL_UNSIGNED_BYTE, "Let's Start . . .");
+
+    DeleteObject(hVertexFont);
 }
 
 void UnInitialize(void)

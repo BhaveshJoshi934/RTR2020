@@ -30,10 +30,17 @@ HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 bool gbActiveWindow = false;
 
+bool bDone = 0;
+
 GLfloat x = 1.8f;
 GLfloat y = 0.0f;
 GLfloat z = 20.0f;
 
+	HFONT hVertexFont;
+	GLuint uiFontList;
+    GLYPHMETRICSFLOAT agmf[128];
+
+bool DeleteFont = 0;
 //WinMain
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -219,6 +226,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
                     z = 12.0f;
                 }
                 break;
+
+            case 'E':
+            case 'e':
+                bDone = 1;
+                break;
         }
         break;
 	case WM_DESTROY:
@@ -317,6 +329,32 @@ void Initialize(void)
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
+
+	//initialization for font
+	LOGFONT logFont;
+	logFont.lfHeight = 60;
+	logFont.lfWidth = 30;
+	logFont.lfEscapement = 0;
+	logFont.lfOrientation = 0;
+	logFont.lfWeight = FW_BOLD;
+	logFont.lfItalic = FALSE;
+	logFont.lfUnderline = FALSE;
+	logFont.lfStrikeOut = FALSE;
+	logFont.lfCharSet = ANSI_CHARSET;
+	logFont.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	logFont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	logFont.lfQuality = DEFAULT_QUALITY;
+	logFont.lfPitchAndFamily = DEFAULT_PITCH;
+	strcpy(logFont.lfFaceName,"Optima");
+
+	//create the font and display list
+	hVertexFont = CreateFontIndirect(&logFont);
+
+	SelectObject(ghdc, hVertexFont);
+	uiFontList = glGenLists(128);
+	//wglUseFontOutlines(ghdc, 0, 128, uiFontList, 0.0f, 0.5f, WGL_FONT_POLYGONS, agmf);
+	wglUseFontBitmaps(ghdc, 0, 128, uiFontList);
+
 	//SetClearColor
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -337,134 +375,379 @@ void Resize(int width, int height)
 	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
 }
 
-void DrawFont(void)
-{
-    static GLfloat delay = 30.0f;
-    static GLfloat a,b,c,d = 0.0f;
-
-	HFONT hVertexFont;
-	GLuint uiFontList;
-    GLYPHMETRICSFLOAT agmf[128];
-	//initialization for font
-	LOGFONT logFont;
-	logFont.lfHeight = 40;
-	logFont.lfWidth = 20;
-	logFont.lfEscapement = 0;
-	logFont.lfOrientation = 0;
-	logFont.lfWeight = FW_DONTCARE;
-	logFont.lfItalic = FALSE;
-	logFont.lfUnderline = FALSE;
-	logFont.lfStrikeOut = FALSE;
-	logFont.lfCharSet = ANSI_CHARSET;
-	logFont.lfOutPrecision = OUT_DEFAULT_PRECIS;
-	logFont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
-	logFont.lfQuality = DEFAULT_QUALITY;
-	logFont.lfPitchAndFamily = DEFAULT_PITCH;
-	strcpy(logFont.lfFaceName,"Optima");
-
-	//create the font and display list
-	hVertexFont = CreateFontIndirect(&logFont);
-
-	SelectObject(ghdc, hVertexFont);
-	uiFontList = glGenLists(128);
-	//wglUseFontOutlines(ghdc, 0, 128, uiFontList, 0.0f, 0.5f, WGL_FONT_POLYGONS, agmf);
-	wglUseFontBitmaps(ghdc, 0, 128, uiFontList);
-
-	//code
-	glLoadIdentity();
-
-	glTranslatef(-2.80f, 0.0f, -15.0f);
-    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
-
-    if(a <= 1.0f && b <= 0.5f)
-    {
-        glColor3f(a, b, 0.0f);
-    }
-    else
-    {
-        glColor3f(1.0f, 0.5f, 0.0f);
-    }
-    a = a + 0.001f;
-    b = b + 0.001f;
-
-	glRasterPos3f(0.0f, 1.0f, 0.0f);
-	glListBase(uiFontList);
-	if(delay <= 30.0f)
-    {
-        glCallLists(15, GL_UNSIGNED_BYTE, "ASTROMEDICOMP'S");
-    }
-
-    if(c <= 1.0f)
-    {
-        glColor3f(c, c, c);
-    }
-    else
-    {
-        glColor3f(1.0f, 1.0f, 1.0f);
-    }
-    c = c + 0.001f;
-
-	glRasterPos3f(0.0f, 0.0f, 0.0f);
-	if(delay <= 20.0f)
-    {
-        glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP\n");
-    }
-
-
-    if(d <= 1.0f)
-    {
-        glColor3f(0.0f, d, 0.0f);
-    }
-    else
-    {
-        glColor3f(0.0f,1.0f,0.0f);
-    }
-    d = d + 0.001f;
-
-	glRasterPos3f(1.2f, -1.0f, 0.0f);
-	if(delay <= 10.0f)
-    {
-        glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS\n");
-    }
-
-    delay = delay - 0.05f;
-/*
-	glColor3f(1.50, 1.50, 1.50);
-
-	glRasterPos3f(0.0f, 1.0f, 0.0f);
-	glListBase(uiFontList);
-	glCallLists(15, GL_UNSIGNED_BYTE, "ASTROMEDICOMP'S");
-
-	glRasterPos3f(0.05f, 0.38f, 0.0f);
-	glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP");
-
-	glRasterPos3f(0.68f, -0.10f, 0.0f);
-	glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS");
-
-	glColor3f(0.70, 0.50, 0.30);
-	glRasterPos3f(0.50f, -1.50f, 0.0f);
-	glCallLists(14, GL_UNSIGNED_BYTE, "Fantasy Resort");
-*/
-}
-
 void Display(void)
 {
+    static GLfloat delay = 30.0f;
 
-    void DrawFont(void);
+	void DrawFont_AMC(void);
+	void DrawFont_FRAG(void);
+	void DrawFont_AMC_Disable(void);
+	void DrawFont_FRAG_Disable(void);
+	void DrawFont_Credit(void);
+	void DrawFont_Credit_Disable(void);
+	void DrawFont_Credit_Special(void);
+	void DrawFont_Credit_Special_Disable(void);
+	void DrawFont_Technical_Details(void);
+	void DrawFont_Technical_Details_Disable(void);
+
 	//code
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//glTranslatef(0.0f,0.0f,-30.0f);
+      if(delay <= 30.0f)
+      {
+        DrawFont_AMC();
+      }
+     if(delay <= 25.0f)
+     {
+         DrawFont_AMC_Disable();
+     }
+    if(delay <= 20.0f)
+    {
+        DrawFont_Technical_Details();
+    }
+    if(delay <= 15.0f)
+    {
+        DrawFont_Technical_Details_Disable();
+    }
+	if(delay <= 10.0f)
+    {
+       DrawFont_FRAG();
+    }
+    if(delay <= 5.0f)
+    {
+        DrawFont_FRAG_Disable();
+    }
 
-	DrawFont();
+if(bDone == 1)
+{
+    static GLfloat delay_2 = 30.0f;
+    if(delay_2 <= 30.0f)
+    {
+        DrawFont_Credit();
+    }
+    if(delay_2 <= 25.0f)
+    {
+        DrawFont_Credit_Disable();
+    }
+    if(delay_2 <= 20.0f)
+    {
+        DrawFont_Credit_Special();
+    }
+    if(delay_2 <= 15.0f)
+    {
+        DrawFont_Credit_Special_Disable();
+    }
+
+    delay_2 = delay_2 - 0.01f;
+}
+
+    delay = delay - 0.01f;
+
 
 	//glFlush();
 	SwapBuffers(ghdc);
 }
 
+void DrawFont_AMC(void)
+{
+    static GLfloat a,b = 0.0f;
+    static GLfloat x   = 1.0f;
+    static GLfloat y  =  0.5f;
+    bool Done = 0;
+
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f,1.0f,1.0f);
+
+	glRasterPos3f(0.0f, 2.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "ASTROMEDICOMP'S");
+
+    if(DeleteFont == 1)
+    {
+        DeleteObject(hVertexFont);
+    }
+}
+
+void DrawFont_FRAG(void)
+{
+    static GLfloat c,d = 0.0f;
+
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(0.25f, -3.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP");
+
+	glRasterPos3f(2.0f, -4.0f, 0.0f);
+
+    glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS");
+
+    if(DeleteFont == 1)
+    {
+        DeleteObject(hVertexFont);
+    }
+}
+
+void DrawFont_AMC_Disable(void)
+{
+    static GLfloat a,b = 1.0f;
+
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(0.0f, 2.0f, 0.0f);
+	glListBase(uiFontList);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "ASTROMEDICOMP'S");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_FRAG_Disable(void)
+{
+    static GLfloat c,d = 0.0f;
+
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(0.25f, -3.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "FRAGMENT GROUP");
+
+	glRasterPos3f(2.0f, -4.0f, 0.0f);
+    glCallLists(8, GL_UNSIGNED_BYTE, "PRESENTS");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Technical_Details(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-3.0f, 5.0f, 0.0f);
+
+    glCallLists(19, GL_UNSIGNED_BYTE, "Technical Details -");
+
+	glRasterPos3f(-1.0f, 4.0f, 0.0f);
+
+    glCallLists(26, GL_UNSIGNED_BYTE, "Programming Language - C++");
+
+	glRasterPos3f(-1.0f, 3.0f, 0.0f);
+
+    glCallLists(29, GL_UNSIGNED_BYTE, "Rendering Technology - OpenGL");
+
+	glRasterPos3f(-1.0f, 2.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Platform - Windows");
+
+	glRasterPos3f(-3.0f, -2.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Music Credits - ");
+
+	glRasterPos3f(-1.0f, -3.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Silly Chicken");
+
+	glRasterPos3f(-1.0f, -4.0f, 0.0f);
+
+    glCallLists(43, GL_UNSIGNED_BYTE, "https://www.youtube.com/watch?v=W16EsK4JCKM");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Technical_Details_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-3.0f, 5.0f, 0.0f);
+
+    glCallLists(19, GL_UNSIGNED_BYTE, "Technical Details -");
+
+	glRasterPos3f(-1.0f, 4.0f, 0.0f);
+
+    glCallLists(26, GL_UNSIGNED_BYTE, "Programming Language - C++");
+
+	glRasterPos3f(-1.0f, 3.0f, 0.0f);
+
+    glCallLists(29, GL_UNSIGNED_BYTE, "Rendering Technology - OpenGL");
+
+	glRasterPos3f(-1.0f, 2.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Platform - Windows");
+
+	glRasterPos3f(-3.0f, -2.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Music Credits - ");
+
+	glRasterPos3f(-1.0f, -3.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Silly Chicken");
+
+	glRasterPos3f(-1.0f, -4.0f, 0.0f);
+
+    glCallLists(43, GL_UNSIGNED_BYTE, "https://www.youtube.com/watch?v=W16EsK4JCKM");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-2.0f,1.0f,0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Developed By  -");
+
+	glRasterPos3f(5.0f, 1.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Bhavesh Joshi");
+
+	glRasterPos3f(-2.0f, -1.0f, 0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Group Leader  -");
+
+	glRasterPos3f(5.0f, -1.0f, 0.0f);
+
+    glCallLists(11, GL_UNSIGNED_BYTE, "Ajay Ambure");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-2.0f,1.0f,0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Developed By  -");
+
+	glRasterPos3f(5.0f, 1.0f, 0.0f);
+
+    glCallLists(13, GL_UNSIGNED_BYTE, "Bhavesh Joshi");
+
+	glRasterPos3f(-2.0f, -1.0f, 0.0f);
+
+    glCallLists(15, GL_UNSIGNED_BYTE, "Group Leader  -");
+
+	glRasterPos3f(5.0f, -1.0f, 0.0f);
+
+    glCallLists(11, GL_UNSIGNED_BYTE, "Ajay Ambure");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Special(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+	glRasterPos3f(-3.0f, 2.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "Dedicated To -");
+
+	glRasterPos3f(-1.0f, 0.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Sharada Joshi(Mom)");
+
+	glRasterPos3f(-0.1f, -1.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Dilip Joshi(Dad)");
+
+	glRasterPos3f(2.5f, -2.0f, 0.0f);
+
+    glCallLists(3, GL_UNSIGNED_BYTE, "AND");
+
+	glRasterPos3f(-1.0f, -3.0f, 0.0f);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Dr. Vijay Gokhale Sir");
+
+    DeleteObject(hVertexFont);
+}
+
+void DrawFont_Credit_Special_Disable(void)
+{
+	//code
+	glLoadIdentity();
+
+	glTranslatef(-3.5f, 0.0f, -15.0f);
+    //gluLookAt(x,y,z,0.0f,0.0f,0.0f,0.0f,1.0f,0.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+	glRasterPos3f(-3.0f, 2.0f, 0.0f);
+
+    glCallLists(14, GL_UNSIGNED_BYTE, "Dedicated To -");
+
+	glRasterPos3f(-1.0f, 0.0f, 0.0f);
+
+    glCallLists(18, GL_UNSIGNED_BYTE, "Sharada Joshi(Mom)");
+
+	glRasterPos3f(-0.1f, -1.0f, 0.0f);
+
+    glCallLists(16, GL_UNSIGNED_BYTE, "Dilip Joshi(Dad)");
+
+	glRasterPos3f(2.5f, -2.0f, 0.0f);
+
+    glCallLists(3, GL_UNSIGNED_BYTE, "AND");
+
+	glRasterPos3f(-1.0f, -3.0f, 0.0f);
+
+    glCallLists(21, GL_UNSIGNED_BYTE, "Dr. Vijay Gokhale Sir");
+
+    DeleteObject(hVertexFont);
+}
 
 void UnInitialize(void)
 {

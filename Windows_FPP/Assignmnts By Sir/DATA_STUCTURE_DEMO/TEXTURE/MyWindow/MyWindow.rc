@@ -1,0 +1,9 @@
+#include "MyWindow.h"
+MYICON ICON bdj1.ico
+
+//Image Loading code
+DAY_BITMAP BITMAP Day.bmp
+DAYTWO_BITMAP BITMAP DayTwo.bmp
+NIGHT_BITMAP BITMAP Night.bmp
+
+
