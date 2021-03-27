@@ -1,0 +1,27 @@
+Description :
+‘A Birthday Gift’, is an animation sequence of a very common birthday gift, a ‘Greeting Card’. Although simple, it brings a story of its own, short but sweet.
+A story of a loving Father nurturing its Creation. Never stopping however bad the circumstances get. A story of a true gentleman and a living LEGEND.
+
+Technology Used :
+OpenGL Programmable Pipeline
+OpenAL
+macOS Catalina 10.15.7
+
+Background Music:
+Lords Of The Rings- https://www.youtube.com/watch?v=LML6S...​
+Happy Birthday on Bansuri: https://www.youtube.com/watch?v=7SxOp...​
+
+Group Leaders Participated -
+Rutwik Choughule
+Ajay Ambure
+
+Hashtags:
+#AstroMediComp​
+#RTR2020​
+#OpenGL​
+#RealTimeRendering​
+#ProgrammablePipeline​
+#3D​
+#macOS​
+#ObjectiveC​
+#OpenAL

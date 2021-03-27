@@ -1,4 +1,4 @@
-//DS ALL COMBINED
+//DS Project Demo
 
 //Header Files
 
@@ -128,7 +128,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	Initialize();
 
-    //PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
+    PlaySound(TEXT("Silly_Chicken.wav"),NULL,SND_ASYNC | SND_FILENAME);
 
 	ShowWindow(hwnd, iCmdShow);
 
