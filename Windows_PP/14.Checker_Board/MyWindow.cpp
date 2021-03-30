@@ -12,6 +12,10 @@
 #define       WIN_WIDTH      800
 #define       WIN_HEIGHT     600
 
+
+#define CHECKIMAGEWIDTH  64
+#define CHECKIMAGEHEIGHT 64
+
 #pragma comment(lib,"glew32.lib")
 #pragma comment(lib,"OpenGL32.lib")
 
@@ -37,22 +41,17 @@ bool gbActiveWindow = false;
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 
-GLuint Stone_Texture;
-GLuint Kundali_Texture;
-
 GLuint gVertexShaderObject;
 GLuint gFragmentShaderObject;
 GLuint gShaderProgramObject;
 
-GLuint vao_pyramid;
-GLuint vbo_Position_pyramid;
-//GLuint vbo_Color_pyramid;
-GLuint vbo_texture_pyramid;
+GLuint vao_checker;
+GLuint vbo_Position_checker;
+GLuint vbo_texture_checker;
 
-GLuint vao_cube;
-GLuint vbo_Position_cube;
-//GLuint vbo_Color_cube;
-GLuint vbo_texture_cube;
+GLubyte CheckImage[CHECKIMAGEWIDTH][CHECKIMAGEHEIGHT][4];
+
+GLuint TEXT_IMAGE;
 
 GLuint textureSamplerUniform;
 
@@ -102,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("Two 2D Shape Colored Shapes in PP : Bhavesh Joshi !!"),
+                          TEXT("Checker Board in PP : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -230,7 +229,7 @@ void Initialize()
 {
     void uninitialize();
     void Resize(int,int);
-    bool LoadGLTexture(GLuint*,TCHAR[]);
+    void LoadGLTexture(void);
 
     PIXELFORMATDESCRIPTOR pfd;
     int iPixelFormatIndex;
@@ -358,7 +357,7 @@ void Initialize()
         "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
-        "FragColor = texture(u_texture_sampler,out_TexCoord);"
+        "FragColor = texture(u_texture_sampler,out_TexCoord);" \
         "}";
 
     glShaderSource(gFragmentShaderObject,1,(const char **)&fragmentShaderSourceCode,NULL);
@@ -422,154 +421,38 @@ void Initialize()
     mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
     //textureSamplerUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_sampler");
     textureSamplerUniform = glGetUniformLocation(gShaderProgramObject,"u_texture_sampler");
-
-    const GLfloat pyramidVertices[] =
+/*
+    const GLfloat SmileyVertices[] =
             {
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,-0.5f,
-
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f
+                1.0f,1.0f,0.0f,
+                -1.0f,1.0f,0.0f,
+                -1.0f,-1.0f,0.0f,
+                1.0f,-1.0f,0.0f
             };
-
-    const GLfloat pyramidTexCoord[] =
+*/
+    const GLfloat CheckerTexCoord[] =
             {
-                0.5f, 1.0f,
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-
-                0.5f, 1.0f,
-                1.0f, 0.0f,
-                0.0f, 0.0f,
-
-                0.5f, 1.0f,
                 0.0f,0.0f,
-                1.0f,0.0f,
-
-                0.5f, 1.0f,
-                1.0f, 0.0f,
-                0.0f, 0.0f
-            };
-
-    const GLfloat cubeVertices[] =
-            {
-                0.5f,0.5f,0.5f,
-                -0.5f,0.5f,0.5f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-
-                0.5f,0.5f,-0.5f,
-                0.5f,0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,-0.5f,
-
-                -0.5f,0.5f,-0.5f,
-                0.5f,0.5f,-0.5f,
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-
-                -0.5f,0.5f,0.5f,
-                -0.5f,0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f,
-
-                0.5f,0.5f,-0.5f,
-                -0.5f,0.5f,-0.5f,
-                -0.5f,0.5f,0.5f,
-                0.5f,0.5f,0.5f,
-
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f
-            };
-
-    const GLfloat cubeTexCoord[] =
-            {
-                //FRONT FACE
-                0.0f, 0.0f,
-                1.0f, 0.0f,
+                0.0f,1.0f,
                 1.0f,1.0f,
-                0.0f,1.0f,
-
-                //RIGHT FACE
-                1.0f, 0.0f,
-                1.0f,1.0f,
-                0.0f,1.0f,
-                0.0f, 0.0f,
-
-                //BACK FACE
-                1.0f, 0.0f,
-                1.0f, 1.0f,
-                0.0f, 1.0f,
-                0.0f, 0.0f,
-
-                //LEFT FACE
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-                1.0f, 1.0f,
-                0.0f, 1.0f,
-
-                //TOP FACE
-                0.0f,1.0f,
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-                1.0f, 1.0f,
-
-                //BOTTOM FACE
-                1.0f, 1.0f,
-                0.0f, 1.0f,
-                0.0f, 0.0f,
-                1.0f, 0.0f
+                1.0f,0.0f
             };
 
-    glGenVertexArrays(1,&vao_pyramid);
-    glBindVertexArray(vao_pyramid);
+    glGenVertexArrays(1,&vao_checker);
+    glBindVertexArray(vao_checker);
 
     //POSITION
-    glGenBuffers(1,&vbo_Position_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidVertices),pyramidVertices,GL_STATIC_DRAW);
+    glGenBuffers(1,&vbo_Position_checker);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
+    glBufferData(GL_ARRAY_BUFFER,4*3*sizeof(GLfloat),NULL,GL_DYNAMIC_DRAW);
     glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
-    //COLOR
-    glGenBuffers(1,&vbo_texture_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_texture_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidTexCoord),pyramidTexCoord,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_TEXTURE0,2,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_TEXTURE0);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    glBindVertexArray(0);
-
-
-    glGenVertexArrays(1,&vao_cube);
-    glBindVertexArray(vao_cube);
-
-    //POSITION
-    glGenBuffers(1,&vbo_Position_cube);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_cube);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    //COLOR
-    glGenBuffers(1,&vbo_texture_cube);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_texture_cube);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeTexCoord),cubeTexCoord,GL_STATIC_DRAW);
+    //TEXTURE
+    glGenBuffers(1,&vbo_texture_checker);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_texture_checker);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(CheckerTexCoord),CheckerTexCoord,GL_STATIC_DRAW);
     glVertexAttribPointer(BDJ_ATTRIBUTE_TEXTURE0,2,GL_FLOAT,GL_FALSE,0,NULL);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_TEXTURE0);
     glBindBuffer(GL_ARRAY_BUFFER,0);
@@ -582,10 +465,8 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-	LoadGLTexture(&Stone_Texture,MAKEINTRESOURCE(STONE_BITMAP));         //Texture Code
-	LoadGLTexture(&Kundali_Texture,MAKEINTRESOURCE(KUNDALI_BITMAP));     //Texture Code
-
-	glEnable(GL_TEXTURE_2D);   //Texture Code
+	glEnable(GL_TEXTURE_2D);
+	LoadGLTexture();         //Texture Code
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
@@ -594,48 +475,37 @@ void Initialize()
     Resize(WIN_WIDTH,WIN_HEIGHT);
 }
 
-bool LoadGLTexture(GLuint *Texture,TCHAR resourceID[])
+void LoadGLTexture(void)
 {
-    //Variable Declartions
-    bool bResult = false;
-    HBITMAP hBitmap = NULL;    // OS Image Lading
-    BITMAP bmp;                // OS Image Lading
+    void MakeCheckImage(void);
+    MakeCheckImage();
 
-    //code  :  Real Texture Code : Very Important
+    glGenTextures(1,&TEXT_IMAGE);
+    glBindTexture(GL_TEXTURE_2D,TEXT_IMAGE);
 
-    hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL),
-                                 resourceID,
-                                 IMAGE_BITMAP,
-                                 0,
-                                 0,
-                                 LR_CREATEDIBSECTION); // KARAN he function handel return karat, : GetModuleHandel Hinstance deto...
+    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 
-    if(hBitmap)
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,CHECKIMAGEWIDTH,CHECKIMAGEHEIGHT,0,GL_RGBA,GL_UNSIGNED_BYTE,CheckImage);
+}
+
+void MakeCheckImage()
+{
+    int i,j,c;
+    for(i=0;i<CHECKIMAGEWIDTH;i++)
     {
-        bResult = true;
-        GetObject(hBitmap,sizeof(BITMAP),&bmp);   // Ithe Image loading code sampla
-
-        //From Here Start OpenGl code
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-
-        glGenTextures(1,Texture);   // GPU side la ek target pointer tayar zala; ani aplyala gattu milala : Ithe Address aahe
-        glBindTexture(GL_TEXTURE_2D,*Texture); // Ithe Value aahe
-
-        //Setting of Texture Param
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
-
-        //Atta Data Tkaycha ahe Graphics card side la with the help of Graphic driver
-        //gluBuild2DMipmaps(GL_TEXTURE_2D,3,bmp.bmWidth,bmp.bmHeight,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
-
-        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,bmp.bmWidth,bmp.bmHeight,0,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        DeleteObject(hBitmap);  // This is OS Fuction  : AApan texture use kela pn nahiye tari delete kela karan to load zalay...
+        for(j=0;j<CHECKIMAGEHEIGHT;j++)
+        {
+            c = (((i & 0X8) == 0) ^ ((j & 0X8) == 0))* 255;
+            CheckImage[i][j][0] = (GLubyte)c;
+            CheckImage[i][j][1] = (GLubyte)c;
+            CheckImage[i][j][2] = (GLubyte)c;
+            CheckImage[i][j][3] =  255;
+        }
     }
-
-    return bResult;
 }
 
 void Resize(int width,int height)
@@ -645,13 +515,13 @@ void Resize(int width,int height)
 
     glViewport(0,0,(GLsizei)width,(GLsizei)height);
 
-    perspectiveProjectionMatrix = vmath::perspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+    perspectiveProjectionMatrix = vmath::perspective(60.0f,(GLfloat)width/(GLfloat)height,0.1f,30.0f);
 }
 
 void Display()
 {
-    static GLfloat angle_pyramid = 0.0f;
-    static GLfloat angle_cube = 0.0f;
+    static GLfloat Vertices_straight[12];
+    static GLfloat Vertices_angular[12];
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -662,76 +532,67 @@ void Display()
 
     mat4 modelViewMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
-    mat4 translateMatrix = vmath::translate(1.0f,0.0f,-3.0f);
-    mat4 rotationMatrix = vmath::rotate((GLfloat)angle_pyramid,0.0f,1.0f,0.0f);
+    mat4 translateMatrix = vmath::translate(0.0f,0.0f,-3.6f);
 
-    modelViewMatrix = translateMatrix * rotationMatrix;
-
-    modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
-
-    glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,Stone_Texture);
-    glUniform1i(textureSamplerUniform,0);
-
-    glBindVertexArray(vao_pyramid);
-
-    glDrawArrays(GL_TRIANGLES,0,12);
-
-    glBindVertexArray(0);
-
-    //FOR SQUARE
-
-    //mat4 modelViewMatrix = mat4::identity();
-    //mat4 modelViewProjectionMatrix = mat4::identity();
-
-    mat4 rotationMatrix1 = mat4::identity();
-    mat4 rotationMatrix2 = mat4::identity();
-    mat4 rotationMatrix3 = mat4::identity();
-    mat4 scaleMatrix = mat4::identity();
-
-    translateMatrix = vmath::translate(-1.0f,0.0f,-3.0f);
-    scaleMatrix = vmath::scale(0.75f,0.75f,0.75f);
-    rotationMatrix1 = vmath::rotate((GLfloat)angle_cube,1.0f,0.0f,0.0f);
-    rotationMatrix2 = vmath::rotate((GLfloat)angle_cube,0.0f,1.0f,0.0f);
-    rotationMatrix3 = vmath::rotate((GLfloat)angle_cube,0.0f,0.0f,1.0f);
-
-    modelViewMatrix = translateMatrix * scaleMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
+    modelViewMatrix = translateMatrix;
 
     modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
 
     glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,Kundali_Texture);
-    glUniform1i(textureSamplerUniform,0);
+    glBindVertexArray(vao_checker);
 
-    glBindVertexArray(vao_cube);
+    Vertices_straight[0] = -2.0f;
+    Vertices_straight[1] = -1.0f;
+    Vertices_straight[2] = 0.0f;
+    Vertices_straight[3] = -2.0f;
+    Vertices_straight[4] = 1.0f;
+    Vertices_straight[5] = 0.0f;
+    Vertices_straight[6] = 0.0f;
+    Vertices_straight[7] = 1.0f;
+    Vertices_straight[8] = 0.0f;
+    Vertices_straight[9] = 0.0f;
+    Vertices_straight[10] = -1.0f;
+    Vertices_straight[11] = 0.0f;
 
-    glDrawArrays(GL_TRIANGLE_FAN,0,4);
-    glDrawArrays(GL_TRIANGLE_FAN,4,4);
-    glDrawArrays(GL_TRIANGLE_FAN,8,4);
-    glDrawArrays(GL_TRIANGLE_FAN,16,4);
-    glDrawArrays(GL_TRIANGLE_FAN,20,4);
-    glDrawArrays(GL_TRIANGLE_FAN,24,4);
+    //glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
+    glBufferData(GL_ARRAY_BUFFER,4*3*sizeof(GLfloat),Vertices_straight,GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+
+    glDrawArrays(GL_QUADS,0,4);
 
     glBindVertexArray(0);
 
-    //Stop OpenGL Program
-    glUseProgram(0);
+    glBindVertexArray(vao_checker);
 
-    angle_pyramid = angle_pyramid + 0.1f;
-    if(angle_pyramid >= 360.0f)
-    {
-        angle_pyramid = 0.0f;
-    }
+    Vertices_angular[0] = 1.0f;
+    Vertices_angular[1] = -1.0f;
+    Vertices_angular[2] = 0.0f;
+    Vertices_angular[3] = 1.0f;
+    Vertices_angular[4] = 1.0f;
+    Vertices_angular[5] = 0.0f;
+    Vertices_angular[6] = 2.41421f;
+    Vertices_angular[7] = 1.0f;
+    Vertices_angular[8] = -1.41421f;
+    Vertices_angular[9] = 2.41421f;
+    Vertices_angular[10] = -1.0f;
+    Vertices_angular[11] = -1.41421f;
 
-    angle_cube = angle_cube + 0.1f;
-    if(angle_cube >= 360.0f)
-    {
-        angle_cube = 0.0f;
-    }
+    //glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
+    glBufferData(GL_ARRAY_BUFFER,4*3*sizeof(GLfloat),Vertices_angular,GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+
+    glDrawArrays(GL_QUADS,0,4);
+
+    glBindVertexArray(0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,TEXT_IMAGE);
+    glUniform1i(textureSamplerUniform,0);
 
     SwapBuffers(ghdc);
 }
@@ -748,8 +609,7 @@ void uninitialize()
 	}
 
 
-    glDeleteTextures(1,&Stone_Texture);
-	glDeleteTextures(1,&Kundali_Texture);
+    glDeleteTextures(1,&TEXT_IMAGE);
 
     /*
     glDetachShader(gShaderProgramObject,gVertexShaderObject);
@@ -764,40 +624,22 @@ void uninitialize()
     glUseProgram(0);
     */
 
-    if(vao_pyramid)
+    if(vao_checker)
     {
-        glDeleteVertexArrays(1,&vao_pyramid);
-        vao_pyramid = 0;
+        glDeleteVertexArrays(1,&vao_checker);
+        vao_checker = 0;
     }
 
-    if(vbo_Position_pyramid)
+    if(vbo_Position_checker)
     {
-        glDeleteBuffers(1,&vbo_Position_pyramid);
-        vbo_Position_pyramid = 0;
+        glDeleteBuffers(1,&vbo_Position_checker);
+        vbo_Position_checker = 0;
     }
 
-    if(vbo_texture_pyramid)
+    if(vbo_texture_checker)
     {
-        glDeleteBuffers(1,&vbo_texture_pyramid);
-        vbo_texture_pyramid = 0;
-    }
-
-    if(vao_cube)
-    {
-        glDeleteVertexArrays(1,&vao_cube);
-        vao_cube = 0;
-    }
-
-    if(vbo_Position_cube)
-    {
-        glDeleteBuffers(1,&vbo_Position_cube);
-        vbo_Position_cube = 0;
-    }
-
-    if(vbo_texture_cube)
-    {
-        glDeleteBuffers(1,&vbo_texture_cube);
-        vbo_texture_cube = 0;
+        glDeleteBuffers(1,&vbo_texture_checker);
+        vbo_texture_checker = 0;
     }
 
     if(gShaderProgramObject)
