@@ -555,7 +555,7 @@ void Display()
     Vertices_straight[10] = -1.0f;
     Vertices_straight[11] = 0.0f;
 
-    //glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
     glBufferData(GL_ARRAY_BUFFER,4*3*sizeof(GLfloat),Vertices_straight,GL_DYNAMIC_DRAW);
     glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
@@ -580,7 +580,7 @@ void Display()
     Vertices_angular[10] = -1.0f;
     Vertices_angular[11] = -1.41421f;
 
-    //glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_checker);
     glBufferData(GL_ARRAY_BUFFER,4*3*sizeof(GLfloat),Vertices_angular,GL_DYNAMIC_DRAW);
     glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
