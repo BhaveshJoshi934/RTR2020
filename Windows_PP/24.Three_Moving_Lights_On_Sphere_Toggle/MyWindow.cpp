@@ -39,16 +39,6 @@ bool gbActiveWindow = false;
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 
-GLfloat lightPosition[] = {100.0f,100.0f,100.0f,1.0f};
-GLfloat lightAmbient[] = /*{0.0f,0.0f,0.0f,1.0f};*/ {0.1f,0.1f,0.1f,1.0f};
-GLfloat lightDiffuse[] = /*{1.0f,1.0f,1.0f,1.0f};*/  {0.5f,0.2f,0.7f,1.0f};
-GLfloat lightSpecular[] = /*{1.0f,1.0f,1.0f,1.0f};*/   {0.7f,0.7f,0.7f,1.0f};
-GLfloat MaterialAmbient[] = {0.0f,0.0f,0.0f,0.0f};
-GLfloat MaterialDiffuse[] = {1.0f,1.0f,1.0f,1.0f};
-GLfloat MaterialSpecular[] = {1.0f,1.0f,1.0f,1.0f};
-
-GLfloat MaterialShininess = /*50.0f;*/ 128.0f;
-
 float sphere_vertices[1146];
 float sphere_normals[1146];
 float sphere_textures[764];
@@ -62,8 +52,8 @@ GLuint gVertexShaderObject_PF;
 GLuint gFragmentShaderObject_PF;
 GLuint gShaderProgramObject_PF;
 
-bool FragmentShader = true;
 bool bLight;
+bool FragmentShader = false;
 
 GLuint gVao_sphere;
 GLuint gNumVertices;
@@ -72,31 +62,93 @@ GLuint gVbo_sphere_position;
 GLuint gVbo_sphere_normal;
 GLuint gVbo_sphere_element;
 
-GLuint modelMatrixUniform_PF;                             //GLuint mvpUniform => 3 madhe todala
-GLuint viewMatrixUniform_PF;
-GLuint perspectiveProjectionUniform_PF;
-GLuint LaUniform_PF;
-GLuint LdUniform_PF;
-GLuint LsUniform_PF;
-GLuint lightPositionUniform_PF;
-GLuint KaUniform_PF;
-GLuint KdUniform_PF;
-GLuint KsUniform_PF;
-GLuint KshineUniform_PF;
-GLuint LKeyPressedUniform_PF;
+GLfloat factor = 10.0f;
 
-GLuint modelMatrixUniform_PV;                             //GLuint mvpUniform => 3 madhe todala
+GLfloat angleX = 0.0f;
+GLfloat angleY = 0.0f;
+GLfloat angleZ = 0.0f;
+
+GLfloat lightPosition_Red_PV[] = {0.0f,0.0,0.0f,1.0f};
+GLfloat lightAmbient_Red_PV[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Red_PV[] = {1.0f,0.0f,0.0f,1.0f};
+GLfloat lightSpecular_Red_PV[] = {1.0f,0.0f,0.0f,1.0f};
+
+GLfloat lightPosition_Blue_PV[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightAmbient_Blue_PV[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Blue_PV[] = {0.0f,0.0f,1.0f,1.0f};
+GLfloat lightSpecular_Blue_PV[] = {0.0f,0.0f,1.0f,1.0f};
+
+GLfloat lightPosition_Green_PV[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightAmbient_Green_PV[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Green_PV[] = {0.0f,1.0f,0.0f,1.0f};
+GLfloat lightSpecular_Green_PV[] = {0.0f,1.0f,0.0f,1.0f};
+
+GLfloat MaterialAmbient_PV[] = {0.0f,0.0f,0.0f,0.0f};
+GLfloat MaterialDiffuse_PV[] = {1.0f,1.0f,1.0f,1.0f};
+GLfloat MaterialSpecular_PV[] = {1.0f,1.0f,1.0f,1.0f};
+GLfloat MaterialShininess_PV = 50.0f;
+
+GLfloat lightPosition_Red_PF[] = {0.0f,0.0,0.0f,1.0f};
+GLfloat lightAmbient_Red_PF[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Red_PF[] = {1.0f,0.0f,0.0f,1.0f};
+GLfloat lightSpecular_Red_PF[] = {1.0f,0.0f,0.0f,1.0f};
+
+GLfloat lightPosition_Blue_PF[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightAmbient_Blue_PF[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Blue_PF[] = {0.0f,0.0f,1.0f,1.0f};
+GLfloat lightSpecular_Blue_PF[] = {0.0f,0.0f,1.0f,1.0f};
+
+GLfloat lightPosition_Green_PF[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightAmbient_Green_PF[] = {0.0f,0.0f,0.0f,1.0f};
+GLfloat lightDiffuse_Green_PF[] = {0.0f,1.0f,0.0f,1.0f};
+GLfloat lightSpecular_Green_PF[] = {0.0f,1.0f,0.0f,1.0f};
+
+GLfloat MaterialAmbient_PF[] = {0.0f,0.0f,0.0f,0.0f};
+GLfloat MaterialDiffuse_PF[] = {1.0f,1.0f,1.0f,1.0f};
+GLfloat MaterialSpecular_PF[] = {1.0f,1.0f,1.0f,1.0f};
+GLfloat MaterialShininess_PF = 128.0f;
+
+GLuint modelMatrixUniform_PV;
 GLuint viewMatrixUniform_PV;
 GLuint perspectiveProjectionUniform_PV;
-GLuint LaUniform_PV;
-GLuint LdUniform_PV;
-GLuint LsUniform_PV;
-GLuint lightPositionUniform_PV;
+GLuint LaUniform_Red_PV;
+GLuint LdUniform_Red_PV;
+GLuint LsUniform_Red_PV;
+GLuint lightPositionUniform_Red_PV;
+GLuint LaUniform_Blue_PV;
+GLuint LdUniform_Blue_PV;
+GLuint LsUniform_Blue_PV;
+GLuint lightPositionUniform_Blue_PV;
+GLuint LaUniform_Green_PV;
+GLuint LdUniform_Green_PV;
+GLuint LsUniform_Green_PV;
+GLuint lightPositionUniform_Green_PV;
 GLuint KaUniform_PV;
 GLuint KdUniform_PV;
 GLuint KsUniform_PV;
 GLuint KshineUniform_PV;
 GLuint LKeyPressedUniform_PV;
+
+GLuint modelMatrixUniform_PF;
+GLuint viewMatrixUniform_PF;
+GLuint perspectiveProjectionUniform_PF;
+GLuint LaUniform_Red_PF;
+GLuint LdUniform_Red_PF;
+GLuint LsUniform_Red_PF;
+GLuint lightPositionUniform_Red_PF;
+GLuint LaUniform_Blue_PF;
+GLuint LdUniform_Blue_PF;
+GLuint LsUniform_Blue_PF;
+GLuint lightPositionUniform_Blue_PF;
+GLuint LaUniform_Green_PF;
+GLuint LdUniform_Green_PF;
+GLuint LsUniform_Green_PF;
+GLuint lightPositionUniform_Green_PF;
+GLuint KaUniform_PF;
+GLuint KdUniform_PF;
+GLuint KsUniform_PF;
+GLuint KshineUniform_PF;
+GLuint LKeyPressedUniform_PF;
 
 mat4 perspectiveProjectionMatrix;
 
@@ -115,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
     int X = 0;
     int Y = 0;
 
-    if(fopen_s(&gpFile,"LogFile.txt","w") != 0)
+    if(fopen_s(&gpFile,"Log.txt","w") != 0)
     {
         printf("Can't Open File!!!Exitting Now!!\n\n");
         exit(1);
@@ -142,7 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("Toggling in Per Vertex and Per Fragment : Bhavesh Joshi !!"),
+                          TEXT("Three Rotating Lights on Steady Sphere Toggling in PP : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -199,24 +251,16 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
     case WM_CREATE:
         break;
 
-    case WM_KEYDOWN:
-        switch(wParam)
-        {
-        case VK_ESCAPE:
-            ToggleFullScreen();
-            break;
-
-        default:
-            break;
-        }
-        break;
-
     case WM_CHAR:
         switch(wParam)
         {
         case 'Q':
         case 'q':
             DestroyWindow(hwnd);
+            break;
+
+        case VK_ESCAPE:
+            ToggleFullScreen();
             break;
 
         case 'L':
@@ -365,7 +409,7 @@ void Initialize()
         fprintf(gpFile,"%s\n\n",glGetStringi(GL_EXTENSIONS,i));
     }
 
-    /*--------------------------------------------VERTEX SHADER-------------------------------------------------------------*/
+     //--------------------------------------------VERTEX SHADER-------------------------------------------------------------/
 
     //Create Shader
     gVertexShaderObject_PV = glCreateShader(GL_VERTEX_SHADER);
@@ -378,14 +422,22 @@ void Initialize()
             "in vec3 vNormal;" \
             "uniform mat4 u_model_matrix;" \
             "uniform mat4 u_view_matrix;" \
-            "uniform mat4 u_perspective_projection_matrix;"
-            "uniform vec3 u_la;" \
-            "uniform vec3 u_ld;" \
-            "uniform vec3 u_ls;" \
+            "uniform mat4 u_perspective_projection_matrix;" \
+            "uniform vec3 u_la_red;" \
+            "uniform vec3 u_ld_red;" \
+            "uniform vec3 u_ls_red;" \
+            "uniform vec4 u_light_position_red;" \
+            "uniform vec3 u_la_blue;" \
+            "uniform vec3 u_ld_blue;" \
+            "uniform vec3 u_ls_blue;" \
+            "uniform vec4 u_light_position_blue;" \
+            "uniform vec3 u_la_green;" \
+            "uniform vec3 u_ld_green;" \
+            "uniform vec3 u_ls_green;" \
+            "uniform vec4 u_light_position_green;" \
             "uniform vec3 u_ka;" \
             "uniform vec3 u_kd;" \
             "uniform vec3 u_ks;" \
-            "uniform vec4 u_light_position;" \
             "uniform int u_LKeyPressed;" \
             "uniform float u_shininess;" \
             "out vec3 phong_ads_light;" \
@@ -395,13 +447,27 @@ void Initialize()
             "{" \
             "vec4 eye_coordinates = u_view_matrix * u_model_matrix * vPosition;" \
             "vec3 transformed_normal = normalize(mat3(u_view_matrix * u_model_matrix) * vNormal);" \
-            "vec3 light_direction = normalize(vec3(u_light_position - eye_coordinates));" \
-            "vec3 reflection_vector = reflect(-light_direction,transformed_normal);" \
             "vec3 view_vector = normalize(-eye_coordinates.xyz);" \
-            "vec3 ambient = u_la * u_ka;" \
-            "vec3 diffuse = u_ld * u_kd * max(dot(light_direction,transformed_normal),0.0f);" \
-            "vec3 specular = u_ls * u_ks * pow(max(dot(reflection_vector,view_vector),0.0f),u_shininess);" \
-            "phong_ads_light = ambient + diffuse + specular;" \
+
+            "vec3 light_direction_red = normalize(vec3(u_light_position_red - eye_coordinates));" \
+            "vec3 reflection_vector_red = reflect(-light_direction_red,transformed_normal);" \
+            "vec3 ambient_red = u_la_red * u_ka;" \
+            "vec3 diffuse_red = u_ld_red * u_kd * max(dot(light_direction_red,transformed_normal),0.0f);" \
+            "vec3 specular_red = u_ls_red * u_ks * pow(max(dot(reflection_vector_red,view_vector),0.0f),u_shininess);" \
+
+            "vec3 light_direction_blue = normalize(vec3(u_light_position_blue - eye_coordinates));" \
+            "vec3 reflection_vector_blue = reflect(-light_direction_blue,transformed_normal);" \
+            "vec3 ambient_blue = u_la_blue * u_ka;" \
+            "vec3 diffuse_blue = u_ld_blue * u_kd * max(dot(light_direction_blue,transformed_normal),0.0f);" \
+            "vec3 specular_blue = u_ls_blue * u_ks * pow(max(dot(reflection_vector_blue,view_vector),0.0f),u_shininess);" \
+
+            "vec3 light_direction_green = normalize(vec3(u_light_position_green - eye_coordinates));" \
+            "vec3 reflection_vector_green = reflect(-light_direction_green,transformed_normal);" \
+            "vec3 ambient_green = u_la_green * u_ka;" \
+            "vec3 diffuse_green = u_ld_green * u_kd * max(dot(light_direction_green,transformed_normal),0.0f);" \
+            "vec3 specular_green = u_ls_green * u_ks * pow(max(dot(reflection_vector_green,view_vector),0.0f),u_shininess);" \
+
+            "phong_ads_light = ambient_red + ambient_blue + ambient_green + diffuse_red + diffuse_blue + diffuse_green + specular_red + specular_blue + specular_green;" \
             "}" \
             "else" \
             "{" \
@@ -409,6 +475,8 @@ void Initialize()
             "}" \
             "gl_Position = u_perspective_projection_matrix * u_view_matrix * u_model_matrix * vPosition;" \
             "}";
+
+    fprintf(gpFile,"Vertex_PV\n\n");
 
     glShaderSource(gVertexShaderObject_PV,1,(const GLchar **)&vertexShaderSourceCode_PV,NULL);
 
@@ -435,8 +503,9 @@ void Initialize()
             }
         }
     }
+    fprintf(gpFile,"Vertex_PV_End\n\n");
 
-    /*--------------------------------------------FRAGMENT SHADER-------------------------------------------------------------*/
+//--------------------------------------------FRAGMENT SHADER-------------------------------------------------------------
 
     //Create Shader
     gFragmentShaderObject_PV = glCreateShader(GL_FRAGMENT_SHADER);
@@ -451,7 +520,7 @@ void Initialize()
         "{" \
         "FragColor = vec4(phong_ads_light,1.0f);" \
         "}";
-
+    fprintf(gpFile,"Fragment_PV\n\n");
     glShaderSource(gFragmentShaderObject_PV,1,(const char **)&fragmentShaderSourceCode_PV,NULL);
 
     //Compile
@@ -475,7 +544,8 @@ void Initialize()
         }
     }
 
-    /*--------------------------------------------SHADER PROGRAM-------------------------------------------------------------*/
+
+//    *--------------------------------------------SHADER PROGRAM-------------------------------------------------------------
 
     //Create
     gShaderProgramObject_PV = glCreateProgram();
@@ -509,20 +579,35 @@ void Initialize()
         }
     }
 
+//    mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
+
     modelMatrixUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_model_matrix");
     viewMatrixUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_view_matrix");
     perspectiveProjectionUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_perspective_projection_matrix");
-    LaUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_la");
-    LdUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ld");
-    LsUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ls");
-    lightPositionUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_light_position");
+    LaUniform_Red_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_la_red");
+    LdUniform_Red_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ld_red");
+    LsUniform_Red_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ls_red");
+    lightPositionUniform_Red_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_light_position_red");
+    LaUniform_Blue_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_la_blue");
+    LdUniform_Blue_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ld_blue");
+    LsUniform_Blue_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ls_blue");
+    lightPositionUniform_Blue_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_light_position_blue");
+    LaUniform_Green_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_la_green");
+    LdUniform_Green_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ld_green");
+    LsUniform_Green_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ls_green");
+    lightPositionUniform_Green_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_light_position_green");
     KaUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ka");
     KdUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_kd");
     KsUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_ks");
     KshineUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_shininess");
     LKeyPressedUniform_PV = glGetUniformLocation(gShaderProgramObject_PV,"u_LKeyPressed");
 
-  //Create Shader
+    fprintf(gpFile,"Fragment_PV_End\n\n");
+
+
+ //    /*--------------------------------------------VERTEX SHADER-------------------------------------------------------------*/
+
+    //Create Shader
     gVertexShaderObject_PF = glCreateShader(GL_VERTEX_SHADER);
 
     //Feed Shader
@@ -534,31 +619,40 @@ void Initialize()
             "uniform mat4 u_model_matrix;" \
             "uniform mat4 u_view_matrix;" \
             "uniform mat4 u_perspective_projection_matrix;" \
-            "uniform vec4 u_light_position;" \
+            "uniform vec4 u_light_position_red;" \
+            "uniform vec4 u_light_position_blue;" \
+            "uniform vec4 u_light_position_green;" \
             "uniform int u_LKeyPressed;" \
             "out vec3 transformed_normal;" \
-            "out vec3 light_direction;" \
             "out vec3 view_vector;" \
+            "out vec3 light_direction_red;" \
+            "out vec3 light_direction_blue;" \
+            "out vec3 light_direction_green;" \
             "void main(void)" \
             "{" \
             "if(u_LKeyPressed == 1)" \
             "{" \
             "vec4 eye_coordinates = u_view_matrix * u_model_matrix * vPosition;" \
             "transformed_normal = mat3(u_view_matrix * u_model_matrix) * vNormal;" \
-            "light_direction = vec3(u_light_position - eye_coordinates);" \
             "view_vector = -eye_coordinates.xyz;" \
+            "light_direction_red = vec3(u_light_position_red - eye_coordinates);" \
+            "light_direction_blue = vec3(u_light_position_blue - eye_coordinates);" \
+            "light_direction_green = vec3(u_light_position_green - eye_coordinates);" \
             "}" \
             "gl_Position = u_perspective_projection_matrix * u_view_matrix * u_model_matrix * vPosition;" \
             "}";
+
+            fprintf(gpFile,"Vertex_PF\n\n");
 
     glShaderSource(gVertexShaderObject_PF,1,(const GLchar **)&vertexShaderSourceCode_PF,NULL);
 
     //Compile Shader
     glCompileShader(gVertexShaderObject_PF);
-
-    //GLint infoLogLength = 0;
-    //GLint shaderCompiledStatus = 0;
-    //char *szInfoLog = NULL;
+/*-------------------------------------------------------
+    GLint infoLogLength = 0;
+    GLint shaderCompiledStatus = 0;
+    char *szInfoLog = NULL;
+*/
     glGetShaderiv(gVertexShaderObject_PF,GL_COMPILE_STATUS,&shaderCompiledStatus);
     if(shaderCompiledStatus == GL_FALSE)
     {
@@ -577,6 +671,9 @@ void Initialize()
         }
     }
 
+    fprintf(gpFile,"Veretx_PF_End\n\n");
+ //   /*--------------------------------------------FRAGMENT SHADER-------------------------------------------------------------
+
     //Create Shader
     gFragmentShaderObject_PF = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -585,30 +682,52 @@ void Initialize()
         "#version 440 core" \
         "\n" \
         "in vec3 transformed_normal;" \
-        "in vec3 light_direction;" \
         "in vec3 view_vector;" \
-        "uniform vec3 u_la;" \
-        "uniform vec3 u_ld;" \
-        "uniform vec3 u_ls;" \
+        "in vec3 light_direction_red;" \
+        "in vec3 light_direction_blue;" \
+        "in vec3 light_direction_green;" \
+        "uniform vec3 u_la_red;" \
+        "uniform vec3 u_ld_red;" \
+        "uniform vec3 u_ls_red;" \
+        "uniform vec3 u_la_blue;" \
+        "uniform vec3 u_ld_blue;" \
+        "uniform vec3 u_ls_blue;" \
+        "uniform vec3 u_la_green;" \
+        "uniform vec3 u_ld_green;" \
+        "uniform vec3 u_ls_green;" \
         "uniform vec3 u_ka;" \
         "uniform vec3 u_kd;" \
         "uniform vec3 u_ks;" \
-        "uniform float u_shininess;" \
         "uniform int u_LKeyPressed;" \
+        "uniform float u_shininess;" \
         "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
         "vec3 phong_ads_light;" \
         "if(u_LKeyPressed == 1)" \
         "{" \
-        "vec3 normalized_transformed_normal = normalize(transformed_normal);" \
-        "vec3 normalized_light_direction    = normalize(light_direction);" \
-        "vec3 normalized_view_vector        = normalize(view_vector);" \
-        "vec3 ambient = u_la * u_ka;" \
-        "vec3 diffuse = u_ld * u_kd * max(dot(normalized_light_direction,normalized_transformed_normal),0.0f);" \
-        "vec3 reflection_vector = reflect(-normalized_light_direction,normalized_transformed_normal);" \
-        "vec3 specular = u_ls * u_ks * pow(max(dot(reflection_vector,normalized_view_vector),0.0f),u_shininess);" \
-        "phong_ads_light = ambient + diffuse + specular;" \
+        "vec3 normalized_transformed_normal      = normalize(transformed_normal);" \
+        "vec3 normalized_light_direction_red     = normalize(light_direction_red);" \
+        "vec3 normalized_light_direction_blue    = normalize(light_direction_blue);" \
+        "vec3 normalized_light_direction_green   = normalize(light_direction_green);" \
+        "vec3 normalized_view_vector             = normalize(view_vector);" \
+
+        "vec3 reflection_vector_red = reflect(-normalized_light_direction_red,normalized_transformed_normal);" \
+        "vec3 ambient_red = u_la_red * u_ka;" \
+        "vec3 diffuse_red = u_ld_red * u_kd * max(dot(normalized_light_direction_red,normalized_transformed_normal),0.0f);" \
+        "vec3 specular_red = u_ls_red * u_ks * pow(max(dot(reflection_vector_red,normalized_view_vector ),0.0f),u_shininess);" \
+
+        "vec3 reflection_vector_blue = reflect(-normalized_light_direction_blue,normalized_transformed_normal);" \
+        "vec3 ambient_blue = u_la_blue * u_ka;" \
+        "vec3 diffuse_blue = u_ld_blue * u_kd * max(dot(normalized_light_direction_blue,normalized_transformed_normal),0.0f);" \
+        "vec3 specular_blue = u_ls_blue * u_ks * pow(max(dot(reflection_vector_blue,normalized_view_vector ),0.0f),u_shininess);" \
+
+        "vec3 reflection_vector_green = reflect(-normalized_light_direction_green,normalized_transformed_normal);" \
+        "vec3 ambient_green = u_la_green * u_ka;" \
+        "vec3 diffuse_green = u_ld_green * u_kd * max(dot(normalized_light_direction_green,normalized_transformed_normal),0.0f);" \
+        "vec3 specular_green = u_ls_green * u_ks * pow(max(dot(reflection_vector_green,normalized_view_vector ),0.0f),u_shininess);" \
+
+        "phong_ads_light = ambient_red + ambient_blue + ambient_green + diffuse_red + diffuse_blue + diffuse_green + specular_red + specular_blue + specular_green;" \
         "}" \
         "else" \
         "{" \
@@ -618,7 +737,7 @@ void Initialize()
         "}";
 
     glShaderSource(gFragmentShaderObject_PF,1,(const char **)&fragmentShaderSourceCode_PF,NULL);
-
+fprintf(gpFile,"Fragment_PF\n\n");
     //Compile
     glCompileShader(gFragmentShaderObject_PF);
 
@@ -640,7 +759,8 @@ void Initialize()
         }
     }
 
-    /*--------------------------------------------SHADER PROGRAM-------------------------------------------------------------*/
+
+//    /*--------------------------------------------SHADER PROGRAM-------------------------------------------------------------
 
     //Create
     gShaderProgramObject_PF = glCreateProgram();
@@ -655,7 +775,9 @@ void Initialize()
     //Link
     glLinkProgram(gShaderProgramObject_PF);
 
+    //-------------------------------------
     //GLint shaderProgramLinkStatus = 0;
+    //-------------------------------------
     glGetProgramiv(gShaderProgramObject_PF,GL_LINK_STATUS,&shaderProgramLinkStatus);
     if(shaderProgramLinkStatus == GL_FALSE)
     {
@@ -679,10 +801,18 @@ void Initialize()
     modelMatrixUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_model_matrix");
     viewMatrixUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_view_matrix");
     perspectiveProjectionUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_perspective_projection_matrix");
-    LaUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_la");
-    LdUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ld");
-    LsUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ls");
-    lightPositionUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_light_position");
+    LaUniform_Red_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_la_red");
+    LdUniform_Red_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ld_red");
+    LsUniform_Red_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ls_red");
+    lightPositionUniform_Red_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_light_position_red");
+    LaUniform_Blue_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_la_blue");
+    LdUniform_Blue_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ld_blue");
+    LsUniform_Blue_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ls_blue");
+    lightPositionUniform_Blue_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_light_position_blue");
+    LaUniform_Green_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_la_green");
+    LdUniform_Green_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ld_green");
+    LsUniform_Green_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ls_green");
+    lightPositionUniform_Green_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_light_position_green");
     KaUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ka");
     KdUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_kd");
     KsUniform_PF = glGetUniformLocation(gShaderProgramObject_PF,"u_ks");
@@ -751,21 +881,44 @@ void Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Start Using OpenGL Program
-if(FragmentShader == true)
+if(FragmentShader == false)
 {
     glUseProgram(gShaderProgramObject_PV);
+
     if(bLight == true)
     {
+        lightPosition_Red_PV[0] = 0.0f;
+        lightPosition_Red_PV[1] = factor * sin(angleX);
+        lightPosition_Red_PV[2] = factor * cos(angleX);
+        lightPosition_Red_PV[3] = 1.0f;
+
+        lightPosition_Green_PV[0] = factor * sin(angleY);
+        lightPosition_Green_PV[1] = 0.0f;
+        lightPosition_Green_PV[2] = factor * cos(angleY);
+        lightPosition_Green_PV[3] = 1.0f;
+
+        lightPosition_Blue_PV[0] = factor * sin(angleZ);
+        lightPosition_Blue_PV[1] = factor * cos(angleZ);
+        lightPosition_Blue_PV[2] = 0.0f;
+        lightPosition_Blue_PV[3] = 1.0f;
+
         glUniform1i(LKeyPressedUniform_PV,1);
-        glUniform1f(KshineUniform_PV,MaterialShininess);      // Ithe Error Yeu Shakate
-        glUniform4fv(lightPositionUniform_PV,1,lightPosition);
-        glUniform3fv(LaUniform_PV,1,lightAmbient);
-        glUniform3fv(LdUniform_PV,1,lightDiffuse);
-        glUniform3fv(LsUniform_PV,1,lightSpecular);
-        glUniform3fv(KaUniform_PV,1,MaterialAmbient);
-        glUniform3fv(KdUniform_PV,1,MaterialDiffuse);
-        glUniform3fv(KsUniform_PV,1,MaterialSpecular);
+        glUniform1f(KshineUniform_PV,MaterialShininess_PV);
+        glUniform4fv(lightPositionUniform_Red_PV,1,lightPosition_Red_PV);
+        glUniform3fv(LaUniform_Red_PV,1,lightAmbient_Red_PV);
+        glUniform3fv(LdUniform_Red_PV,1,lightDiffuse_Red_PV);
+        glUniform3fv(LsUniform_Red_PV,1,lightSpecular_Red_PV);
+        glUniform4fv(lightPositionUniform_Blue_PV,1,lightPosition_Blue_PV);
+        glUniform3fv(LaUniform_Blue_PV,1,lightAmbient_Blue_PV);
+        glUniform3fv(LdUniform_Blue_PV,1,lightDiffuse_Blue_PV);
+        glUniform3fv(LsUniform_Blue_PV,1,lightSpecular_Blue_PV);
+        glUniform4fv(lightPositionUniform_Green_PV,1,lightPosition_Green_PV);
+        glUniform3fv(LaUniform_Green_PV,1,lightAmbient_Green_PV);
+        glUniform3fv(LdUniform_Green_PV,1,lightDiffuse_Green_PV);
+        glUniform3fv(LsUniform_Green_PV,1,lightSpecular_Green_PV);
+        glUniform3fv(KaUniform_PV,1,MaterialAmbient_PV);
+        glUniform3fv(KdUniform_PV,1,MaterialDiffuse_PV);
+        glUniform3fv(KsUniform_PV,1,MaterialSpecular_PV);
     }
     else
     {
@@ -777,8 +930,7 @@ if(FragmentShader == true)
     mat4 projectionMatrix = mat4::identity();
     mat4 translateMatrix = vmath::translate(0.0f,0.0f,-3.0f);
 
-    modelMatrix = translateMatrix;    // model la Translate
-
+    modelMatrix = translateMatrix  ;    // model la Translate
     projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform_PV,1,GL_FALSE,modelMatrix);
@@ -788,17 +940,41 @@ if(FragmentShader == true)
 else
 {
     glUseProgram(gShaderProgramObject_PF);
+
     if(bLight == true)
     {
+        lightPosition_Red_PF[0] = 0.0f;
+        lightPosition_Red_PF[1] = factor * sin(angleX);
+        lightPosition_Red_PF[2] = factor * cos(angleX);
+        lightPosition_Red_PF[3] = 1.0f;
+
+        lightPosition_Green_PF[0] = factor * sin(angleY);
+        lightPosition_Green_PF[1] = 0.0f;
+        lightPosition_Green_PF[2] = factor * cos(angleY);
+        lightPosition_Green_PF[3] = 1.0f;
+
+        lightPosition_Blue_PF[0] = factor * sin(angleZ);
+        lightPosition_Blue_PF[1] = factor * cos(angleZ);
+        lightPosition_Blue_PF[2] = 0.0f;
+        lightPosition_Blue_PF[3] = 1.0f;
+
         glUniform1i(LKeyPressedUniform_PF,1);
-        glUniform1f(KshineUniform_PF,MaterialShininess);      // Ithe Error Yeu Shakate
-        glUniform4fv(lightPositionUniform_PF,1,lightPosition);
-        glUniform3fv(LaUniform_PF,1,lightAmbient);
-        glUniform3fv(LdUniform_PF,1,lightDiffuse);
-        glUniform3fv(LsUniform_PF,1,lightSpecular);
-        glUniform3fv(KaUniform_PF,1,MaterialAmbient);
-        glUniform3fv(KdUniform_PF,1,MaterialDiffuse);
-        glUniform3fv(KsUniform_PF,1,MaterialSpecular);
+        glUniform1f(KshineUniform_PF,MaterialShininess_PF);
+        glUniform4fv(lightPositionUniform_Red_PF,1,lightPosition_Red_PF);
+        glUniform3fv(LaUniform_Red_PF,1,lightAmbient_Red_PF);
+        glUniform3fv(LdUniform_Red_PF,1,lightDiffuse_Red_PF);
+        glUniform3fv(LsUniform_Red_PF,1,lightSpecular_Red_PF);
+        glUniform4fv(lightPositionUniform_Blue_PF,1,lightPosition_Blue_PF);
+        glUniform3fv(LaUniform_Blue_PF,1,lightAmbient_Blue_PF);
+        glUniform3fv(LdUniform_Blue_PF,1,lightDiffuse_Blue_PF);
+        glUniform3fv(LsUniform_Blue_PF,1,lightSpecular_Blue_PF);
+        glUniform4fv(lightPositionUniform_Green_PF,1,lightPosition_Green_PF);
+        glUniform3fv(LaUniform_Green_PF,1,lightAmbient_Green_PF);
+        glUniform3fv(LdUniform_Green_PF,1,lightDiffuse_Green_PF);
+        glUniform3fv(LsUniform_Green_PF,1,lightSpecular_Green_PF);
+        glUniform3fv(KaUniform_PF,1,MaterialAmbient_PF);
+        glUniform3fv(KdUniform_PF,1,MaterialDiffuse_PF);
+        glUniform3fv(KsUniform_PF,1,MaterialSpecular_PF);
     }
     else
     {
@@ -810,14 +986,12 @@ else
     mat4 projectionMatrix = mat4::identity();
     mat4 translateMatrix = vmath::translate(0.0f,0.0f,-3.0f);
 
-    modelMatrix = translateMatrix;    // model la Translate
-
+    modelMatrix = translateMatrix  ;    // model la Translate
     projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform_PF,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform_PF,1,GL_FALSE,viewMatrix);
     glUniformMatrix4fv(perspectiveProjectionUniform_PF,1,GL_FALSE,projectionMatrix);
-
 }
         // *** bind vao ***
     glBindVertexArray(gVao_sphere);
@@ -832,6 +1006,24 @@ else
     //Stop OpenGL Program
     glUseProgram(0);
 
+    angleX = angleX + 0.01f;
+    if(angleX >= 360.0f)
+    {
+        angleX = 0.0f;
+    }
+
+    angleY = angleY + 0.01f;
+    if(angleY >= 360.0f)
+    {
+        angleY = 0.0f;
+    }
+
+    angleZ = angleZ + 0.01f;
+    if(angleZ >= 360.0f)
+    {
+        angleZ = 0.0f;
+    }
+
     SwapBuffers(ghdc);
 }
 
@@ -845,37 +1037,6 @@ void uninitialize()
 		SetWindowPos(ghwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
 		ShowCursor(TRUE);
 	}
-    /*
-    glDetachShader(gShaderProgramObject,gVertexShaderObject);
-    glDetachShader(gShaderProgramObject,gFragmentShaderObject);
-
-    glDeleteShader(gVertexShaderObject);
-    gVertexShaderObject = 0;
-
-    glDeleteShader(gFragmentShaderObject);
-    gFragmentShaderObject = 0;
-
-    glUseProgram(0);
-    */
-/*
-    if(vao)
-    {
-        glDeleteVertexArrays(1,&vao);
-        vao = 0;
-    }
-
-    if(vbo_Position)
-    {
-        glDeleteBuffers(1,&vbo_Position);
-        vbo_Position = 0;
-    }
-
-    if(vbo_Color)
-    {
-        glDeleteBuffers(1,&vbo_Color);
-        vbo_Color = 0;
-    }
-*/
 
     if(gVao_sphere)
     {
@@ -893,37 +1054,6 @@ void uninitialize()
     {
         glDeleteBuffers(1,&gVbo_sphere_position);
         gVbo_sphere_position = 0;
-    }
-
-    if(gShaderProgramObject_PF)
-    {
-        glUseProgram(gShaderProgramObject_PF);
-        GLsizei shaderCount;
-
-        glGetProgramiv(gShaderProgramObject_PF,GL_ATTACHED_SHADERS,&shaderCount);
-
-        GLuint *pShaders = NULL;
-
-        pShaders = (GLuint*)malloc(shaderCount * sizeof(GLuint));
-        if(pShaders == NULL)
-        {
-            printf("Malloc Failed!!!Exitting Now!!\n\n");
-            exit(0);
-        }
-
-        glGetAttachedShaders(gShaderProgramObject_PF,shaderCount,&shaderCount,pShaders);
-
-        for(GLsizei i = 0 ; i < shaderCount ; i++)
-        {
-            glDetachShader(gShaderProgramObject_PF,pShaders[i]);
-            glDeleteShader(pShaders[i]);
-            pShaders[i] = 0;
-            free(pShaders);
-
-            glDeleteProgram(gShaderProgramObject_PF);
-            gShaderProgramObject_PF = 0;
-            glUseProgram(0);
-        }
     }
 
     if(gShaderProgramObject_PV)
@@ -953,6 +1083,37 @@ void uninitialize()
 
             glDeleteProgram(gShaderProgramObject_PV);
             gShaderProgramObject_PV = 0;
+            glUseProgram(0);
+        }
+    }
+
+    if(gShaderProgramObject_PF)
+    {
+        glUseProgram(gShaderProgramObject_PF);
+        GLsizei shaderCount;
+
+        glGetProgramiv(gShaderProgramObject_PF,GL_ATTACHED_SHADERS,&shaderCount);
+
+        GLuint *pShaders = NULL;
+
+        pShaders = (GLuint*)malloc(shaderCount * sizeof(GLuint));
+        if(pShaders == NULL)
+        {
+            printf("Malloc Failed!!!Exitting Now!!\n\n");
+            exit(0);
+        }
+
+        glGetAttachedShaders(gShaderProgramObject_PF,shaderCount,&shaderCount,pShaders);
+
+        for(GLsizei i = 0 ; i < shaderCount ; i++)
+        {
+            glDetachShader(gShaderProgramObject_PF,pShaders[i]);
+            glDeleteShader(pShaders[i]);
+            pShaders[i] = 0;
+            free(pShaders);
+
+            glDeleteProgram(gShaderProgramObject_PF);
+            gShaderProgramObject_PF = 0;
             glUseProgram(0);
         }
     }

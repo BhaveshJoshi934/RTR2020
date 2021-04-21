@@ -57,6 +57,8 @@ GLuint gVbo_sphere_position;
 GLuint gVbo_sphere_normal;
 GLuint gVbo_sphere_element;
 
+GLfloat factor = 10.0f;
+
 GLfloat angleX = 0.0f;
 GLfloat angleY = 0.0f;
 GLfloat angleZ = 0.0f;
@@ -621,9 +623,20 @@ void Display()
 
     if(bLight == true)
     {
-        lightPosition_Red[1] = angleX;
-        lightPosition_Green[0] = angleY;
-        lightPosition_Blue[0] = angleZ;
+        lightPosition_Red[0] = 0.0f;
+        lightPosition_Red[1] = factor * sin(angleX);
+        lightPosition_Red[2] = factor * cos(angleX);
+        lightPosition_Red[3] = 1.0f;
+
+        lightPosition_Green[0] = factor * sin(angleY);
+        lightPosition_Green[1] = 0.0f;
+        lightPosition_Green[2] = factor * cos(angleY);
+        lightPosition_Green[3] = 1.0f;
+
+        lightPosition_Blue[0] = factor * sin(angleZ);
+        lightPosition_Blue[1] = factor * cos(angleZ);
+        lightPosition_Blue[2] = 0.0f;
+        lightPosition_Blue[3] = 1.0f;
 
         glUniform1i(LKeyPressedUniform,1);
         glUniform1f(KshineUniform,MaterialShininess);
@@ -652,11 +665,8 @@ void Display()
     mat4 viewMatrix = mat4::identity();     // view la Identity
     mat4 projectionMatrix = mat4::identity();
     mat4 translateMatrix = vmath::translate(0.0f,0.0f,-3.0f);
-    mat4 rotateMatrix_Red = vmath::rotate(angleX,1.0f,0.0f,0.0f);
-    mat4 rotateMatrix_Green = vmath::rotate(angleY,0.0f,1.0f,0.0f);
-    mat4 rotateMatrix_Blue = vmath::rotate(angleZ,0.0f,0.0f,1.0f);
 
-    modelMatrix = translateMatrix * rotateMatrix_Red * rotateMatrix_Green * rotateMatrix_Blue;    // model la Translate
+    modelMatrix = translateMatrix  ;    // model la Translate
     projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -682,19 +692,19 @@ void Display()
         angle_pyramid = 0.0f;
     }
 
-    angleX = angleX + 0.1f;
+    angleX = angleX + 0.01f;
     if(angleX >= 360.0f)
     {
         angleX = 0.0f;
     }
 
-    angleY = angleY + 0.1f;
+    angleY = angleY + 0.01f;
     if(angleY >= 360.0f)
     {
         angleY = 0.0f;
     }
 
-    angleZ = angleZ + 0.1f;
+    angleZ = angleZ + 0.01f;
     if(angleZ >= 360.0f)
     {
         angleZ = 0.0f;
