@@ -1,0 +1,33 @@
+01) Download Latest Stable Version Of Android Studio 4.1.3 From https://developer.android.com/studio/index.html
+    [ File Name : Zip Or Exe. Exe Is Recommended ]
+
+02) Keep Internet 'On'.
+
+03) Install With All Default Options.
+
+04) Continue With Default 'Do not import settings' Selected.
+
+05) Let It Download And Install With 'Standard' Setup Selected.
+
+06) Keep Default UI Theme ( IntelliJ ) As It Is.
+
+07) Finish The Installation Which Will Start Downloading The Default Components.
+    It Installs Android Studio At : C:\Program Files\Android
+    And Android SDK With Its Related Things ( gradle etc ) At : C:\Users\vijay\AppData\Local\Android\Sdk
+    
+08) After Finishing The Installation And Path Settings, Go To The Bottom Right Of Android Studio Window,
+    Click On "Configure" And Choose "Check For Updates". Let Updation Occur If Needed.
+
+09) Then In The Same Above UI, Choose "SDK Manager", Which Lets Us To "SDK Platforms"
+    Tab And Shows Which SDK Platforms Are Installed.
+
+    IMPORTANT : It Usually Shows Checkmark On The Default And The Latest Installed Platform,
+                Say "Android 11 (R)".
+
+                * Usually We May Need Some Other Platforms As We Have Other Platform Devices
+                  Like "Android 10 (Q)", Android 9 (Pie), "Android 8 (Oreo)" Etc.
+                  So Check Them Accordingly And Press "Apply" Button To Let Them Also Get Installed.
+
+    * REMEMBER : Installer Itself Does System Environment Path Settings.
+                 Check By 'adb' Command.
+==================================================================================================================

@@ -1,0 +1,80 @@
+00) Keep Internet 'On' Before  Starting Following Steps.
+
+01) Start 'Android Studio.app' from Programs.
+
+02) 'Welcome to Android Studio' window appears.
+    In it click on 'Create New Project'
+
+03) By default, under "Phone and Tablet" category, Choose ”Empty Activity” project type Is Selected.
+    Click "Next" which shows "Configure your project" window.
+    In it, 
+    a) Type desired 'Application name', say 'Window'
+    b) Type desired 'Package name', say 'com.astromedicomp'
+       [ astromedicomp.com is written in reverse domain order ]
+    c) Type or choose 'Project location''
+       I created this inside '_Template' directory.
+    d) Choose "Language", Java ( other option is Kotlin )
+    e) Keep Minimum API Level As Default i.e. API 16: Android 4.1 (Jelly Bean)
+    f) Keep Everything Else As It Is.
+
+    * Above settings let the 'Package name' to become 'com.astromedicomp.window'
+      [ i.e. domain name in reverse order appended by application name ]
+      Also see that Upper Case 'W' Of Project Name 'Window', In Above Package Name Becomes Lowe Case 'w'.
+
+    Click 'Finish'
+
+04) Wait for build process to complete.
+
+    * IDE's Build activity's event log > Build tab shows downloading of 
+      "gradle 6.5"
+      [ https://services.gradle.org/distributions/gradle-6.5-bin.zip ]
+
+    May take a long time to download and install.
+
+05) Finally our project window will appear showing 'MainActivity.java' File 
+    and we are ready to code.
+
+06) The Directory And File Structure At The Given Location is detailed in 
+    '05-Project-Directory Structure By Gradle.txt' File.
+
+07) At this point, when no file is yet modified manually, 
+    we can copy ALL CONTENTS of whole directory as 'template' and 
+    later can modify it to suit our needs and even can use this for 
+    purely 'command line' building.
+
+08) Enable your device to work as 'development' enabled and app deployable device.
+    a) Connect device to your development machine with a USB cable. 
+       [ On Windows OS, we may need to install the appropriate USB driver for our device ]
+    b) Enable USB debugging in the Developer options as follows by :
+       Settings > About > find 'Build number' single tap 7 times > now device development enabled >
+       come back to 'Settings' > go to 'Developer options' > find and enable 'USB debugging'
+    c) It may ask us whether we want to use it for "USB File Transfer", Say Yes/Ok.
+
+09) In "Navigation Bar" available deployment targets list box are seen. 
+    Inside it there are 2 categories, one is "Running Devices" and second is second is 
+    "Available Devices"
+
+    Or
+
+    In Run Menu, choose "Select device ..."
+
+    They also show "Android Virtual Devices (AVD)" or also known as "Android Emulators"
+
+    chose our detected device or suitable emulator from here.
+
+10) After device is connected and chosen,
+    In Android Studio > left pane > select/click 'app' module > in menubar, choose > Run > Run 'app'
+
+11) From bottom of IDE, there appears a green popup with "Success. Operation Successful" message.
+    and on chosen device we can see the window with black background with centrally located text "Hello World!".
+
+12) From Android Studio, Close The Project And Quit The Android Studio.
+
+13) To run the project on emulator, follow the 'b' link given in 'References' 
+    section below.
+==================================================================================================================
+Reference :
+===========
+a) https://developer.android.com/training/basics/firstapp/creating-project.html
+b) https://developer.android.com/training/basics/firstapp/running-app.html
+==================================================================================================================

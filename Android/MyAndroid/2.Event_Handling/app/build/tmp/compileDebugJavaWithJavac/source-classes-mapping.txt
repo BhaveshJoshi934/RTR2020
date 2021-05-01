@@ -1,0 +1,6 @@
+com/example/event/MyView.java
+ com.example.event.MyView
+com/example/event/BuildConfig.java
+ com.example.event.BuildConfig
+com/example/event/MainActivity.java
+ com.example.event.MainActivity

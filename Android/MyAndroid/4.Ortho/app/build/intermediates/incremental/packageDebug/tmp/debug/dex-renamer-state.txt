@@ -1,0 +1,4 @@
+#Tue Apr 27 02:10:57 IST 2021
+base.0=C\:\\MyProject\\RTR\\RTR2020\\Android\\MyAndroid\\4.Ortho\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

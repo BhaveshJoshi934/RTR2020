@@ -1,0 +1,48 @@
+* Link : https://en.wikipedia.org/wiki/Android_Studio 
+         says that "use of bundled OpenJDK is recommended".
+
+* Link : https://developer.android.com/studio/intro/studio-config
+         Says That since Android Studio Version 2.2, OpenJDK Comes Bundled With Android Studio.
+
+* Android Sets Above OpenJDK's Path Internally So There Is No Problem Of Java With Respect To Android.
+
+* If Any Other Java Is Not Installed,
+  Then both "java -version" And "javac -version" Will Fail Even Though Android Had Its Own OpenJDK.
+  This Is Because Android's OpenJDK's Path Is Not Included In System Environment Path Variable.
+
+* So Either We Install Separate Java SDK Say Oracle Java And 
+  Set Its Path To Be Our Any Purpose Java ( Not For Android )
+
+  OR
+
+  Locate The Android's OpenJDK, Add Its Path To System Environment Path
+  For Android Studio, Its OpenJDK Path Is : C:\Program Files\Android\jdk\microsoft_dist_openjdk_1.8.0.25
+  Add It To Path As : C:\Program Files\Android\jdk\microsoft_dist_openjdk_1.8.0.25\bin
+
+  OR
+
+  Keep both.
+
+  - JDK Installed by java will serve for Android. 
+    Don't include its path in System Environment Path Variable.
+    It Will Be Used Only By Android ( By Its Own Internal Path Settings )
+    
+    AND
+
+  - Oracle Java SDK Will Server For Other Java Development.
+    Add Its Path To System Environment Path Variable
+    It Will Be Used For Other Regular Java Development.
+
+* I Use Last Option i.e. Keeping Both.
+
+  Hencae My Output Of "java -version" Command Looks Like :
+  
+  C:\Users\vijay>java -version
+  java version "1.8.0_212"
+  Java(TM) SE Runtime Environment (build 1.8.0_212-b10)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.212-b10, mixed mode)
+
+  C:\Users\vijay>"C:\Program Files\Android\jdk\microsoft_dist_openjdk_1.8.0.25\bin"\java -version
+  openjdk version "1.8.0-25"
+  OpenJDK Runtime Environment (build 1.8.0-25-microsoft-b00)
+  OpenJDK 64-Bit Server VM (build 25.71-b00, mixed mode)
