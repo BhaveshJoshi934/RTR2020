@@ -1,0 +1,8 @@
+com/example/twoshapesrotating/GLESMacros.java
+ com.example.twoshapesrotating.GLESMacros
+com/example/twoshapesrotating/BuildConfig.java
+ com.example.twoshapesrotating.BuildConfig
+com/example/twoshapesrotating/MainActivity.java
+ com.example.twoshapesrotating.MainActivity
+com/example/twoshapesrotating/GLESView.java
+ com.example.twoshapesrotating.GLESView

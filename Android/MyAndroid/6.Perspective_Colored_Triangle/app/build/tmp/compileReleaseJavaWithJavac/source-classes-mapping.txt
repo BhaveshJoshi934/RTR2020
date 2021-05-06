@@ -1,0 +1,8 @@
+com/example/colored/BuildConfig.java
+ com.example.colored.BuildConfig
+com/example/colored/MainActivity.java
+ com.example.colored.MainActivity
+com/example/colored/GLESMacros.java
+ com.example.colored.GLESMacros
+com/example/colored/GLESView.java
+ com.example.colored.GLESView

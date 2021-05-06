@@ -1,0 +1,8 @@
+com/example/twoshapes/GLESMacros.java
+ com.example.twoshapes.GLESMacros
+com/example/twoshapes/BuildConfig.java
+ com.example.twoshapes.BuildConfig
+com/example/twoshapes/MainActivity.java
+ com.example.twoshapes.MainActivity
+com/example/twoshapes/GLESView.java
+ com.example.twoshapes.GLESView
