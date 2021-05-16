@@ -90,7 +90,9 @@ GLuint KsUniform;
 GLuint KshineUniform;
 GLuint LKeyPressedUniform;
 
-mat4 perspectiveProjectionMatrix;
+//mat4 orthographicProjectionMatrix;
+
+mat4 orthographicProjectionMatrix;
 
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 
@@ -577,7 +579,7 @@ void Initialize()
 
     bLight = false;
 
-    perspectiveProjectionMatrix = mat4::identity();
+    orthographicProjectionMatrix = mat4::identity();
 
     Resize(WIN_WIDTH,WIN_HEIGHT);
 }
@@ -589,7 +591,25 @@ void Resize(int width,int height)
 
     glViewport(0,0,(GLsizei)width,(GLsizei)height);
 
-    perspectiveProjectionMatrix = vmath::perspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+   // orthographicProjectionMatrix = vmath::perspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+       if(width <= height)
+        {
+            orthographicProjectionMatrix = vmath::ortho(0.0f,
+			 15.5f,
+			 0.0f,
+			 15.5f*((GLfloat)height/(GLfloat)width),
+			-10.0f,
+			 10.0f);
+        }
+        else
+        {
+            orthographicProjectionMatrix = vmath::ortho(0.0f,
+			 15.5f*((GLfloat)width/(GLfloat)height),
+			 0.0f,
+			 15.5f,
+			-10.0f,
+			 10.0f);
+        }
 }
 
 void Display()
@@ -602,7 +622,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -611,7 +631,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -620,7 +640,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -666,10 +686,10 @@ void Display()
     mat4 modelMatrix = mat4::identity();
     mat4 viewMatrix = mat4::identity();     // view la Identity
     mat4 projectionMatrix = mat4::identity();
-    mat4 translateMatrix = vmath::translate(-6.0f,3.0f,-10.0f);
+    mat4 translateMatrix = vmath::translate(1.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -685,7 +705,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -694,7 +714,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -703,7 +723,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -746,10 +766,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-3.5f,3.0f,-10.0f);
+    translateMatrix = vmath::translate(26.0f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -766,7 +786,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -775,7 +795,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -784,7 +804,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -827,10 +847,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-1.0f,3.0f,-10.0f);
+    translateMatrix = vmath::translate(11.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -848,7 +868,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -857,7 +877,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -866,7 +886,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -909,10 +929,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(1.5f,3.0f,-10.0f);
+    translateMatrix = vmath::translate(6.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -930,7 +950,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -939,7 +959,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -948,7 +968,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -991,10 +1011,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(3.7f,3.0f,-10.0f);
+    translateMatrix = vmath::translate(16.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1011,7 +1031,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1020,7 +1040,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1029,7 +1049,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1072,10 +1092,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(6.0f,3.0f,-10.0f);
+    translateMatrix = vmath::translate(21.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1092,7 +1112,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1101,7 +1121,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1110,7 +1130,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1153,10 +1173,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-6.0f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(1.5f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1174,7 +1194,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1183,7 +1203,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1192,7 +1212,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1235,10 +1255,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-3.5f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(21.5f,14.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1256,7 +1276,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1265,7 +1285,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1274,7 +1294,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1317,10 +1337,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-1.0f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(6.5f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1338,7 +1358,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1347,7 +1367,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1356,7 +1376,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1399,10 +1419,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(1.5f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(11.5f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1420,7 +1440,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1429,7 +1449,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1438,7 +1458,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1481,10 +1501,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(3.7f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(16.5f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1502,7 +1522,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1511,7 +1531,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1520,7 +1540,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1563,10 +1583,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(6.0f,1.0f,-10.0f);
+    translateMatrix = vmath::translate(21.5f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1584,7 +1604,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1593,7 +1613,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1602,7 +1622,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1645,10 +1665,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-6.0f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(26.0f,10.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1666,7 +1686,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1675,7 +1695,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1684,7 +1704,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1727,10 +1747,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-3.5f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(1.5f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1748,7 +1768,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1757,7 +1777,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1766,7 +1786,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1809,10 +1829,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-1.0f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(6.5f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1830,7 +1850,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1839,7 +1859,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1848,7 +1868,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1891,10 +1911,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(1.5f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(11.5f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1912,7 +1932,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -1921,7 +1941,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -1930,7 +1950,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -1976,10 +1996,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(3.7f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(16.5f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -1997,7 +2017,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2006,7 +2026,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2015,7 +2035,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2058,10 +2078,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(6.0f,-1.0f,-10.0f);
+    translateMatrix = vmath::translate(21.5f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2079,7 +2099,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2088,7 +2108,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2097,7 +2117,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2140,10 +2160,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-6.0f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(26.0f,6.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2161,7 +2181,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2170,7 +2190,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2179,7 +2199,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2224,10 +2244,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-3.5f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(1.5f,2.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2245,7 +2265,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2254,7 +2274,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2263,7 +2283,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2306,10 +2326,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(-1.0f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(6.5f,2.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2327,7 +2347,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2336,7 +2356,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2345,7 +2365,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2388,10 +2408,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(1.5f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(16.5f,2.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2409,7 +2429,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2418,7 +2438,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2427,7 +2447,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2470,10 +2490,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(4.0f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(21.5f,2.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -2491,7 +2511,7 @@ void Display()
     {
         if(Key_1 == 1)
         {
-            angleX = angleX + 0.01f;
+            angleX = angleX + 0.001f;
             lightPosition[0] = 0.0f;
             lightPosition[1] = factor * sin(angleX);
             lightPosition[2] = factor * cos(angleX);
@@ -2500,7 +2520,7 @@ void Display()
 
         else if(Key_2 == 2)
         {
-            angleY = angleY + 0.01f;
+            angleY = angleY + 0.001f;
             lightPosition[0] = factor * sin(angleY);
             lightPosition[1] = 0.0f;
             lightPosition[2] = factor * cos(angleY);
@@ -2509,7 +2529,7 @@ void Display()
 
         else if(Key_3 == 3)
         {
-            angleZ = angleZ + 0.01f;
+            angleZ = angleZ + 0.001f;
             lightPosition[0] = factor * sin(angleZ);
             lightPosition[1] = factor * cos(angleZ);
             lightPosition[2] = 0.0f;
@@ -2552,10 +2572,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(6.0f,-3.0f,-10.0f);
+    translateMatrix = vmath::translate(26.0f,2.0f,0.0f);
 
     modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = perspectiveProjectionMatrix;  // perspective la Projection
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);

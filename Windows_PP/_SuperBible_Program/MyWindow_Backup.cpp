@@ -526,55 +526,54 @@ void Initialize()
 
     static const GLfloat vertex_data[] =
     {
-              // Position                 Tex Coord
-            -0.5f, -0.5f,  0.5f,      0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
+             // Position                 Tex Coord
+            -0.25f, -0.25f,  0.25f,      0.0f, 1.0f,
+            -0.25f, -0.25f, -0.25f,      0.0f, 0.0f,
+             0.25f, -0.25f, -0.25f,      1.0f, 0.0f,
 
-             0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,      1.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,      0.0f, 1.0f,
+             0.25f, -0.25f, -0.25f,      1.0f, 0.0f,
+             0.25f, -0.25f,  0.25f,      1.0f, 1.0f,
+            -0.25f, -0.25f,  0.25f,      0.0f, 1.0f,
 
-             0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,      1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,      0.0f, 1.0f,
+             0.25f, -0.25f, -0.25f,      0.0f, 0.0f,
+             0.25f,  0.25f, -0.25f,      1.0f, 0.0f,
+             0.25f, -0.25f,  0.25f,      0.0f, 1.0f,
 
-             0.5f,  0.5f, -0.5f,      1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,      0.0f, 1.0f,
+             0.25f,  0.25f, -0.25f,      1.0f, 0.0f,
+             0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
+             0.25f, -0.25f,  0.25f,      0.0f, 1.0f,
 
-             0.5f,  0.5f, -0.5f,      1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,      0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
+             0.25f,  0.25f, -0.25f,      1.0f, 0.0f,
+            -0.25f,  0.25f, -0.25f,      0.0f, 0.0f,
+             0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
 
-            -0.5f,  0.5f, -0.5f,      0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,      0.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
+            -0.25f,  0.25f, -0.25f,      0.0f, 0.0f,
+            -0.25f,  0.25f,  0.25f,      0.0f, 1.0f,
+             0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
 
-            -0.5f,  0.5f, -0.5f,      1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
+            -0.25f,  0.25f, -0.25f,      1.0f, 0.0f,
+            -0.25f, -0.25f, -0.25f,      0.0f, 0.0f,
+            -0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
 
-            -0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,      0.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
+            -0.25f, -0.25f, -0.25f,      0.0f, 0.0f,
+            -0.25f, -0.25f,  0.25f,      0.0f, 1.0f,
+            -0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
 
-            -0.5f,  0.5f, -0.5f,      0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,      1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
+            -0.25f,  0.25f, -0.25f,      0.0f, 1.0f,
+             0.25f,  0.25f, -0.25f,      1.0f, 1.0f,
+             0.25f, -0.25f, -0.25f,      1.0f, 0.0f,
 
-             0.5f, -0.5f, -0.5f,      1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,      0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,      0.0f, 1.0f,
+             0.25f, -0.25f, -0.25f,      1.0f, 0.0f,
+            -0.25f, -0.25f, -0.25f,      0.0f, 0.0f,
+            -0.25f,  0.25f, -0.25f,      0.0f, 1.0f,
 
-            -0.5f, -0.5f,  0.5f,      0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,      1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
+            -0.25f, -0.25f,  0.25f,      0.0f, 0.0f,
+             0.25f, -0.25f,  0.25f,      1.0f, 0.0f,
+             0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
 
-             0.5f,  0.5f,  0.5f,      1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,      0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,      0.0f, 0.0f,
-
+             0.25f,  0.25f,  0.25f,      1.0f, 1.0f,
+            -0.25f,  0.25f,  0.25f,      0.0f, 1.0f,
+            -0.25f, -0.25f,  0.25f,      0.0f, 0.0f,
     };
 
     glGenBuffers(1, &position_buffer);
@@ -590,8 +589,6 @@ void Initialize()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(vertex_indices),vertex_indices,GL_STATIC_DRAW);
 
     glBindVertexArray(0);
-
-
 
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -657,11 +654,8 @@ void Display()
     vmath::mat4 mv_matrix = vmath::translate(0.0f, 0.0f, -4.0f) * vmath::translate(sinf(2.1f) * 0.5f,
                                                     cosf(1.7f ) * 0.5f,
                                                     sinf(1.3f) * cosf(1.5f ) * 2.0f) *
-                                vmath::rotate((float)Cube_angle, 0.0f, 0.0f, 1.0f) *
                                 vmath::rotate((float)Cube_angle, 0.0f, 1.0f, 0.0f) *
-                                vmath::rotate((float)Cube_angle , 1.0f, 0.0f, 0.0f);
-
-
+                                vmath::rotate((float)Cube_angle * 81.0f, 1.0f, 0.0f, 0.0f);
 
        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -705,7 +699,7 @@ void Display()
 
          glUseProgram(0);
 
-         Cube_angle = Cube_angle + 0.1f;
+         Cube_angle = Cube_angle + 0.001f;
          if(Cube_angle >= 360.0f)
          {
              Cube_angle = 0.0f;
@@ -724,6 +718,18 @@ void uninitialize()
 		SetWindowPos(ghwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
 		ShowCursor(TRUE);
 	}
+    /*
+    glDetachShader(gShaderProgramObject,gVertexShaderObject);
+    glDetachShader(gShaderProgramObject,gFragmentShaderObject);
+
+    glDeleteShader(gVertexShaderObject);
+    gVertexShaderObject = 0;
+
+    glDeleteShader(gFragmentShaderObject);
+    gFragmentShaderObject = 0;
+
+    glUseProgram(0);
+    */
 
     if(vao)
     {
