@@ -1,0 +1,8 @@
+com/example/tweaked/BuildConfig.java
+ com.example.tweaked.BuildConfig
+com/example/tweaked/GLESMacros.java
+ com.example.tweaked.GLESMacros
+com/example/tweaked/GLESView.java
+ com.example.tweaked.GLESView
+com/example/tweaked/MainActivity.java
+ com.example.tweaked.MainActivity

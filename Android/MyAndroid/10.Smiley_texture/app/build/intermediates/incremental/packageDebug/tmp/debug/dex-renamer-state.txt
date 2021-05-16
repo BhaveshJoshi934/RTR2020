@@ -1,0 +1,4 @@
+#Fri May 14 16:37:12 IST 2021
+base.0=C\:\\MyProject\\RTR\\_RTR2020\\Android\\MyAndroid\\10.Smiley_texture\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

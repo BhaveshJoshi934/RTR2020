@@ -1,0 +1,8 @@
+com/example/checkers/MainActivity.java
+ com.example.checkers.MainActivity
+com/example/checkers/GLESMacros.java
+ com.example.checkers.GLESMacros
+com/example/checkers/GLESView.java
+ com.example.checkers.GLESView
+com/example/checkers/BuildConfig.java
+ com.example.checkers.BuildConfig
