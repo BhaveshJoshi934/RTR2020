@@ -1,0 +1,8 @@
+com/example/multicolor/GLESMacros.java
+ com.example.multicolor.GLESMacros
+com/example/multicolor/BuildConfig.java
+ com.example.multicolor.BuildConfig
+com/example/multicolor/GLESView.java
+ com.example.multicolor.GLESView
+com/example/multicolor/MainActivity.java
+ com.example.multicolor.MainActivity

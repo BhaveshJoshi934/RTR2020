@@ -1,0 +1,8 @@
+com/example/diffuse/BuildConfig.java
+ com.example.diffuse.BuildConfig
+com/example/diffuse/GLESMacros.java
+ com.example.diffuse.GLESMacros
+com/example/diffuse/GLESView.java
+ com.example.diffuse.GLESView
+com/example/diffuse/MainActivity.java
+ com.example.diffuse.MainActivity

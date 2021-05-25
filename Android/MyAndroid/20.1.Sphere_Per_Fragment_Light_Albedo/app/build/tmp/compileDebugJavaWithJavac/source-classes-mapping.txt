@@ -1,0 +1,10 @@
+com/example/albedo/MainActivity.java
+ com.example.albedo.MainActivity
+com/example/albedo/GLESView.java
+ com.example.albedo.GLESView
+com/example/albedo/BuildConfig.java
+ com.example.albedo.BuildConfig
+com/example/albedo/Sphere.java
+ com.example.albedo.Sphere
+com/example/albedo/GLESMacros.java
+ com.example.albedo.GLESMacros

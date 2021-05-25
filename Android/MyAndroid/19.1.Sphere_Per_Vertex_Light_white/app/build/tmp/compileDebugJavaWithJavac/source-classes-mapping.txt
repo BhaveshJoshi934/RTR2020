@@ -1,0 +1,10 @@
+com/example/vertex_white/Sphere.java
+ com.example.vertex_white.Sphere
+com/example/vertex_white/MainActivity.java
+ com.example.vertex_white.MainActivity
+com/example/vertex_white/BuildConfig.java
+ com.example.vertex_white.BuildConfig
+com/example/vertex_white/GLESMacros.java
+ com.example.vertex_white.GLESMacros
+com/example/vertex_white/GLESView.java
+ com.example.vertex_white.GLESView

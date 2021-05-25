@@ -1,0 +1,8 @@
+com/example/cube/MainActivity.java
+ com.example.cube.MainActivity
+com/example/cube/GLESMacros.java
+ com.example.cube.GLESMacros
+com/example/cube/GLESView.java
+ com.example.cube.GLESView
+com/example/cube/BuildConfig.java
+ com.example.cube.BuildConfig

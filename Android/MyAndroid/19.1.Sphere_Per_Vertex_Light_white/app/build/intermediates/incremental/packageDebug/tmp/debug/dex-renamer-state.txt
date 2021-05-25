@@ -1,0 +1,4 @@
+#Sun May 23 19:49:28 IST 2021
+base.0=C\:\\MyProject\\RTR\\_RTR2020\\Android\\MyAndroid\\19.1.Sphere_Per_Vertex_Light_white\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

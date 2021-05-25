@@ -1,0 +1,8 @@
+com/example/square/GLESView.java
+ com.example.square.GLESView
+com/example/square/GLESMacros.java
+ com.example.square.GLESMacros
+com/example/square/BuildConfig.java
+ com.example.square.BuildConfig
+com/example/square/MainActivity.java
+ com.example.square.MainActivity
