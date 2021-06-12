@@ -41,13 +41,13 @@ GLuint gVertexShaderObject;
 GLuint gFragmentShaderObject;
 GLuint gShaderProgramObject;
 
+GLuint vao_cube;
+GLuint vbo_Position_cube;
+GLuint vbo_Color_cube;
 
-GLuint vao;
-GLuint vbo_Position;
 GLuint mvpUniform;
 
-mat4 orthographicProjectionMatrix;
-
+mat4 perspectiveProjectionMatrix;
 
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 
@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
     int X = 0;
     int Y = 0;
 
-    if(fopen_s(&gpFile,"LogFile.txt","w") != 0)
+    if(fopen_s(&gpFile,"Log.txt","w") != 0)
     {
         printf("Can't Open File!!!Exitting Now!!\n\n");
         exit(1);
@@ -91,7 +91,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("Orthographic Projection in PP : Bhavesh Joshi !!"),
+                          TEXT("Black and White Cube in PP : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -146,7 +146,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
     switch(iMsg)
     {
     case WM_CREATE:
-        MessageBox(hwnd,"MyMessage","Window Created!!!",MB_OK);
         break;
 
     case WM_KEYDOWN:
@@ -298,10 +297,13 @@ void Initialize()
             "#version 440 core" \
             "\n" \
             "in vec4 vPosition;" \
+            "in vec4 vColor;" \
             "uniform mat4 u_mvp_matrix;" \
+            "out vec4 out_color;" \
             "void main(void)" \
             "{" \
             "gl_Position = u_mvp_matrix * vPosition;" \
+            "out_color = vColor;" \
             "}";
 
     glShaderSource(gVertexShaderObject,1,(const GLchar **)&vertexShaderSourceCode,NULL);
@@ -339,10 +341,11 @@ void Initialize()
     const GLchar *fragmentShaderSourceCode =
         "#version 440 core" \
         "\n" \
+        "in vec4 out_color;" \
         "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
-        "FragColor = vec4(1.0f,1.0f,1.0f,1.0f);"
+        "FragColor = out_color;"
         "}";
 
     glShaderSource(gFragmentShaderObject,1,(const char **)&fragmentShaderSourceCode,NULL);
@@ -379,6 +382,7 @@ void Initialize()
     glAttachShader(gShaderProgramObject,gFragmentShaderObject);
 
     glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_POSITION,"vPosition");
+    glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_COLOR,"vColor");
 
     //Link
     glLinkProgram(gShaderProgramObject);
@@ -404,21 +408,88 @@ void Initialize()
 
     mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
 
-    const GLfloat triangleVertices[] =
+    const GLfloat cubeVertices[] =
             {
-                0.0f,50.0f,0.0f,
-                -50.0f,-50.0f,0.0f,
-                50.0f,-50.0f,0.0f
+                0.5f,0.5f,0.5f,
+                -0.5f,0.5f,0.5f,
+                -0.5f,-0.5f,0.5f,
+                0.5f,-0.5f,0.5f,
+
+                0.5f,0.5f,-0.5f,
+                0.5f,0.5f,0.5f,
+                0.5f,-0.5f,0.5f,
+                0.5f,-0.5f,-0.5f,
+
+                -0.5f,0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,
+                0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+
+                -0.5f,0.5f,0.5f,
+                -0.5f,0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,0.5f,
+
+                0.5f,0.5f,-0.5f,
+                -0.5f,0.5f,-0.5f,
+                -0.5f,0.5f,0.5f,
+                0.5f,0.5f,0.5f,
+
+                0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,-0.5f,
+                -0.5f,-0.5f,0.5f,
+                0.5f,-0.5f,0.5f
             };
 
-    glGenVertexArrays(1,&vao);
-    glBindVertexArray(vao);
+    const GLfloat CubeColor[] =
+    {
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
 
-    glGenBuffers(1,&vbo_Position);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position); // vbo is named symbol of pointer i.e. gattu...
-    glBufferData(GL_ARRAY_BUFFER,sizeof(triangleVertices),triangleVertices,GL_STATIC_DRAW);
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+    };
+
+    glGenVertexArrays(1,&vao_cube);
+    glBindVertexArray(vao_cube);
+
+    //POSITION
+    glGenBuffers(1,&vbo_Position_cube);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_cube);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
     glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+
+    glGenBuffers(1,&vbo_Color_cube);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_Color_cube);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(CubeColor),CubeColor,GL_STATIC_DRAW);
+    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,0,NULL);
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
     glBindVertexArray(0);
@@ -431,7 +502,7 @@ void Initialize()
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
-    orthographicProjectionMatrix = mat4::identity();
+    perspectiveProjectionMatrix = mat4::identity();
 
     Resize(WIN_WIDTH,WIN_HEIGHT);
 }
@@ -443,48 +514,55 @@ void Resize(int width,int height)
 
     glViewport(0,0,(GLsizei)width,(GLsizei)height);
 
-    if(width <= height)
-    {
-        orthographicProjectionMatrix = vmath::ortho(-100.0f,
-                                                    100.0f,
-                                                    (-100.0f * (height/width)),
-                                                    (100.0f * (height/width)),
-                                                    -100.0f,
-                                                    100.0f);
-    }
-    else
-    {
-        orthographicProjectionMatrix = vmath::ortho(-100.0f,
-                                                    100.0f,
-                                                    (-100.0f * (width/height)),
-                                                    (100.0f * (width/height)),
-                                                    -100.0f,
-                                                    100.0f);
-    }
+    perspectiveProjectionMatrix = vmath::perspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
 }
 
 void Display()
 {
+    static GLfloat angle_cube = 0.0f;
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Start Using OpenGL Program
     glUseProgram(gShaderProgramObject);
 
+    //FOR TRIANGLE
+
     mat4 modelViewMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
+    mat4 translateMatrix = vmath::translate(0.0f,0.0f,-4.0f);
+    mat4 rotationMatrix1 = mat4::identity();
+    mat4 rotationMatrix2 = mat4::identity();
+    mat4 rotationMatrix3 = mat4::identity();
+    rotationMatrix1 = vmath::rotate((GLfloat)angle_cube,1.0f,0.0f,0.0f);
+    rotationMatrix2 = vmath::rotate((GLfloat)angle_cube,0.0f,1.0f,0.0f);
+    rotationMatrix3 = vmath::rotate((GLfloat)angle_cube,0.0f,0.0f,1.0f);
 
-    modelViewProjectionMatrix = orthographicProjectionMatrix * modelViewMatrix;
+    modelViewMatrix = translateMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
+
+    modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
 
     glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
 
-    glBindVertexArray(vao);
+    glBindVertexArray(vao_cube);
 
-    glDrawArrays(GL_TRIANGLES,0,3);
+    glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDrawArrays(GL_TRIANGLE_FAN,4,4);
+    glDrawArrays(GL_TRIANGLE_FAN,8,4);
+    glDrawArrays(GL_TRIANGLE_FAN,16,4);
+    glDrawArrays(GL_TRIANGLE_FAN,20,4);
+    glDrawArrays(GL_TRIANGLE_FAN,24,4);
 
     glBindVertexArray(0);
 
     //Stop OpenGL Program
     glUseProgram(0);
+
+    angle_cube = angle_cube + 0.1f;
+    if(angle_cube >= 360.0f)
+    {
+        angle_cube = 0.0f;
+    }
 
     SwapBuffers(ghdc);
 }
@@ -512,16 +590,22 @@ void uninitialize()
     glUseProgram(0);
     */
 
-    if(vao)
+    if(vao_cube)
     {
-        glDeleteVertexArrays(1,&vao);
-        vao = 0;
+        glDeleteVertexArrays(1,&vao_cube);
+        vao_cube = 0;
     }
 
-    if(vbo_Position)
+    if(vbo_Position_cube)
     {
-        glDeleteVertexArrays(1,&vbo_Position);
-        vbo_Position = 0;
+        glDeleteBuffers(1,&vbo_Position_cube);
+        vbo_Position_cube = 0;
+    }
+
+    if(vbo_Color_cube)
+    {
+        glDeleteBuffers(1,&vbo_Color_cube);
+        vbo_Color_cube = 0;
     }
 
     if(gShaderProgramObject)

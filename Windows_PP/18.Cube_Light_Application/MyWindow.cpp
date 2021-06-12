@@ -45,8 +45,6 @@ GLuint vao_cube;
 GLuint vbo_Position_cube;
 GLuint vbo_Normal_cube;
 
-
-
 GLuint modelViewMatrixUniform;
 GLuint perspectiveProjectionUniform;
 GLuint LKeyPressedUniform;
