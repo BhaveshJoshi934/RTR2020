@@ -23,7 +23,7 @@ function main()
 
 	var context = canvas.getContext("2d");
 
-	if(!canvas)
+	if(!context)
 	{
 		console.log("Obataining Context Failed/n");
 	}
@@ -34,8 +34,8 @@ function main()
 
 	//4. Paint Background by black color
 
-	context.fillStyle="black";  //Setter Function(= chya ujvya bajula) OR Mutator Function  and   Getter Function(= chya davya bajula) OR 
-	context.fillRect(0,0,canvas.width,canvas.height);
+	context.fillStyle="black";  //Setter Function(= chya ujvya bajula) OR Mutator Function  and   Getter Function(= chya davya bajula) OR Accesor Function
+	context.fillRect(0,0,canvas.width,canvas.height);   //This is not  like Viewport Refer recording
 
 	//5. Center the Future coming text
 

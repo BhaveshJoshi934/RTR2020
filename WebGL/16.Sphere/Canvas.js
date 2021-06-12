@@ -13,17 +13,17 @@ const WebGLMacros =
     BDJ_ATTRIBUTE_NORMAL:2,
     BDJ_ATTRIBUTE_TEXTURE0:3,
 
-};   // Key Value Pairs
+};
 
 var vertexShaderObject;
 var fragmentShaderObject;
 var shaderProgramObject;
 
-var vao;
-var vbo_Position;
+var sphere = null;
+
 var mvpUniform;
 
-var orthographicProjectionMatrix;
+var perspeciveProjectionMatrix;
 
 var requestAnimationFrame = window.requestAnimationFrame ||
 							window.webkitRequestAnimationFrame ||
@@ -216,7 +216,7 @@ function init()
 
 	gl.linkProgram(shaderProgramObject);
 
-	if(!gl.getProgramParameter(shaderProgramObject,gl.LINK_STATUS))
+	if(gl.getProgramParameter(shaderProgramObject,gl.LINK_STATUS) == false)
 	{
 		var error = gl.getProgramInfoLog(shaderProgramObject);
 		if(error.length > 0)
@@ -228,28 +228,16 @@ function init()
 
 	mvpUniform = gl.getUniformLocation(shaderProgramObject,"u_mvp_matrix");
 
-	var triangleVertices = new Float32Array([
-												0.0,50.0,0.0,
-												-50.0,-50.0,0.0,
-												50.0,-50.0,0.0
-											]);
+	gl.clearDepth(1.0);
+	gl.enable(gl.DEPTH_TEST);
+	gl.depthFunc(gl.LEQUAL);
 
-	vao = gl.createVertexArray();
-
-	gl.bindVertexArray(vao);
-
-	vbo_Position = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER,vbo_Position);
-	gl.bufferData(gl.ARRAY_BUFFER,triangleVertices,gl.STATIC_DRAW);
-	gl.vertexAttribPointer(WebGLMacros.BDJ_ATTRIBUTE_POSITION,3,gl.FLOAT,false,0,0);
-	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_POSITION);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER,null);
-	gl.bindVertexArray(null);
+	sphere = new Mesh();
+	makeSphere(sphere,2.0,30,30);
 
 	gl.clearColor(0.0,0.0,0.0,1.0);
 
-	orthographicProjectionMatrix = mat4.create();
+	perspectiveProjectionMatrix = mat4.create();
 }
 
 function resize()
@@ -266,47 +254,26 @@ function resize()
 	}
 
 	gl.viewport(0,0,canvas.width,canvas.height);
-
-	if(canvas.width <= canvas.height)
-	{
-		mat4.ortho(orthographicProjectionMatrix,
-				   -100.0,
-					100.0,
-					(-100.0 *(canvas.height/canvas.width)),
-					(100.0 *(canvas.height/canvas.width)),
-					-100.0,
-					100.0);
-	}
-	else
-	{
-		mat4.ortho(orthographicProjectionMatrix,
-				   (-100.0 *(canvas.height/canvas.width)),
-					(100.0 *(canvas.height/canvas.width)),
-					-100.0,
-					100.0,
-					-100.0,
-					100.0);
-	}
+	
+	mat4.perspective(perspectiveProjectionMatrix,45.0,parseFloat(canvas.width)/parseFloat(canvas.height),0.1,100.0);
 }
 
 function draw()
 {
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	gl.useProgram(shaderProgramObject);
 
 	var modelViewMatrix = mat4.create();
 	var modelViewProjectionMatrix = mat4.create();
+	
+	mat4.translate(modelViewMatrix,modelViewMatrix,[0.0,0.0,-10.0]);
 
-	mat4.multiply(modelViewProjectionMatrix,orthographicProjectionMatrix,modelViewMatrix);
+	mat4.multiply(modelViewProjectionMatrix,perspectiveProjectionMatrix,modelViewMatrix);
 
 	gl.uniformMatrix4fv(mvpUniform,false,modelViewProjectionMatrix);
 
-	gl.bindVertexArray(vao);
-
-	gl.drawArrays(gl.TRIANGLES,0,3);
-
-	gl.bindVertexArray(null);
+	sphere.draw();
 
 	gl.useProgram(null);
 
@@ -315,16 +282,9 @@ function draw()
 
 function uninitialize()
 {
-	if(vao)
+	if(sphere)
 	{
-		gl.deleteVertexArray(vao);
-		vao = null;
-	}
-
-	if(vbo_Position)
-	{
-		gl.deleteBuffer(vbo_Position);
-		vbo_Position = null;
+		sphere.deallocate();
 	}
 	
 	if(shaderProgramObject)

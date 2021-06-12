@@ -15,6 +15,7 @@ const WebGLMacros =
     BDJ_ATTRIBUTE_COLOR:1,
     BDJ_ATTRIBUTE_NORMAL:2,
     BDJ_ATTRIBUTE_TEXTURE0:3,
+
 };
 
 var vertexShaderObject;
@@ -406,7 +407,7 @@ function init()
 												gl.bindTexture(gl.TEXTURE_2D,pyramid_texture);
 												gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);
 												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
-												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST_MIPMAP_NEAREST);
 												gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,pyramid_texture.image);
 												gl.bindTexture(gl.TEXTURE_2D,null);
 											 };
@@ -418,11 +419,12 @@ function init()
 												gl.bindTexture(gl.TEXTURE_2D,cube_texture);
 												gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);
 												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
-												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST_MIPMAP_NEAREST);
 												gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cube_texture.image);
 												gl.bindTexture(gl.TEXTURE_2D,null);
 										  };
 
+	//gl.enable(gl.TEXTURE_2D);
 
 	gl.clearColor(0.0,0.0,0.0,1.0);
 
@@ -459,11 +461,9 @@ function draw()
 	
 	mat4.translate(modelViewMatrix,modelViewMatrix,[-1.5,0.0,-3.0]);
 
-	mat4.scale(modelViewMatrix,modelViewMatrix,[0.75,0.75,0.75]);
-
 	mat4.rotateX(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
-	mat4.rotateY(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
-	mat4.rotateZ(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
+
+	mat4.scale(modelViewMatrix,modelViewMatrix,[0.75,0.75,0.75]);
 
 	mat4.multiply(modelViewProjectionMatrix,perspectiveProjectionMatrix,modelViewMatrix);
 
@@ -476,11 +476,10 @@ function draw()
 	gl.bindVertexArray(vao_cube);
 
 	gl.drawArrays(gl.TRIANGLE_FAN,0,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,4,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,8,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,12,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,16,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,20,4);
+	gl.drawArrays(gl.TRIANGLE_FAN,0,8);
+	gl.drawArrays(gl.TRIANGLE_FAN,0,12);
+	gl.drawArrays(gl.TRIANGLE_FAN,0,16);
+	gl.drawArrays(gl.TRIANGLE_FAN,0,20);
 
 	gl.bindVertexArray(null);
 //----------------------------------------------------------------------------------------------
