@@ -71,7 +71,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
 	@Override
 	public boolean onTouchEvent(MotionEvent e)
 	{	
-		int eventaction = e.getAction();
+		int eventaction = e.getAction();   
 		if(!gestureDetector.onTouchEvent(e))
 			super.onTouchEvent(e);
 		return(true);
@@ -235,6 +235,7 @@ public class GLESView extends GLSurfaceView implements GLSurfaceView.Renderer,On
 		}
 
 		mvpUniform = GLES32.glGetUniformLocation(shaderProgramObject,"u_mvp_matrix");
+		
 		final float triangleVertices[] = new float[]
 		{
 			0.0f,50.0f,0.0f,
