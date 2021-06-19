@@ -6,11 +6,6 @@ var canvas_original_width;
 var canvas_original_height;
 var bFullscreen = false;
 
-var angle_cube = 0.0;
-
-var bAnimate;
-var bLight;
-
 const WebGLMacros = 
 {
 	BDJ_ATTRIBUTE_POSITION:0,
@@ -23,23 +18,18 @@ var vertexShaderObject;
 var fragmentShaderObject;
 var shaderProgramObject;
 
-var vao_pyramid;
+var TexCoord = new Float32Array (8);
+var cube_texture;
+
 var vao_cube;
-var vbo_Position_pyramid;
 var vbo_Position_cube;
-var vbo_Color_pyramid;
-var vbo_Color_cube;
-var vbo_Normal_cube;
-var vbo_Normal_pyramid;
+var vbo_texture_cube;
 
-var modelViewMatrixUniform;
-var perspectiveProjectionUniform;
-var lightPositionUniform;
-var LdUniform;
-var KdUniform;
-var LKeyPressedUniform;
+var mvpUniform;
+var KeyPressed;
+var textureSamplerUniform;
 
-var perspeciveProjectionMatrix;
+var perspeciveProjectionMatrix;  // ADHI O/p dakhvto....
 
 var requestAnimationFrame = window.requestAnimationFrame ||
 							window.webkitRequestAnimationFrame ||
@@ -73,7 +63,8 @@ function main()
 	//"window" is inbuilt variable like document used above...
 	//window is DOM object as it is inherited from document...
 	window.addEventListener("keydown", keyDown, false);  // 1st param : Inbuilt event ; 2nd param : my function ; 3rd param : following bubble propagation not capture propagation
-	
+	window.addEventListener("click", mouseDown, false);  // 1st param : Inbuilt event ; 2nd param : my function ; 3rd param : following bubble propagation not capture propagation 
+
 	window.addEventListener("resize",resize,false);
 
 	init();
@@ -148,23 +139,30 @@ function keyDown(event) // Type Inference : type runtime la tharel
 			toggleFullScreen(); 
 			break;
 
-		case 76:
-		case 108:
-			if(bLight == false)
-				bLight = true;
-			else
-				bLight = false;
+		case 49:
+			KeyPressed = 1;
+			gl.enable(gl.TEXTURE_2D);
 			break;
 
-		case 65:
-		case 97:
-			if(bAnimate == false)
-				bAnimate = true;
-			else
-				bAnimate = false;
+		case 50:
+			KeyPressed = 2;
+			gl.enable(gl.TEXTURE_2D);
+			break;
+
+		case 51:
+			KeyPressed = 3;
+			gl.enable(gl.TEXTURE_2D);
+			break;
+
+		case 52:
+			KeyPressed = 4;
+			gl.enable(gl.TEXTURE_2D);
 			break;
 	}
+}
 
+function mouseDown(event)
+{
 }
 
 function init()
@@ -191,27 +189,15 @@ function init()
 	var vertexShaderSourceCode = 
 	"#version 300 es"+
 	"\n"+
-    "in vec4 vPosition;"+
-    "in vec3 vNormal;"+
-    "uniform mat4 u_model_view_matrix;"+
-    "uniform mat4 u_projection_matrix;"+
-    "uniform int u_LKeyPressed;"+
-    "uniform vec3 u_ld;"+
-    "uniform vec3 u_kd;"+
-    "uniform vec4 u_light_position;"+
-    "out vec3 diffuse_light;"+
-    "void main(void)"+
-    "{"+
-    "if(u_LKeyPressed == 1)"+
-    "{"+
-    "vec4 eye_coordinates = u_model_view_matrix * vPosition;"+
-    "mat3 normal_matrix = mat3(transpose(inverse(u_model_view_matrix)));"+
-    "vec3 tnorm = normalize(normal_matrix * vNormal);"+
-    "vec3 s = normalize(vec3(u_light_position - eye_coordinates));"+
-    "diffuse_light = u_ld * u_kd * max(dot(s,tnorm),0.0);"+
-    "}"+
-    "gl_Position = u_projection_matrix * u_model_view_matrix * vPosition;"+
-    "}";
+	"in vec4 vPosition;"+
+	"in vec2 vTexCoord;"+
+	"uniform mat4 u_mvp_matrix;"+
+	"out vec2 out_TexCoord;"+
+	"void main(void)"+
+	"{"+
+	"gl_Position = u_mvp_matrix * vPosition;"+
+	"out_TexCoord = vTexCoord;"+
+	"}";
 
 	gl.shaderSource(vertexShaderObject,vertexShaderSourceCode);
 	gl.compileShader(vertexShaderObject);
@@ -232,12 +218,13 @@ function init()
 	"#version 300 es"+
 	"\n"+
 	"precision highp float;"+
-    "in vec3 diffuse_light;"+
-    "out vec4 FragColor;"+
-    "void main(void)"+
-    "{"+
-    "FragColor = vec4(diffuse_light,1.0);"+
-    "}";
+	"in vec2 out_TexCoord;"+
+	"uniform sampler2D u_texture_sampler;"+
+	"out vec4 FragColor;"+
+	"void main(void)"+
+	"{"+
+	"FragColor = texture(u_texture_sampler,out_TexCoord);"+
+	"}";
 
 	gl.shaderSource(fragmentShaderObject,fragmentShaderSourceCode);
 	gl.compileShader(fragmentShaderObject);
@@ -257,7 +244,7 @@ function init()
 	gl.attachShader(shaderProgramObject,fragmentShaderObject);
 
 	gl.bindAttribLocation(shaderProgramObject,WebGLMacros.BDJ_ATTRIBUTE_POSITION,"vPosition");
-	gl.bindAttribLocation(shaderProgramObject,WebGLMacros.BDJ_ATTRIBUTE_NORMAL,"vNormal");
+	gl.bindAttribLocation(shaderProgramObject,WebGLMacros.BDJ_ATTRIBUTE_TEXTURE0,"vTexCoord");
 
 	gl.linkProgram(shaderProgramObject);
 
@@ -271,112 +258,25 @@ function init()
 		}
 	}
 
-	modelViewMatrixUniform = gl.getUniformLocation(shaderProgramObject,"u_model_view_matrix");
-    perspectiveProjectionUniform = gl.getUniformLocation(shaderProgramObject,"u_projection_matrix");
-    LKeyPressedUniform = gl.getUniformLocation(shaderProgramObject,"u_LKeyPressed");
-    LdUniform = gl.getUniformLocation(shaderProgramObject,"u_ld");
-    KdUniform = gl.getUniformLocation(shaderProgramObject,"u_kd");
-    lightPositionUniform = gl.getUniformLocation(shaderProgramObject,"u_light_position");
+	mvpUniform = gl.getUniformLocation(shaderProgramObject,"u_mvp_matrix");
+	textureSamplerUniform = gl.getUniformLocation(shaderProgramObject,"u_texture_sampler");
 
     var cubeVertices = new Float32Array([
                 0.5,0.5,0.5,
                 -0.5,0.5,0.5,
                 -0.5,-0.5,0.5,
-                0.5,-0.5,0.5,
-
-                0.5,0.5,-0.5,
-                0.5,0.5,0.5,
-                0.5,-0.5,0.5,
-                0.5,-0.5,-0.5,
-
-                -0.5,0.5,-0.5,
-                0.5,0.5,-0.5,
-                0.5,-0.5,-0.5,
-                -0.5,-0.5,-0.5,
-
-                -0.5,0.5,0.5,
-                -0.5,0.5,-0.5,
-                -0.5,-0.5,-0.5,
-                -0.5,-0.5,0.5,
-
-                0.5,0.5,-0.5,
-                -0.5,0.5,-0.5,
-                -0.5,0.5,0.5,
-                0.5,0.5,0.5,
-
-                0.5,-0.5,-0.5,
-                -0.5,-0.5,-0.5,
-                -0.5,-0.5,0.5,
                 0.5,-0.5,0.5
             ]);
 /*
-	var cubeColors = new Float32Array 
+	var cubeTexCoord = new Float32Array 
             ([
-                1.0,0.0,0.0,
-                1.0,0.0,0.0,
-                1.0,0.0,0.0,
-                1.0,0.0,0.0,
-
-                0.0,1.0,0.0,
-                0.0,1.0,0.0,
-                0.0,1.0,0.0,
-                0.0,1.0,0.0,
-
-                0.0,0.0,1.0,
-                0.0,0.0,1.0,
-                0.0,0.0,1.0,
-                0.0,0.0,1.0,
-
-                0.0,1.0,1.0,
-                0.0,1.0,1.0,
-                0.0,1.0,1.0,
-                0.0,1.0,1.0,
-
-                1.0,1.0,0.0,
-                1.0,1.0,0.0,
-                1.0,1.0,0.0,
-                1.0,1.0,0.0,
-
-                1.0,0.0,1.0
-                1.0,0.0,1.0
-                1.0,0.0,1.0
-                1.0,0.0,1.0
+                                //RONT ACE
+                0.0, 0.0,
+                1.0, 0.0,
+                1.0,1.0,
+                0.0,1.0
             ]);
 */
-
-	var cubeNormal = new Float32Array
-	([
-        0.0, 0.0, 1.0,
-		0.0, 0.0, 1.0,
-		0.0, 0.0, 1.0,
-		0.0, 0.0, 1.0,
-
-		1.0, 0.0, 0.0,
-		1.0, 0.0, 0.0,
-		1.0, 0.0, 0.0,
-		1.0, 0.0, 0.0,
-
-		0.0, 0.0, -1.0,
-		0.0, 0.0, -1.0,
-		0.0, 0.0, -1.0,
-		0.0, 0.0, -1.0,
-
-		-1.0, 0.0, 0.0,
-		-1.0, 0.0, 0.0,
-		-1.0, 0.0, 0.0,
-		-1.0, 0.0, 0.0,
-
-		0.0, 1.0, 0.0,
-		0.0, 1.0, 0.0,
-		0.0, 1.0, 0.0,
-		0.0, 1.0, 0.0,
-
-		0.0, -1.0, 0.0,
-		0.0, -1.0, 0.0,
-		0.0, -1.0, 0.0,
-		0.0, -1.0, 0.0
-	]);
-
 	vao_cube = gl.createVertexArray();
 
 	gl.bindVertexArray(vao_cube);
@@ -388,27 +288,31 @@ function init()
 	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_POSITION);
 	gl.bindBuffer(gl.ARRAY_BUFFER,null);
 
-	vbo_Normal_cube = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER,vbo_Normal_cube);
-	gl.bufferData(gl.ARRAY_BUFFER,cubeNormal,gl.STATIC_DRAW);
-	gl.vertexAttribPointer(WebGLMacros.BDJ_ATTRIBUTE_NORMAL,3,gl.FLOAT,false,0,0);
-	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_NORMAL);
+	vbo_texture_cube = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER,vbo_texture_cube);
+	gl.bufferData(gl.ARRAY_BUFFER,0,gl.DYNAMIC_DRAW); 
+	gl.vertexAttribPointer(WebGLMacros.BDJ_ATTRIBUTE_TEXTURE0,2,gl.FLOAT,false,0,0);
+	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_TEXTURE0);
 	gl.bindBuffer(gl.ARRAY_BUFFER,null);
-
-	/*
-	vbo_Color_cube = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER,vbo_Color_cube);
-	gl.bufferData(gl.ARRAY_BUFFER,cubeColors,gl.STATIC_DRAW);
-	gl.vertexAttribPointer(WebGLMacros.BDJ_ATTRIBUTE_COLOR,3,gl.FLOAT,false,0,0);
-	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_COLOR);
-	gl.bindBuffer(gl.ARRAY_BUFFER,null);
-	*/
-
+	
 	gl.bindVertexArray(null);
-
+	
 	gl.clearDepth(1.0);
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LEQUAL);
+
+	cube_texture = gl.createTexture();
+	cube_texture.image = new Image();
+	cube_texture.image.src = "smiley_512x512.png";
+	cube_texture.image.onload = function(){
+												gl.bindTexture(gl.TEXTURE_2D,cube_texture);
+												gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);
+												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+												gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+												gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cube_texture.image);
+												gl.bindTexture(gl.TEXTURE_2D,null);
+										  };  
+
 
 	gl.clearColor(0.0,0.0,0.0,1.0);
 
@@ -442,48 +346,78 @@ function draw()
 	var modelViewMatrix = mat4.create();
 	var modelViewProjectionMatrix = mat4.create();
 	var translateMatrix = mat4.create();
-
-	if(bLight == true)
-    {
-        gl.uniform1i(LKeyPressedUniform,1);
-        gl.uniform3f(LdUniform,1.0,1.0,1.0);
-        gl.uniform3f(KdUniform,0.5,0.5,0.5);
-        var lightPosition = [0.0,0.0,2.0,1.0];
-        gl.uniform4fv(lightPositionUniform,1,lightPosition);
-    }
-    else
-    {
-        gl.uniform1i(LKeyPressedUniform,0);
-    }
 	
 	mat4.translate(modelViewMatrix,modelViewMatrix,[0.0,0.0,-3.0]);
 
-	mat4.rotateX(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
-	mat4.rotateY(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
-	mat4.rotateZ(modelViewMatrix,modelViewMatrix,degToRad(angle_cube));
-
 	mat4.multiply(modelViewProjectionMatrix,perspectiveProjectionMatrix,modelViewMatrix);
 
-	gl.uniformMatrix4fv(modelViewMatrixUniform,false,modelViewProjectionMatrix);
+	gl.uniformMatrix4fv(mvpUniform,false,modelViewProjectionMatrix); 
+
+	gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D,cube_texture);
+	gl.uniform1i(textureSamplerUniform,0);
+
+	if(KeyPressed == 1)
+	{
+		TexCoord[0] = 1.0;
+        TexCoord[1] = 1.0;
+        TexCoord[2] = 0.0;
+        TexCoord[3] = 1.0;
+        TexCoord[4] = 0.0;
+        TexCoord[5] = 0.0;
+        TexCoord[6] = 1.0;
+        TexCoord[7] = 0.0;
+	}
+
+	else if(KeyPressed == 2)
+	{
+		TexCoord[0] = 0.5;
+        TexCoord[1] = 0.5;
+        TexCoord[2] = 0.0;
+        TexCoord[3] = 0.5;
+        TexCoord[4] = 0.0;
+        TexCoord[5] = 0.0;
+        TexCoord[6] = 0.5;
+        TexCoord[7] = 0.0;
+	}
+
+	else if(KeyPressed == 3)
+	{
+		TexCoord[0] = 2.0;
+        TexCoord[1] = 2.0; 
+        TexCoord[2] = 0.0;
+        TexCoord[3] = 2.0;
+        TexCoord[4] = 0.0;
+        TexCoord[5] = 0.0;
+        TexCoord[6] = 2.0;
+        TexCoord[7] = 0.0;
+	}
+
+	else if(KeyPressed == 4)
+	{
+		TexCoord[0] = 0.5;
+        TexCoord[1] = 0.5;
+        TexCoord[2] = 0.5;
+        TexCoord[3] = 0.5;
+        TexCoord[4] = 0.5;
+        TexCoord[5] = 0.5;
+        TexCoord[6] = 0.5;
+        TexCoord[7] = 0.5;
+	}
+
+	gl.bindBuffer(gl.ARRAY_BUFFER,vbo_texture_cube);
+	gl.bufferData(gl.ARRAY_BUFFER,TexCoord,gl.DYNAMIC_DRAW);
+	gl.vertexAttribPointer(WebGLMacros.BDJ_ATTRIBUTE_TEXTURE0,2,gl.FLOAT,false,0,0);
+	gl.enableVertexAttribArray(WebGLMacros.BDJ_ATTRIBUTE_TEXTURE0);
+	gl.bindBuffer(gl.ARRAY_BUFFER,null);
 
 	gl.bindVertexArray(vao_cube);
 
-	gl.drawArrays(gl.TRIANGLE_FAN,0,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,4,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,8,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,12,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,16,4);
-	gl.drawArrays(gl.TRIANGLE_FAN,20,4);
+	gl.drawArrays(gl.TRIANGLE_FAN,0,4);  
 
 	gl.bindVertexArray(null);
 
 	gl.useProgram(null);
-
-	angle_cube = angle_cube + 1.0;
-	if(angle_cube >= 360.0)
-	{
-		angle_cube = 0.0;
-	}
 
 	requestAnimationFrame(draw,canvas);
 }
@@ -495,7 +429,6 @@ function degToRad(degree)
 
 function uninitialize()
 {
-
 	if(vao_cube)
 	{
 		gl.deleteVertexArray(vao_cube);
@@ -508,10 +441,10 @@ function uninitialize()
 		vbo_Position_cube = null;
 	}
 
-	if(vbo_Normal_cube)
+	if(vbo_texture_cube)
 	{
-		gl.deleteBuffer(vbo_Normal_cube);
-		vbo_Normal_cube = null;
+		gl.deleteBuffer(vbo_texture_cube);
+		vbo_texture_cube = null;
 	}
 	
 	if(shaderProgramObject)
