@@ -12,7 +12,6 @@ const WebGLMacros =
     BDJ_ATTRIBUTE_COLOR:1,
     BDJ_ATTRIBUTE_NORMAL:2,
     BDJ_ATTRIBUTE_TEXTURE0:3,
-
 };
 
 var vertexShaderObject;

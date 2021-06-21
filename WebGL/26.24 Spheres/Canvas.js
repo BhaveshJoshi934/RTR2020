@@ -19,35 +19,9 @@ var vertexShaderObject;
 var fragmentShaderObject;
 var shaderProgramObject;
 
-var lightPosition = [100.0,100.0,100.0,1.0];
-var lightAmbient = /*{0.0f,0.0f,0.0f,1.0f};*/  [0.1,0.1,0.1];
-var lightDiffuse = /*{1.0f,1.0f,1.0f,1.0f}; */ [0.5,0.2,0.7];
-var lightSpecular = /*{1.0f,1.0f,1.0f,1.0f}; */ [0.7,0.7,0.7];
-var MaterialAmbient = [0.0,0.0,0.0];
-var MaterialDiffuse = [1.0,1.0,1.0];
-var MaterialSpecular = [1.0,1.0,1.0];
-
-var MaterialShininess = /*50.0f;*/ 128.0;
-
 var sphere = null;
 
-var modelMatrixUniform;
-var viewMatrixUniform;
-var projectionMatrixUniform;
-
-var lightPositionUniform;
-var LaUniform;
-var LdUniform;
-var LsUniform;
-
-var KaUniform;
-var KdUniform;
-var KsUniform;
-var KshineUniform;
-
-var LKeyPressedUniform;
-
-var bLight = false;
+var mvpUniform;
 
 var perspeciveProjectionMatrix;
 
@@ -158,13 +132,6 @@ function keyDown(event) // Type Inference : type runtime la tharel
 		case 70:
 			toggleFullScreen(); 
 			break;
-
-		case 76:
-			if(bLight == false)
-				bLight = true;
-			else
-				bLight = false;
-			break;
 	}
 }
 
@@ -196,41 +163,12 @@ function init()
 	var vertexShaderSourceCode = 
 	"#version 300 es"+
 	"\n"+
-    "in vec4 vPosition;"+
-    "in vec3 vNormal;"+
-    "uniform mat4 u_model_matrix;"+
-    "uniform mat4 u_view_matrix;"+
-    "uniform mat4 u_perspective_projection_matrix;"+
-    "uniform vec3 u_la;"+
-    "uniform vec3 u_ld;"+
-    "uniform vec3 u_ls;"+
-    "uniform vec3 u_ka;"+
-    "uniform vec3 u_kd;"+
-    "uniform vec3 u_ks;"+
-    "uniform vec4 u_light_position;"+
-    "uniform int u_LKeyPressed;"+
-    "uniform float u_shininess;"+
-    "out vec3 phong_ads_light;"+
-    "void main(void)"+
-    "{"+
-    "if(u_LKeyPressed == 1)"+
-    "{"+
-    "vec4 eye_coordinates = u_view_matrix * u_model_matrix * vPosition;"+
-    "vec3 transformed_normal = normalize(mat3(u_view_matrix * u_model_matrix) * vNormal);"+
-    "vec3 light_direction = normalize(vec3(u_light_position - eye_coordinates));"+
-    "vec3 reflection_vector = reflect(-light_direction,transformed_normal);"+
-    "vec3 view_vector = normalize(-eye_coordinates.xyz);"+
-    "vec3 ambient = u_la * u_ka;"+
-    "vec3 diffuse = u_ld * u_kd * max(dot(light_direction,transformed_normal),0.0f);"+
-    "vec3 specular = u_ls * u_ks * pow(max(dot(reflection_vector,view_vector),0.0f),u_shininess);"+
-    "phong_ads_light = ambient + diffuse + specular;"+
-    "}" +
-    "else"+
-    "{"+
-    "phong_ads_light = vec3(1.0f,1.0f,1.0f);"+
-    "}"+
-    "gl_Position = u_perspective_projection_matrix * u_view_matrix * u_model_matrix * vPosition;"+
-    "}";
+	"in vec4 vPosition;"+
+	"uniform mat4 u_mvp_matrix;"+
+	"void main(void)"+
+	"{"+
+	"gl_Position = u_mvp_matrix * vPosition;"+
+	"}";
 
 	gl.shaderSource(vertexShaderObject,vertexShaderSourceCode);
 	gl.compileShader(vertexShaderObject);
@@ -251,12 +189,11 @@ function init()
 	"#version 300 es"+
 	"\n"+
 	"precision highp float;"+
-	"in vec3 phong_ads_light;"+
-    "out vec4 FragColor;"+
-    "void main(void)"+
-    "{"+
-    "FragColor = vec4(phong_ads_light,1.0f);"+
-    "}";
+	"out vec4 FragColor;"+
+	"void main(void)"+
+	"{"+
+	"FragColor = vec4(1.0,1.0,1.0,1.0);"+
+	"}";
 
 	gl.shaderSource(fragmentShaderObject,fragmentShaderSourceCode);
 	gl.compileShader(fragmentShaderObject);
@@ -276,8 +213,6 @@ function init()
 	gl.attachShader(shaderProgramObject,fragmentShaderObject);
 
 	gl.bindAttribLocation(shaderProgramObject,WebGLMacros.BDJ_ATTRIBUTE_POSITION,"vPosition");
-	gl.bindAttribLocation(shaderProgramObject,WebGLMacros.BDJ_ATTRIBUTE_NORMAL,"vNormal");
-
 
 	gl.linkProgram(shaderProgramObject);
 
@@ -291,18 +226,7 @@ function init()
 		}
 	}
 
-    modelMatrixUniform = gl.getUniformLocation(shaderProgramObject,"u_model_matrix");
-    viewMatrixUniform = gl.getUniformLocation(shaderProgramObject,"u_view_matrix");
-    projectionMatrixUniform = gl.getUniformLocation(shaderProgramObject,"u_perspective_projection_matrix");
-    LaUniform = gl.getUniformLocation(shaderProgramObject,"u_la");
-    LdUniform = gl.getUniformLocation(shaderProgramObject,"u_ld");
-    LsUniform = gl.getUniformLocation(shaderProgramObject,"u_ls");
-    lightPositionUniform = gl.getUniformLocation(shaderProgramObject,"u_light_position");
-    KaUniform = gl.getUniformLocation(shaderProgramObject,"u_ka");
-    KdUniform = gl.getUniformLocation(shaderProgramObject,"u_kd");
-    KsUniform = gl.getUniformLocation(shaderProgramObject,"u_ks");
-    KshineUniform = gl.getUniformLocation(shaderProgramObject,"u_shininess");
-    LKeyPressedUniform = gl.getUniformLocation(shaderProgramObject,"u_LKeyPressed");
+	mvpUniform = gl.getUniformLocation(shaderProgramObject,"u_mvp_matrix");
 
 	gl.clearDepth(1.0);
 	gl.enable(gl.DEPTH_TEST);
@@ -340,38 +264,14 @@ function draw()
 
 	gl.useProgram(shaderProgramObject);
 
-	if(bLight == true)
-    {
-        gl.uniform1i(LKeyPressedUniform,1);
-        gl.uniform1f(KshineUniform,MaterialShininess);      // Ithe Error Yeu Shakate
-        gl.uniform4fv(lightPositionUniform,lightPosition);
-        gl.uniform3fv(LaUniform,lightAmbient);
-        gl.uniform3fv(LdUniform,lightDiffuse);
-        gl.uniform3fv(LsUniform,lightSpecular);
-        gl.uniform3fv(KaUniform,MaterialAmbient);
-        gl.uniform3fv(KdUniform,MaterialDiffuse);
-        gl.uniform3fv(KsUniform,MaterialSpecular);
-    }
-    else
-    {
-        gl.uniform1i(LKeyPressedUniform,0);
-    }
-
 	var modelViewMatrix = mat4.create();
-	var viewMatrix = mat4.create();
-	var projectionMatrix = mat4.create();
-	var translateMatrix = mat4.create();
+	var modelViewProjectionMatrix = mat4.create();
+	
+	mat4.translate(modelViewMatrix,modelViewMatrix,[0.0,0.0,-10.0]);
 
-	modelMatrix = translateMatrix;
-	projectionMatrix = perspectiveProjectionMatrix;
+	mat4.multiply(modelViewProjectionMatrix,perspectiveProjectionMatrix,modelViewMatrix);
 
-	mat4.translate(translateMatrix,translateMatrix,[0.0,0.0,-10.0]);
-
-	//mat4.multiply(modelViewProjectionMatrix,perspectiveProjectionMatrix,modelViewMatrix);
-
-	gl.uniformMatrix4fv(modelMatrixUniform,false,modelMatrix);
-	gl.uniformMatrix4fv(viewMatrixUniform,false,viewMatrix);
-	gl.uniformMatrix4fv(projectionMatrixUniform,false,projectionMatrix);
+	gl.uniformMatrix4fv(mvpUniform,false,modelViewProjectionMatrix);
 
 	sphere.draw();
 
