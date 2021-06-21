@@ -37,18 +37,22 @@ bool gbActiveWindow = false;
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
 
-GLuint gVertexShaderObject;
-GLuint gFragmentShaderObject;
-GLuint gShaderProgramObject;
+GLuint gRenderVertexShaderObject;
+GLuint gRenderFragmentShaderObject;
+GLuint gSkyboxVertexShaderObject;
+GLuint gSkyboxFragmentShaderObject;
 
-GLuint vao_pyramid;
-GLuint vbo_Position_pyramid;
-GLuint vbo_Color_pyramid;
+GLuint gRenderShaderProgramObject;
+GLuint gSkyboxShaderProgramObject;
+
 GLuint vao_cube;
 GLuint vbo_Position_cube;
-GLuint vbo_Color_cube;
 
-GLuint mvpUniform;
+//GLuint mvpUniform;
+
+GLuint modelMatrixUniform;
+GLuint viewMatrixUniform;
+GLuint projectionMatrixUniform;
 
 mat4 perspectiveProjectionMatrix;
 
@@ -94,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("Two 2D Shape Colored Shapes in PP : Bhavesh Joshi !!"),
+                          TEXT("CubeMap : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -300,13 +304,10 @@ void Initialize()
             "#version 440 core" \
             "\n" \
             "in vec4 vPosition;" \
-            "in vec4 vColor;" \
             "uniform mat4 u_mvp_matrix;" \
-            "out vec4 out_Color;" \
             "void main(void)" \
             "{" \
             "gl_Position = u_mvp_matrix * vPosition;" \
-            "out_Color = vColor;" \
             "}";
 
     glShaderSource(gVertexShaderObject,1,(const GLchar **)&vertexShaderSourceCode,NULL);
@@ -344,11 +345,10 @@ void Initialize()
     const GLchar *fragmentShaderSourceCode =
         "#version 440 core" \
         "\n" \
-        "in vec4 out_Color;"
         "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
-        "FragColor = out_Color;"
+        "FragColor = vec4(1.0f,1.0f,1.0f,1.0f);"
         "}";
 
     glShaderSource(gFragmentShaderObject,1,(const char **)&fragmentShaderSourceCode,NULL);
@@ -385,7 +385,6 @@ void Initialize()
     glAttachShader(gShaderProgramObject,gFragmentShaderObject);
 
     glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_POSITION,"vPosition");
-    glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_COLOR,"vColor");
 
     //Link
     glLinkProgram(gShaderProgramObject);
@@ -410,44 +409,6 @@ void Initialize()
     }
 
     mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
-
-    const GLfloat pyramidVertices[] =
-            {
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,-0.5f,
-
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f
-            };
-
-    const GLfloat pyramidColors[] =
-            {
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f
-            };
 
     const GLfloat cubeVertices[] =
             {
@@ -482,61 +443,6 @@ void Initialize()
                 0.5f,-0.5f,0.5f
             };
 
-    const GLfloat cubeColors[] =
-            {
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f
-            };
-
-    glGenVertexArrays(1,&vao_pyramid);
-    glBindVertexArray(vao_pyramid);
-
-    //POSITION
-    glGenBuffers(1,&vbo_Position_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidVertices),pyramidVertices,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    //COLOR
-    glGenBuffers(1,&vbo_Color_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Color_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidColors),pyramidColors,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    glBindVertexArray(0);
-
-
     glGenVertexArrays(1,&vao_cube);
     glBindVertexArray(vao_cube);
 
@@ -548,14 +454,6 @@ void Initialize()
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
-    //COLOR
-    glGenBuffers(1,&vbo_Color_cube);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Color_cube);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeColors),cubeColors,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
     glBindVertexArray(0);
 
     glShadeModel(GL_SMOOTH);
@@ -564,7 +462,7 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-    glClearColor(0.0f,0.0f,0.0f,1.0f);
+    glClearColor(0.0f,0.0f,0.0f,0.0f);
 
     perspectiveProjectionMatrix = mat4::identity();
 
@@ -595,38 +493,15 @@ void Display()
 
     mat4 modelViewMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
-    mat4 translateMatrix = vmath::translate(1.5f,0.0f,-4.0f);
-    mat4 rotationMatrix = vmath::rotate((GLfloat)angle_pyramid,0.0f,1.0f,0.0f);
-
-    modelViewMatrix = translateMatrix * rotationMatrix;
-
-    modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
-
-    glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
-
-    glBindVertexArray(vao_pyramid);
-
-    glDrawArrays(GL_TRIANGLES,0,12);
-
-    glBindVertexArray(0);
-
-    //FOR SQUARE
-
-    //mat4 modelViewMatrix = mat4::identity();
-    //mat4 modelViewProjectionMatrix = mat4::identity();
-
+    mat4 translateMatrix = vmath::translate(0.0f,0.0f,-4.0f);
     mat4 rotationMatrix1 = mat4::identity();
     mat4 rotationMatrix2 = mat4::identity();
     mat4 rotationMatrix3 = mat4::identity();
-    mat4 scaleMatrix = mat4::identity();
-
-    translateMatrix = vmath::translate(-1.5f,0.0f,-4.0f);
-    scaleMatrix = vmath::scale(0.75f,0.75f,0.75f);
     rotationMatrix1 = vmath::rotate((GLfloat)angle_cube,1.0f,0.0f,0.0f);
     rotationMatrix2 = vmath::rotate((GLfloat)angle_cube,0.0f,1.0f,0.0f);
     rotationMatrix3 = vmath::rotate((GLfloat)angle_cube,0.0f,0.0f,1.0f);
 
-    modelViewMatrix = translateMatrix * scaleMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
+    modelViewMatrix = translateMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
 
     modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
 
@@ -645,12 +520,6 @@ void Display()
 
     //Stop OpenGL Program
     glUseProgram(0);
-
-    angle_pyramid = angle_pyramid + 0.1f;
-    if(angle_pyramid >= 360.0f)
-    {
-        angle_pyramid = 0.0f;
-    }
 
     angle_cube = angle_cube + 0.1f;
     if(angle_cube >= 360.0f)
@@ -684,24 +553,6 @@ void uninitialize()
     glUseProgram(0);
     */
 
-    if(vao_pyramid)
-    {
-        glDeleteVertexArrays(1,&vao_pyramid);
-        vao_pyramid = 0;
-    }
-
-    if(vbo_Position_pyramid)
-    {
-        glDeleteBuffers(1,&vbo_Position_pyramid);
-        vbo_Position_pyramid = 0;
-    }
-
-    if(vbo_Color_pyramid)
-    {
-        glDeleteBuffers(1,&vbo_Color_pyramid);
-        vbo_Color_pyramid = 0;
-    }
-
     if(vao_cube)
     {
         glDeleteVertexArrays(1,&vao_cube);
@@ -712,12 +563,6 @@ void uninitialize()
     {
         glDeleteBuffers(1,&vbo_Position_cube);
         vbo_Position_cube = 0;
-    }
-
-    if(vbo_Color_cube)
-    {
-        glDeleteBuffers(1,&vbo_Color_cube);
-        vbo_Color_cube = 0;
     }
 
     if(gShaderProgramObject)

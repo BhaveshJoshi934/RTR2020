@@ -27,12 +27,16 @@ enum
 
 FILE* gpFile = NULL;
 
+bool bLight = false;
 bool gbFullScreen = false;
 DWORD dwStyle;
 WINDOWPLACEMENT wpPrev = {sizeof(WINDOWPLACEMENT)};
 HWND ghwnd = NULL;
 
 bool gbActiveWindow = false;
+
+GLuint Marble_Texture;
+GLuint textureSamplerUniform;
 
 HDC ghdc = NULL;
 HGLRC ghrc = NULL;
@@ -41,14 +45,15 @@ GLuint gVertexShaderObject;
 GLuint gFragmentShaderObject;
 GLuint gShaderProgramObject;
 
-GLuint vao_pyramid;
-GLuint vbo_Position_pyramid;
-GLuint vbo_Color_pyramid;
 GLuint vao_cube;
-GLuint vbo_Position_cube;
-GLuint vbo_Color_cube;
+GLuint vbo_PCNT_cube;
 
-GLuint mvpUniform;
+GLuint modelViewMatrixUniform;
+GLuint perspectiveProjectionUniform;
+GLuint LKeyPressedUniform;
+GLuint LdUniform;
+GLuint KdUniform;
+GLuint lightPositionUniform;
 
 mat4 perspectiveProjectionMatrix;
 
@@ -94,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
                           szAppName,
-                          TEXT("Two 2D Shape Colored Shapes in PP : Bhavesh Joshi !!"),
+                          TEXT("Black and White Cube in PP : Bhavesh Joshi !!"),
                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
                           X,
                           Y,
@@ -168,6 +173,19 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
         }
         break;
 
+    case WM_CHAR:
+            switch(wParam)
+            {
+            case 'L':
+            case 'l':
+                if(bLight == false)
+                    bLight = true;
+                else
+                    bLight = false;
+                break;
+            }
+            break;
+
     case WM_SIZE:
             Resize(LOWORD(lParam),HIWORD(lParam));
             break;
@@ -222,6 +240,7 @@ void Initialize()
 {
     void uninitialize();
     void Resize(int,int);
+    bool LoadGLTexture(GLuint*,TCHAR[]);
 
     PIXELFORMATDESCRIPTOR pfd;
     int iPixelFormatIndex;
@@ -301,11 +320,29 @@ void Initialize()
             "\n" \
             "in vec4 vPosition;" \
             "in vec4 vColor;" \
-            "uniform mat4 u_mvp_matrix;" \
+            "in vec2 vTexCoord;" \
+            "in vec3 vNormal;" \
+            "uniform mat4 u_model_view_matrix;" \
+            "uniform mat4 u_projection_matrix;" \
+            "uniform int u_LKeyPressed;" \
+            "uniform vec3 u_ld;" \
+            "uniform vec3 u_kd;" \
+            "uniform vec4 u_light_position;" \
+            "out vec3 diffuse_light;" \
+            "out vec2 out_TexCoord;" \
             "out vec4 out_Color;" \
             "void main(void)" \
             "{" \
-            "gl_Position = u_mvp_matrix * vPosition;" \
+            "if(u_LKeyPressed == 1)" \
+            "{" \
+            "vec4 eye_coordinates = u_model_view_matrix * vPosition;" \
+            "mat3 normal_matrix = mat3(transpose(inverse(u_model_view_matrix)));" \
+            "vec3 tnorm = normalize(normal_matrix * vNormal);" \
+            "vec3 s = normalize(vec3(u_light_position - eye_coordinates));" \
+            "diffuse_light = u_ld * u_kd * max(dot(s,tnorm),0.0f);" \
+            "}"
+            "gl_Position = u_projection_matrix * u_model_view_matrix * vPosition;" \
+            "out_TexCoord = vTexCoord;" \
             "out_Color = vColor;" \
             "}";
 
@@ -344,11 +381,25 @@ void Initialize()
     const GLchar *fragmentShaderSourceCode =
         "#version 440 core" \
         "\n" \
-        "in vec4 out_Color;"
+        "in vec3 diffuse_light;" \
+        "uniform int u_LKeyPressed;" \
+        "in vec2 out_TexCoord;" \
+        "in vec4 out_Color;" \
+        "uniform sampler2D u_texture_sampler;" \
         "out vec4 FragColor;" \
         "void main(void)" \
         "{" \
-        "FragColor = out_Color;"
+        "vec4 tex =  vec4(texture(u_texture_sampler,out_TexCoord));" \
+        "vec4 light;" \
+        "if(u_LKeyPressed == 1)" \
+        "{" \
+        "light = vec4(diffuse_light,1.0f);" \
+        "}" \
+        "else" \
+        "{" \
+        "light = vec4(1.0f,1.0f,1.0f,1.0f);"
+        "}" \
+        "FragColor = tex * light * out_Color;" \
         "}";
 
     glShaderSource(gFragmentShaderObject,1,(const char **)&fragmentShaderSourceCode,NULL);
@@ -386,6 +437,8 @@ void Initialize()
 
     glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_POSITION,"vPosition");
     glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_COLOR,"vColor");
+    glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_NORMAL,"vNormal");
+    glBindAttribLocation(gShaderProgramObject,BDJ_ATTRIBUTE_TEXTURE0,"vTexCoord");
 
     //Link
     glLinkProgram(gShaderProgramObject);
@@ -409,151 +462,67 @@ void Initialize()
         }
     }
 
-    mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
+    //mvpUniform = glGetUniformLocation(gShaderProgramObject,"u_mvp_matrix");
+    textureSamplerUniform = glGetUniformLocation(gShaderProgramObject,"u_texture_sampler");
+    modelViewMatrixUniform = glGetUniformLocation(gShaderProgramObject,"u_model_view_matrix");
+    perspectiveProjectionUniform = glGetUniformLocation(gShaderProgramObject,"u_projection_matrix");
+    LKeyPressedUniform = glGetUniformLocation(gShaderProgramObject,"u_LKeyPressed");
+    LdUniform = glGetUniformLocation(gShaderProgramObject,"u_ld");
+    KdUniform = glGetUniformLocation(gShaderProgramObject,"u_kd");
+    lightPositionUniform = glGetUniformLocation(gShaderProgramObject,"u_light_position");
 
-    const GLfloat pyramidVertices[] =
+    const GLfloat PCNT_cube[] =
             {
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
+                0.5f,0.5f,0.5f,    1.0f,0.0f,0.0f,  0.0f, 0.0f, 1.0f,   0.0f,0.0f,
+                -0.5f,0.5f,0.5f,   1.0f,0.0f,0.0f,  0.0f, 0.0f, 1.0f,   1.0f,0.0f,
+                -0.5f,-0.5f,0.5f,  1.0f,0.0f,0.0f,  0.0f, 0.0f, 1.0f,   1.0f,1.0f,
+                0.5f,-0.5f,0.5f,   1.0f,0.0f,0.0f,  0.0f, 0.0f, 1.0f,   0.0f,1.0f,
 
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,-0.5f,
+                0.5f,0.5f,-0.5f,   0.0f,1.0f,0.0f,  1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+                0.5f,0.5f,0.5f,    0.0f,1.0f,0.0f,  1.0f, 0.0f, 0.0f,   1.0f,1.0f,
+                0.5f,-0.5f,0.5f,   0.0f,1.0f,0.0f,  1.0f, 0.0f, 0.0f,   0.0f,1.0f,
+                0.5f,-0.5f,-0.5f,  0.0f,1.0f,0.0f,  1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
 
-                0.0f,0.5f,0.0f,
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
+                -0.5f,0.5f,-0.5f,  0.0f,0.0f,1.0f,  0.0f, 0.0f, -1.0f,  1.0f,0.0f,
+                0.5f,0.5f,-0.5f,   0.0f,0.0f,1.0f,  0.0f, 0.0f, -1.0f,  1.0f,1.0f,
+                0.5f,-0.5f,-0.5f,  0.0f,0.0f,1.0f,  0.0f, 0.0f, -1.0f,  0.0f,1.0f,
+                -0.5f,-0.5f,-0.5f, 0.0f,0.0f,1.0f,  0.0f, 0.0f, -1.0f,  0.0f,0.0f,
 
-                0.0f,0.5f,0.0f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f
+                -0.5f,0.5f,0.5f,   1.0f,1.0f,0.0f,  -1.0f, 0.0f, 0.0f,  0.0f,0.0f,
+                -0.5f,0.5f,-0.5f,  1.0f,1.0f,0.0f,  -1.0f, 0.0f, 0.0f,  1.0f,0.0f,
+                -0.5f,-0.5f,-0.5f, 1.0f,1.0f,0.0f,  -1.0f, 0.0f, 0.0f,  1.0f,1.0f,
+                -0.5f,-0.5f,0.5f,  1.0f,1.0f,0.0f,  -1.0f, 0.0f, 0.0f,  0.0f,1.0f,
+
+                0.5f,0.5f,-0.5f,   0.0f,1.0f,1.0f,   0.0f, 1.0f, 0.0f,  0.0f,1.0f,
+                -0.5f,0.5f,-0.5f,  0.0f,1.0f,1.0f,   0.0f, 1.0f, 0.0f,  0.0f,0.0f,
+                -0.5f,0.5f,0.5f,   0.0f,1.0f,1.0f,   0.0f, 1.0f, 0.0f,  1.0f,0.0f,
+                0.5f,0.5f,0.5f,    0.0f,1.0f,1.0f,   0.0f, 1.0f, 0.0f,  1.0f,1.0f,
+
+                0.5f,-0.5f,-0.5f,  1.0f,0.0f,1.0f,   0.0f, -1.0f, 0.0f,  1.0f,1.0f,
+                -0.5f,-0.5f,-0.5f, 1.0f,0.0f,1.0f,   0.0f, -1.0f, 0.0f,  0.0f,1.0f,
+                -0.5f,-0.5f,0.5f,  1.0f,0.0f,1.0f,   0.0f, -1.0f, 0.0f,  0.0f,0.0f,
+                0.5f,-0.5f,0.5f,   1.0f,0.0f,1.0f,   0.0f, -1.0f, 0.0f,  1.0f,0.0f
             };
-
-    const GLfloat pyramidColors[] =
-            {
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f,
-
-                1.0f,0.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,0.0f,1.0f
-            };
-
-    const GLfloat cubeVertices[] =
-            {
-                0.5f,0.5f,0.5f,
-                -0.5f,0.5f,0.5f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-
-                0.5f,0.5f,-0.5f,
-                0.5f,0.5f,0.5f,
-                0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,-0.5f,
-
-                -0.5f,0.5f,-0.5f,
-                0.5f,0.5f,-0.5f,
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-
-                -0.5f,0.5f,0.5f,
-                -0.5f,0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f,
-
-                0.5f,0.5f,-0.5f,
-                -0.5f,0.5f,-0.5f,
-                -0.5f,0.5f,0.5f,
-                0.5f,0.5f,0.5f,
-
-                0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,-0.5f,
-                -0.5f,-0.5f,0.5f,
-                0.5f,-0.5f,0.5f
-            };
-
-    const GLfloat cubeColors[] =
-            {
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-                1.0f,0.0f,0.0f,
-
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-                0.0f,1.0f,0.0f,
-
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,
-
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-                0.0f,1.0f,1.0f,
-
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-                1.0f,1.0f,0.0f,
-
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f,
-                1.0f,0.0f,1.0f
-            };
-
-    glGenVertexArrays(1,&vao_pyramid);
-    glBindVertexArray(vao_pyramid);
-
-    //POSITION
-    glGenBuffers(1,&vbo_Position_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidVertices),pyramidVertices,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    //COLOR
-    glGenBuffers(1,&vbo_Color_pyramid);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Color_pyramid);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(pyramidColors),pyramidColors,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,0,NULL);
-    glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    glBindVertexArray(0);
-
 
     glGenVertexArrays(1,&vao_cube);
     glBindVertexArray(vao_cube);
 
-    //POSITION
-    glGenBuffers(1,&vbo_Position_cube);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Position_cube);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,0,NULL);
+    glGenBuffers(1,&vbo_PCNT_cube);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo_PCNT_cube);
+    glBufferData(GL_ARRAY_BUFFER,24 * 11 * sizeof(float),PCNT_cube,GL_STATIC_DRAW);
+    //Position
+    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),0);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    //COLOR
-    glGenBuffers(1,&vbo_Color_cube);
-    glBindBuffer(GL_ARRAY_BUFFER,vbo_Color_cube);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(cubeColors),cubeColors,GL_STATIC_DRAW);
-    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,0,NULL);
+    //Color
+    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),3 * sizeof(float));
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
+    //Normal
+    glVertexAttribPointer(BDJ_ATTRIBUTE_NORMAL,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),6 * sizeof(float));
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_NORMAL);
+    //Texture
+    glVertexAttribPointer(BDJ_ATTRIBUTE_TEXTURE0,2,GL_FLOAT,GL_FALSE,11 * sizeof(float),9 * sizeof(float));
+    glEnableVertexAttribArray(BDJ_ATTRIBUTE_TEXTURE0);
+
     glBindBuffer(GL_ARRAY_BUFFER,0);
 
     glBindVertexArray(0);
@@ -564,11 +533,58 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-    glClearColor(0.0f,0.0f,0.0f,1.0f);
+    LoadGLTexture(&Marble_Texture,MAKEINTRESOURCE(MARBLE_BITMAP));     //Texture Code
+	glEnable(GL_TEXTURE_2D);   //Texture Code
+
+    glClearColor(0.0f,0.0f,0.0f,0.0f);
 
     perspectiveProjectionMatrix = mat4::identity();
 
     Resize(WIN_WIDTH,WIN_HEIGHT);
+}
+
+bool LoadGLTexture(GLuint *Texture,TCHAR resourceID[])
+{
+    //Variable Declartions
+    bool bResult = false;
+    HBITMAP hBitmap = NULL;    // OS Image Lading
+    BITMAP bmp;                // OS Image Lading
+
+    //code  :  Real Texture Code : Very Important
+
+    hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL),
+                                 resourceID,
+                                 IMAGE_BITMAP,
+                                 0,
+                                 0,
+                                 LR_CREATEDIBSECTION); // KARAN he function handel return karat, : GetModuleHandel Hinstance deto...
+
+    if(hBitmap)
+    {
+        bResult = true;
+        GetObject(hBitmap,sizeof(BITMAP),&bmp);   // Ithe Image loading code sampla
+
+        //From Here Start OpenGl code
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+
+        glGenTextures(1,Texture);   // GPU side la ek target pointer tayar zala; ani aplyala gattu milala : Ithe Address aahe
+        glBindTexture(GL_TEXTURE_2D,*Texture); // Ithe Value aahe
+
+        //Setting of Texture Param
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+
+        //Atta Data Tkaycha ahe Graphics card side la with the help of Graphic driver
+        //gluBuild2DMipmaps(GL_TEXTURE_2D,3,bmp.bmWidth,bmp.bmHeight,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
+
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,bmp.bmWidth,bmp.bmHeight,0,GL_BGR_EXT,GL_UNSIGNED_BYTE,bmp.bmBits);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        DeleteObject(hBitmap);  // This is OS Fuction  : AApan texture use kela pn nahiye tari delete kela karan to load zalay...
+    }
+
+    return bResult;
 }
 
 void Resize(int width,int height)
@@ -591,46 +607,42 @@ void Display()
     //Start Using OpenGL Program
     glUseProgram(gShaderProgramObject);
 
+    if(bLight == true)
+    {
+        glUniform1i(LKeyPressedUniform,1);
+        glUniform3f(LdUniform,1.0f,1.0f,1.0f);
+        glUniform3f(KdUniform,0.5f,0.5f,0.5f);
+        GLfloat lightPosition[] = {0.0f,0.0f,2.0f,1.0f};
+        glUniform4fv(lightPositionUniform,1,lightPosition);
+    }
+    else
+    {
+        glUniform1i(LKeyPressedUniform,0);
+    }
+
     //FOR TRIANGLE
 
     mat4 modelViewMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
-    mat4 translateMatrix = vmath::translate(1.5f,0.0f,-4.0f);
-    mat4 rotationMatrix = vmath::rotate((GLfloat)angle_pyramid,0.0f,1.0f,0.0f);
-
-    modelViewMatrix = translateMatrix * rotationMatrix;
-
-    modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
-
-    glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
-
-    glBindVertexArray(vao_pyramid);
-
-    glDrawArrays(GL_TRIANGLES,0,12);
-
-    glBindVertexArray(0);
-
-    //FOR SQUARE
-
-    //mat4 modelViewMatrix = mat4::identity();
-    //mat4 modelViewProjectionMatrix = mat4::identity();
-
+    mat4 translateMatrix = vmath::translate(0.0f,0.0f,-4.0f);
     mat4 rotationMatrix1 = mat4::identity();
     mat4 rotationMatrix2 = mat4::identity();
     mat4 rotationMatrix3 = mat4::identity();
-    mat4 scaleMatrix = mat4::identity();
-
-    translateMatrix = vmath::translate(-1.5f,0.0f,-4.0f);
-    scaleMatrix = vmath::scale(0.75f,0.75f,0.75f);
     rotationMatrix1 = vmath::rotate((GLfloat)angle_cube,1.0f,0.0f,0.0f);
     rotationMatrix2 = vmath::rotate((GLfloat)angle_cube,0.0f,1.0f,0.0f);
     rotationMatrix3 = vmath::rotate((GLfloat)angle_cube,0.0f,0.0f,1.0f);
 
-    modelViewMatrix = translateMatrix * scaleMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
+    modelViewMatrix = translateMatrix * rotationMatrix1 * rotationMatrix2 * rotationMatrix3 ;
 
     modelViewProjectionMatrix = perspectiveProjectionMatrix * modelViewMatrix;
 
-    glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
+    glUniformMatrix4fv(modelViewMatrixUniform,1,GL_FALSE,modelViewMatrix);
+
+    glUniformMatrix4fv(perspectiveProjectionUniform,1,GL_FALSE,perspectiveProjectionMatrix);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,Marble_Texture);
+    glUniform1i(textureSamplerUniform,0);
 
     glBindVertexArray(vao_cube);
 
@@ -645,12 +657,6 @@ void Display()
 
     //Stop OpenGL Program
     glUseProgram(0);
-
-    angle_pyramid = angle_pyramid + 0.1f;
-    if(angle_pyramid >= 360.0f)
-    {
-        angle_pyramid = 0.0f;
-    }
 
     angle_cube = angle_cube + 0.1f;
     if(angle_cube >= 360.0f)
@@ -684,40 +690,16 @@ void uninitialize()
     glUseProgram(0);
     */
 
-    if(vao_pyramid)
-    {
-        glDeleteVertexArrays(1,&vao_pyramid);
-        vao_pyramid = 0;
-    }
-
-    if(vbo_Position_pyramid)
-    {
-        glDeleteBuffers(1,&vbo_Position_pyramid);
-        vbo_Position_pyramid = 0;
-    }
-
-    if(vbo_Color_pyramid)
-    {
-        glDeleteBuffers(1,&vbo_Color_pyramid);
-        vbo_Color_pyramid = 0;
-    }
-
     if(vao_cube)
     {
         glDeleteVertexArrays(1,&vao_cube);
         vao_cube = 0;
     }
 
-    if(vbo_Position_cube)
+    if(vbo_PCNT_cube)
     {
-        glDeleteBuffers(1,&vbo_Position_cube);
-        vbo_Position_cube = 0;
-    }
-
-    if(vbo_Color_cube)
-    {
-        glDeleteBuffers(1,&vbo_Color_cube);
-        vbo_Color_cube = 0;
+        glDeleteBuffers(1,&vbo_PCNT_cube);
+        vbo_PCNT_cube = 0;
     }
 
     if(gShaderProgramObject)

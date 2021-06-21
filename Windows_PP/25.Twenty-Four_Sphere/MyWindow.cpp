@@ -76,6 +76,7 @@ GLfloat angleZ = 0.0f;
 GLfloat lightPosition[] = {0.0f,0.0,0.0f,1.0f};
 GLfloat lightAmbient[] = {0.0f,0.0f,0.0f,1.0f};
 GLfloat lightDiffuse[] = {1.0f,1.0f,1.0f,1.0f};
+//GLfloat lightSpecular[] = {1.0f,1.0f,1.0f,1.0f};
 
 GLuint modelMatrixUniform;
 GLuint viewMatrixUniform;
@@ -615,7 +616,7 @@ void Resize(int width,int height)
 void Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+//1.
     glUseProgram(gShaderProgramObject);
 
     if(bLight == true)
@@ -682,14 +683,16 @@ void Display()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
     mat4 modelMatrix = mat4::identity();
     mat4 viewMatrix = mat4::identity();     // view la Identity
     mat4 projectionMatrix = mat4::identity();
     mat4 translateMatrix = vmath::translate(1.5f,14.0f,0.0f);
+    mat4 scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
-    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
+    projectionMatrix = orthographicProjectionMatrix ;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
     glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
@@ -698,7 +701,7 @@ void Display()
     glBindVertexArray(0);
 
     glUseProgram(0);
-//---------------------------------------------------------------------------------------------------------------------------
+//2.---------------------------------------------------------------------------------------------------------------------------
     glUseProgram(gShaderProgramObject);
 
     if(bLight == true)
@@ -767,8 +770,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(26.0f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -778,7 +782,7 @@ void Display()
     glBindVertexArray(0);
 
     glUseProgram(0);
-//-------------------------------------------------------------------------------------------------------------
+//3.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -846,10 +850,10 @@ void Display()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
-
     translateMatrix = vmath::translate(11.5f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -860,7 +864,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//4.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -930,8 +934,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(6.5f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -942,7 +947,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//5.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1012,8 +1017,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(16.5f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1024,7 +1030,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//6.-------------------------------------------------------------------------------------------------------------
     glUseProgram(gShaderProgramObject);
 
     if(bLight == true)
@@ -1093,8 +1099,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(21.5f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1105,7 +1112,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//7.-------------------------------------------------------------------------------------------------------------
     glUseProgram(gShaderProgramObject);
 
     if(bLight == true)
@@ -1174,8 +1181,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(1.5f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1186,7 +1194,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//8.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1256,8 +1264,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(21.5f,14.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1268,7 +1277,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//9.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1338,8 +1347,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(6.5f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1350,7 +1360,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//10.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1420,8 +1430,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(11.5f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1432,7 +1443,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//11.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1502,8 +1513,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(16.5f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1514,7 +1526,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//12.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1584,8 +1596,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(21.5f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1596,7 +1609,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//13.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1666,8 +1679,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(26.0f,10.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1678,7 +1692,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//14.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1748,8 +1762,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(1.5f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1760,7 +1775,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//15.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1830,8 +1845,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(6.5f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1842,7 +1858,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//16.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1912,8 +1928,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(11.5f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -1924,7 +1941,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//17.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -1997,8 +2014,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(16.5f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2009,7 +2027,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//18.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2079,8 +2097,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(21.5f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2091,7 +2110,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//19.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2161,8 +2180,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(26.0f,6.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2173,7 +2193,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//20.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2222,7 +2242,7 @@ void Display()
 
     glBindVertexArray(gVao_sphere);
 
-     materialAmbient[0] = 0.02;
+    materialAmbient[0] = 0.02;
     materialAmbient[1] = 0.02;
     materialAmbient[2] = 0.02;
     materialAmbient[3] = 1.0f;
@@ -2239,14 +2259,13 @@ void Display()
 
     materialShininess = 0.078125 * 128;
 
-    materialShininess = 0.25 * 128;
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(1.5f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2256,8 +2275,7 @@ void Display()
     glBindVertexArray(0);
 
     glUseProgram(0);
-
-//-------------------------------------------------------------------------------------------------------------
+//21.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2327,8 +2345,9 @@ void Display()
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
     translateMatrix = vmath::translate(6.5f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2339,7 +2358,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//22.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2408,9 +2427,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(16.5f,2.0f,0.0f);
+    translateMatrix = vmath::translate(11.5f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2421,7 +2441,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//23.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2490,9 +2510,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(21.5f,2.0f,0.0f);
+    translateMatrix = vmath::translate(16.5f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2503,7 +2524,7 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//24.-------------------------------------------------------------------------------------------------------------
 
     glUseProgram(gShaderProgramObject);
 
@@ -2572,9 +2593,10 @@ void Display()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
     glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
 
-    translateMatrix = vmath::translate(26.0f,2.0f,0.0f);
+    translateMatrix = vmath::translate(21.5f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
 
-    modelMatrix = translateMatrix  ;    // model la Translate
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
     projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
 
     glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
@@ -2585,9 +2607,88 @@ void Display()
 
     glUseProgram(0);
 
-//-------------------------------------------------------------------------------------------------------------
+//25.-------------------------------------------------------------------------------------------------------------
 
+    glUseProgram(gShaderProgramObject);
 
+    if(bLight == true)
+    {
+        if(Key_1 == 1)
+        {
+            angleX = angleX + 0.001f;
+            lightPosition[0] = 0.0f;
+            lightPosition[1] = factor * sin(angleX);
+            lightPosition[2] = factor * cos(angleX);
+            lightPosition[3] = 1.0f;
+        }
+
+        else if(Key_2 == 2)
+        {
+            angleY = angleY + 0.001f;
+            lightPosition[0] = factor * sin(angleY);
+            lightPosition[1] = 0.0f;
+            lightPosition[2] = factor * cos(angleY);
+            lightPosition[3] = 1.0f;
+        }
+
+        else if(Key_3 == 3)
+        {
+            angleZ = angleZ + 0.001f;
+            lightPosition[0] = factor * sin(angleZ);
+            lightPosition[1] = factor * cos(angleZ);
+            lightPosition[2] = 0.0f;
+            lightPosition[3] = 1.0f;
+        }
+
+        glUniform1i(LKeyPressedUniform,1);
+        glUniform1f(KshineUniform,materialShininess);
+        glUniform4fv(lightPositionUniform,1,lightPosition);
+        glUniform3fv(LaUniform,1,lightAmbient);
+        glUniform3fv(LdUniform,1,lightDiffuse);
+        glUniform3fv(KaUniform,1,materialAmbient);
+        glUniform3fv(KdUniform,1,materialDiffused);
+        glUniform3fv(KsUniform,1,materialSpecular);
+    }
+    else
+    {
+        glUniform1i(LKeyPressedUniform,0);
+    }
+
+    glBindVertexArray(gVao_sphere);
+
+    materialAmbient[0] = 0.05;
+    materialAmbient[1] = 0.05;
+    materialAmbient[2] = 0.0;
+    materialAmbient[3] = 1.0f;
+
+    materialDiffused[0] = 0.5;
+    materialDiffused[1] = 0.5;
+    materialDiffused[2] = 0.4;
+    materialDiffused[3] = 1.0f;
+
+    materialSpecular[0] = 0.7;
+    materialSpecular[1] = 0.7;
+    materialSpecular[2] = 0.04;
+    materialSpecular[3] = 1.0f;
+
+    materialShininess = 0.078125 * 128;
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+    glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+    translateMatrix = vmath::translate(26.0f,2.0f,0.0f);
+    scaleMatrix = vmath::scale(1.5f,1.5f,1.5f);
+
+    modelMatrix = translateMatrix * scaleMatrix ;    // model la Translate
+    projectionMatrix = orthographicProjectionMatrix;  // perspective la Projection
+
+    glUniformMatrix4fv(modelMatrixUniform,1,GL_FALSE,modelMatrix);
+    glUniformMatrix4fv(viewMatrixUniform,1,GL_FALSE,viewMatrix);
+    glUniformMatrix4fv(perspectiveProjectionUniform,1,GL_FALSE,projectionMatrix);
+
+    glBindVertexArray(0);
+
+    glUseProgram(0);
     if(angleX >= 360.0f)
     {
         angleX = 0.0f;

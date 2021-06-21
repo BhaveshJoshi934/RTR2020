@@ -591,8 +591,6 @@ void Initialize()
 
     glBindVertexArray(0);
 
-
-
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
