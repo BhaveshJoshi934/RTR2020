@@ -511,16 +511,16 @@ void Initialize()
     glBindBuffer(GL_ARRAY_BUFFER,vbo_PCNT_cube);
     glBufferData(GL_ARRAY_BUFFER,24 * 11 * sizeof(float),PCNT_cube,GL_STATIC_DRAW);
     //Position
-    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),0);
+    glVertexAttribPointer(BDJ_ATTRIBUTE_POSITION,3,GL_FLOAT,GL_FALSE,11 * sizeof(GLfloat),0);
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_POSITION);
     //Color
-    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),3 * sizeof(float));
+    glVertexAttribPointer(BDJ_ATTRIBUTE_COLOR,3,GL_FLOAT,GL_FALSE,11 * sizeof(GLfloat),(GLvoid *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_COLOR);
     //Normal
-    glVertexAttribPointer(BDJ_ATTRIBUTE_NORMAL,3,GL_FLOAT,GL_FALSE,11 * sizeof(float),6 * sizeof(float));
+    glVertexAttribPointer(BDJ_ATTRIBUTE_NORMAL,3,GL_FLOAT,GL_FALSE,11 * sizeof(GLfloat),(GLvoid *)(6 * sizeof(GLfloat)));
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_NORMAL);
     //Texture
-    glVertexAttribPointer(BDJ_ATTRIBUTE_TEXTURE0,2,GL_FLOAT,GL_FALSE,11 * sizeof(float),9 * sizeof(float));
+    glVertexAttribPointer(BDJ_ATTRIBUTE_TEXTURE0,2,GL_FLOAT,GL_FALSE,11 * sizeof(GLfloat),(GLvoid *)(9 * sizeof(GLfloat)));
     glEnableVertexAttribArray(BDJ_ATTRIBUTE_TEXTURE0);
 
     glBindBuffer(GL_ARRAY_BUFFER,0);

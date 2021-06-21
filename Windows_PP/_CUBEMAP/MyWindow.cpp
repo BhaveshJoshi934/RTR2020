@@ -297,38 +297,44 @@ void Initialize()
     /*--------------------------------------------VERTEX SHADER-------------------------------------------------------------*/
 
     //Create Shader
-    gVertexShaderObject = glCreateShader(GL_VERTEX_SHADER);
+    gRenderVertexShaderObject = glCreateShader(GL_VERTEX_SHADER);
 
     //Feed Shader
-    const GLchar *vertexShaderSourceCode =
+    const GLchar *renderVertexShaderSourceCode =
             "#version 440 core" \
             "\n" \
             "in vec4 vPosition;" \
-            "uniform mat4 u_mvp_matrix;" \
+            "in vec3 vNormal;" \
+            "uniform mat4 mv_matrix;" \
+            "uniform mat4 proj_matrix;" \
+            "out vec3 out_normal;" \
+            "out vec3 out_view;" \
             "void main(void)" \
             "{" \
-            "gl_Position = u_mvp_matrix * vPosition;" \
+            "vec4 pos_vs = mv_matrix * vPosition;" \
+            "out_normal = mat3(mv_matrix) * vNormal;" \
+            "gl_Position = proj_matrix * pos_vs;" \
             "}";
 
-    glShaderSource(gVertexShaderObject,1,(const GLchar **)&vertexShaderSourceCode,NULL);
+    glShaderSource(gRenderVertexShaderObject,1,(const GLchar **)&renderVertexShaderSourceCode,NULL);
 
     //Compile Shader
-    glCompileShader(gVertexShaderObject);
+    glCompileShader(gRenderVertexShaderObject);
 
     GLint infoLogLength = 0;
     GLint shaderCompiledStatus = 0;
     char *szInfoLog = NULL;
-    glGetShaderiv(gVertexShaderObject,GL_COMPILE_STATUS,&shaderCompiledStatus);
+    glGetShaderiv(gRenderVertexShaderObject,GL_COMPILE_STATUS,&shaderCompiledStatus);
     if(shaderCompiledStatus == GL_FALSE)
     {
-        glGetShaderiv(gVertexShaderObject,GL_INFO_LOG_LENGTH,&infoLogLength);
+        glGetShaderiv(gRenderVertexShaderObject,GL_INFO_LOG_LENGTH,&infoLogLength);
         if(infoLogLength > 0)
         {
             szInfoLog = (char*)malloc(sizeof(char) * infoLogLength);
             if(szInfoLog != NULL)
             {
                 GLsizei written;
-                glGetShaderInfoLog(gVertexShaderObject,infoLogLength,&written,szInfoLog);
+                glGetShaderInfoLog(gRenderVertexShaderObject,infoLogLength,&written,szInfoLog);
                 fprintf(gpFile,"Vertex Shader Compilation Log = %s\n\n",szInfoLog);
                 free(szInfoLog);
                 DestroyWindow(ghwnd);
