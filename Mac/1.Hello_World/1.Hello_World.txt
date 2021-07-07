@@ -1,0 +1,163 @@
+#import<Foundation/Foundation.h>
+#import<cocoa/cocoa.h>
+
+@interface AppDelegate:NSObject <NSApplicationDelegate, NSWindowDelegate>
+
+@end
+
+int main()
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+    NSApp = [NSApplication sharedApplication];
+    [NSApp setDelegate:[[AppDelegate alloc]init]];
+    [NSApp run];
+    [pool release];
+    return 0;
+}
+
+@interface MyView:NSView
+
+@end
+
+@implementation AppDelegate
+{
+    @private
+    NSWindow *window;
+    MyView *view;
+}
+
+-(void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+    NSRect win_rect = NSMakeRect(0.0,0.0,800.0,600.0);
+    window = [[NSWindow alloc]initWithContentRect:win_rect
+             styleMask:NSWindowStyleMaskTitled |
+                       NSWindowStyleMaskClosable |
+                       NSWindowStyleMaskMiniaturizable |
+                       NSWindowStyleMaskResizable
+                       
+             backing:NSBackingStoreBuffered
+             
+             defer:NO];
+
+    [window setTitle:@"Bhavesh Joshi:macOSWinodow"];
+    [window center];
+    view = [[MyView alloc]initWithFrame:win_rect];
+    [window setContentView:view];
+    [window setDelegate:self];
+    [window makeKeyAndOrderFront:self];
+}
+
+-(void)applicationWillTerminate:(NSNotification *)aNotification
+{
+    //code
+}
+
+-(void)windowWillClose:(NSNotification *)aNotification
+{
+    //code
+    [NSApp terminate:self];
+}
+
+-(void)dealloc
+{
+    //code
+    [view release];
+    [window release];
+    [super dealloc];
+}
+
+@end
+
+@implementation MyView
+{
+    @private
+
+    NSString *centralText;
+}
+
+-(id)initWithFrame:(NSRect)Frame
+{
+    self = [super initWithFrame:Frame];
+    if(self)
+    {
+        centralText = @"HelloWorld!!!";
+    }
+    return(self);
+}
+
+-(void)drawRect:(NSRect)dirtyRect
+{
+    NSColor *backgroundColor = [NSColor blackColor];
+    [backgroundColor set];
+    NSRectFill(dirtyRect);
+
+    NSDictionary *dictionaryForTextAttribute = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSFont fontWithName:@"Helvetica" size:32],NSFontAttributeName,
+                                                [NSColor greenColor],NSForegroundColorAttributeName,
+                                                nil]; // [Object],key pair
+
+    NSSize textSize = [centralText sizeWithAttributes:dictionaryForTextAttribute];
+
+    NSPoint point;
+    point.x = (dirtyRect.size.width/2) - (textSize.width/2);
+    point.y = (dirtyRect.size.height/2) - (textSize.height/2);
+
+    [centralText drawAtPoint:point withAttributes:dictionaryForTextAttribute];
+}
+
+-(BOOL)acceptsFirstResponder
+{
+    [[self window]makeFirstResponder:self];
+
+    return(YES);
+}
+
+-(void)keyDown:(NSEvent *)theEvent
+{
+    int key = [[theEvent characters] characterAtIndex:0];
+    switch(key)
+    {
+        case 27:
+            [self release];
+            [NSApp terminate:self];
+            break;
+
+        case 'F':
+        case 'f':
+            [[self window]toggleFullScreen:self];
+            break;
+    }
+}
+
+-(void)mouseDown:(NSEvent *)theEvent
+{
+    centralText = @"leftMouseButtonIsClicked";
+    [self setNeedsDisplay:YES];
+}
+
+-(void)rightMouseDown:(NSEvent *)theEvent
+{
+    centralText = @"rightMouseButtonIsClicked";
+    [self setNeedsDisplay:YES];
+}
+
+-(void)otherMouseDown:(NSEvent *)theEvent
+{
+    centralText = @"HelloWord!!!";
+    [self setNeedsDisplay:YES];
+}
+
+-(void)dealloc
+{
+    [super dealloc];
+}
+
+@end
+
+
+
+/*
+Cmd : mkdir -p Window.app/Contents/MacOS
+
+Cmd : clang -o Window.app/Contents/MacOS/Window Window.m -framework cocoa
+*/

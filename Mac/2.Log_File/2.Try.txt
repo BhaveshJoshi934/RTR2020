@@ -1,0 +1,141 @@
+#import<Foundation/Foundation.h>
+#import<cocoa/cocoa.h>
+
+@interface AppDelegate:NSObject <NSApplicationDelegate, NSWindowDelegate>
+
+@end
+
+int main()
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+    NSApp = [NSApplication sharedApplication];
+    [NSApp setDelegate:[[AppDelegate alloc]init]];
+    [NSApp run];
+    [pool release];
+    return 0;
+}
+
+@interface MyView:NSView
+
+@end
+
+@implementation AppDelegate
+{
+    @private
+    NSWindow *window;
+    MyView *view;
+}
+
+-(void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+    NSRect win_rect = NSMakeRect(0.0,0.0,800.0,600.0);
+    window = [[NSWindow alloc]initWithContentRect:win_rect
+             styleMask:NSWindowStyleMaskTitled |
+                       NSWindowStyleMaskClosable |
+                       NSWindowStyleMaskMiniaturizable |
+                       NSWindowStyleMaskResizable
+                       
+             backing:NSBackingStoreBuffered
+             
+             defer:NO];
+
+    [window setTitle:@"Bhavesh Joshi:macOSWinodow"];
+    [window center];
+    view = [[MyView alloc]initWithFrame:win_rect];
+    [window setContentView:view];
+    [window setDelegate:self];
+    [window makeKeyAndOrderFront:self];
+}
+
+-(void)applicationWillTerminate:(NSNotification *)aNotification
+{
+    //code
+   
+}
+
+-(void)windowWillClose:(NSNotification *)aNotification
+{
+    //code
+    [NSApp terminate:self];
+}
+
+-(void)dealloc
+{
+    //code
+    [view release];
+    [window release];
+    [super dealloc];
+}
+
+@end
+
+@implementation MyView
+{
+    @private
+
+}
+
+-(id)initWithFrame:(NSRect)Frame
+{
+    self = [super initWithFrame:Frame];
+    if(self)
+    {
+       
+    }
+    return(self);
+}
+
+-(void)drawRect:(NSRect)dirtyRect
+{
+   
+}
+
+-(BOOL)acceptsFirstResponder
+{
+    [[self window]makeFirstResponder:self];
+
+    return(YES);
+}
+
+-(void)keyDown:(NSEvent *)theEvent
+{
+    int key = [[theEvent characters] characterAtIndex:0];
+    switch(key)
+    {
+        case 27:
+            [self release];
+            [NSApp terminate:self];
+            break;
+
+        case 'F':
+        case 'f':
+            [[self window]toggleFullScreen:self];
+            break;
+    }
+}
+
+-(void)mouseDown:(NSEvent *)theEvent
+{
+   
+}
+
+-(void)rightMouseDown:(NSEvent *)theEvent
+{
+    
+}
+
+-(void)otherMouseDown:(NSEvent *)theEvent
+{
+  
+
+}
+
+-(void)dealloc
+{
+    [super dealloc];
+}
+
+@end
+
+
+

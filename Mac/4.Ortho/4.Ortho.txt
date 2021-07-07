@@ -1,0 +1,292 @@
+#import<Foundation/Foundation.h>
+#import<cocoa/cocoa.h>
+#import<QuartzCore/CVDisplayLink.h> //CoreVideo => CV
+#import<OpenGL/gl3.h> //gl.h
+
+//CallBack Function
+CVReturn MyDisplayLinkCallback(CVDisplayLinkRef,const CVTimeStamp*,const CVTimeStamp*,CVOptionFlags,CVOptionFlags*,void*);
+
+FILE* gpFile = NULL;
+
+@interface AppDelegate:NSObject <NSApplicationDelegate, NSWindowDelegate>
+
+@end
+
+int main()
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+	NSApp = [NSApplication sharedApplication];
+	[NSApp setDelegate:[[AppDelegate alloc]init]];
+	[NSApp run];
+	[pool release];
+	return 0;
+}
+
+@interface MyOpenGLView:NSOpenGLView
+
+@end
+
+@implementation AppDelegate
+{
+	@private 
+	NSWindow *window;
+	MyOpenGLView *myOpenGLView;
+}
+
+-(void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	NSBundle *appBundle = [NSBundle mainBundle]; 
+	NSString *appDirPath = [appBundle bundlePath]; //appDirPath => /root/User/Bhavesh/Desktop/RTR3/02_LogFile/Window.app
+	NSString *parentDirPath = [appDirPath stringByDeletingLastPathComponent]; //parentDirPath => /root/User/Bhavesh/Desktop/RTR3/02_LogFile
+	NSString *logFileNameWithPath = [NSString stringWithFormat:@"=%@/Log.txt",parentDirPath]; //%@ => parentDirPath => /root/User/Bhavesh/Desktop/RTR3/02_LogFile/Log.txt
+	const char *pszLogFileNameWithPath = [logFileNameWithPath cStringUsingEncoding:NSASCIIStringEncoding]; //here we typecast NSString into C string
+
+	gpFile = fopen(pszLogFileNameWithPath,"w");
+	if(gpFile == NULL)
+	{
+		[self release];
+		[NSApp terminate:self];
+	}
+
+	fprintf(gpFile,"Program Started Successfully...\n");
+
+	NSRect win_rect = NSMakeRect(0.0,0.0,800.0,600.0);
+	window = [[NSWindow alloc]initWithContentRect:win_rect 
+			 styleMask:NSWindowStyleMaskTitled |
+					   NSWindowStyleMaskClosable |
+					   NSWindowStyleMaskMiniaturizable |
+					   NSWindowStyleMaskResizable 
+					   
+			 backing:NSBackingStoreBuffered 
+			 
+			 difer:NO];
+
+	[window setTitle:@"BDJ:OpenGLWindow"];
+	[window center];
+	myOpenGLView = [[MyOpenGLView alloc]initWithFrame:win_rect];
+	[window setContentView:myOpenGLView];
+	[window setDelegate:self];
+	[window makeKeyAndOrderFront:self];
+}
+
+-(void)applicationWillTerminate:(NSNotification *)aNotification
+{
+	//code
+	if(gpFile)
+	{
+		fprintf(gpFile,"Program Terminated Successfully...\n");
+		fclose(gpFile);
+		gpFile = NULL;
+	}
+}
+
+-(void)windowWillClose:(NSNotification *)aNotification
+{
+	//code
+	[NSApp terminate:self];
+}
+
+-(void)dealloc
+{
+	//code
+	[myOpenGLView release];
+	[window release];
+	[super dealloc];
+}
+
+@end
+
+@implementation MyOpenGLView
+{
+	@private
+
+	CVDisplayLinkRef displayLink;
+
+	//Paste all vao,vbo...all global variables here
+}
+
+-(id)initWithFrame:(NSRect)Frame
+{
+	//NO CHANGE
+	self = [super initWithFrame:Frame];
+	if(self)
+	{
+		NSOpenGLPixelFormatAttribute attributes[] = 
+													{
+														NSOpenGLPFAOpenGLProfile,NSOpenGLProfileVersion4_1Core,
+														NSOpenGLPFAScreenMask,CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay);/*Take monitor to which gtaphics card connected*/  
+														NSOpenGLPFANoRecovery,/*Don't Shift To S/W rendering*/
+														NSOpenGLPFAAccelerated,/*Want only HardWare Rendering*/
+														NSOpenGLPFAColorSize,24,
+														NSOpenGLPFADepthSize,24,
+														NSOpenGLPFAAlphaSize,8,
+														NSOpenGLPFADoubleBuffer,0
+													};  //This resembles with PFD in Widnows
+
+		NSOpenGLPixelFormat *pixelFormat = [[[NSopenGLPixelFormate alloc]initWithAttributes:attributes]autorelease];
+		
+		if(pixelFormat == nil)
+		{
+			fprintf(gpFile,"Can't get Pixel Format...\n");
+			[self release];
+			[NSApp terminate:self];
+		}
+
+		NSOpenGLContext *glContext = [[[NSOpenGLContext alloc]initWithFormat:pixelFormat shareContext:nil]autorelease];
+		
+		[self setPixelFormat:pixelFormat]; // SetPixelFormat();
+
+		[self setOpenGLContext:glContext];
+
+	}
+	return(self);
+}
+
+-(CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime
+{
+	//NO CHANGE
+	//code
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init]; //Apple's OpenGL supports multithreading..."Main" has main thread...This thread is for rendering
+	[self drawView];
+	[pool release];
+	return(kCVReturnSuccess);
+}
+
+-(void)prepareOpenGL  //Like Initialize()
+{	
+	//WILL CHANGED
+	//code
+	[super prepareOpenGL];
+
+	//fprintf(gpFile,"OpenGL Version"); 
+	//fprintf(gpFile,"GLSL Version");
+
+	[[self openGLContext]makeCurrentContext]; // In Objective C : getContext = direct Write context name ; setContext = "set" should be there..
+
+	//Swap Interval
+	GLint swapInt = 1;
+	[[self openGLContext]setValue:&swapInt forParameter:NSOpenGLCPSwapInterval];//CP = Context Parameter
+
+	//const char *vertexShaderSourceCode...All Code Copy 
+	//upto glBindVertexArray(0)....All code cpy paste upto here...
+
+	//HERE VERSION MUST BE "#vesrion 410 core"
+	//Uninitialze => [self release]
+	//exit(0) => [NSApp terminate:self]
+
+	//3 Romantic Lines
+
+	glClearColor(0.0f,0.0f,1.0f,1.0f);
+
+	//CV and CGL related Code
+	CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+	CVDisplayLinkSetOutputCallback(displayLink,&MyDisplayLinkCallback,self);
+	CGLContextObj cglContext = (CGLContextObj)[[self openGLContext]CGLContextObj];
+	CGLPixelFormatObj cglPixelFormat = (CGLPixelFormatObj)[self pixelFormat];
+	CVDisplayLinkSetCurrentCGDisplayFromOpeGLContext(displayLink,cglContext,cglPixelFormat);
+	CVDisplayLinkStart(displayLink);
+}
+
+-(void)reshape
+{	
+	//WILL CHANGED
+	//code
+	[super reshape];
+	CGLLockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
+
+	NSRect rect = [self bounce];
+	if(rect.size.height < 0)
+	{
+		rect.size.height = 1;
+	}
+	glViewport(0,0,(GLsizei)rect.size.width,(GLsizei)rect.size.height);
+	CGLUnlockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
+}
+
+-(void)drawRect:(NSRect)dirtyRect
+{
+	//code
+	[self drawView];
+}
+
+-(void)drawView
+{
+	//WILL CHANGED
+	//code
+	[[self openGLContext]makeCurrentContext];
+	CGLLockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//All code from Window Same...
+
+	CGLFlushDrawable((CGLContextObj)[[self openGLContext]CGLContextObj]);
+	CGLUnlockContext((CGLContextObj)[[self openGLContext]CGLContextObj]);
+}
+
+-(BOOL)acceptsFirstResponder
+{
+	//NO CHANGE
+	[[self window] makeFirstResponder];
+
+	retuen(YES);
+}
+
+-(void)keyDown:(NSEvent *)theEvent
+{
+	//WILL CHANGED
+	int key = [[theEvent characters] characterAtIndex:0];
+	switch(key)
+	{
+		case 27:
+			[self release];
+			[NSApp terminate:self];
+			break;
+
+		case 'F':
+		case 'f':
+			[[self window]toggleFullScreen:self];
+			break;
+	}
+}
+
+-(void)mouseDown:(NSEvent *)theEvent
+{
+	
+}
+
+-(void)rightMouse:(NSEvent *)theEvent
+{
+	
+}
+
+-(void)otherMouseDown:(NSEvent *)theEvent
+{
+	
+}
+
+//IF WE WANT TO WRITE OUR OWN FUNCTION
+//-(void)Sum:(int)num1:(int)num2
+
+-(void)dealloc
+{
+	CVDisplayLinkStop(displayLink);
+	CVDisplayLinkRelease(displayLink);
+	[super dealloc];
+}
+
+@end
+
+//Global 
+CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,const CVTimeStamp* now,const CVTimeStamp* outputTime,CVOptionFlags flagsIn,CVOptionFlags* flagsOut,void* displayLinkContext)
+{	
+	CVReturn result = [(myOpenGLView *)displayLinkContext getFrameForTime:outputTime]; //Here last param, void *displayLinkContext is nothing but myOpenGLView pointer set by OS...
+	return(result);
+}
+
+/*
+Cmd : mkdir -p Window.app/Contents/MacOS
+
+Cmd : clang -Wno-deprecated-declarations -o Window.app/Contents/MacOS/Window Window.m -framework cocoa -frameworkQuartzCore -frameworkOpenGL
+
+vmath.h add from this assignment => clang++ -Wno-deprecated-declarations -o Window.app/Contents/MacOS/Window Window.mm -framework cocoa -frameworkQuartzCore -frameworkOpenGL
+*/
