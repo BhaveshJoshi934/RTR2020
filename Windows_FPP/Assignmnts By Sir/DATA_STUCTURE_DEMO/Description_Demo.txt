@@ -1,27 +1,40 @@
 Description :
-‘A Birthday Gift’, is an animation sequence of a very common birthday gift, a ‘Greeting Card’. Although simple, it brings a story of its own, short but sweet.
-A story of a loving Father nurturing its Creation. Never stopping however bad the circumstances get. A story of a true gentleman and a living LEGEND.
+'Catch Me If You Can' is a simple 2D game with key controls. 
+The Main Purpouse of the demo is to utilize the knowledge of Fixed Function Pipeline.
+
+In this demo I have used the concepts of FFP like PushMatrix(),PopMatrix(),glTranslatef(),
+glRotatef(),glScalef(),gluSphere,gluPerspective() and many more which is very important to
+thoroughly understand Programmable Pipeline.
 
 Technology Used :
-OpenGL Programmable Pipeline
-OpenAL
-macOS Catalina 10.15.7
+OS:  Windows 10
+SDK: Win32
+Language: C
+Rendering: OpenGL FFP
+Music Editing: Audacity
 
 Background Music:
-Lords Of The Rings- https://www.youtube.com/watch?v=LML6S...​
-Happy Birthday on Bansuri: https://www.youtube.com/watch?v=7SxOp...​
+Silly Chicken - https://www.youtube.com/watch?v=W16EsK4JCKM...
 
-Group Leaders Participated -
-Rutwik Choughule
+Group Leader - 
 Ajay Ambure
+
+Developed By - 
+Bhavesh Joshi
 
 Hashtags:
 #AstroMediComp​
-#RTR2020​
+#AstroMediComp​_Fragment
+#RTR2020
 #OpenGL​
 #RealTimeRendering​
-#ProgrammablePipeline​
-#3D​
-#macOS​
-#ObjectiveC​
-#OpenAL
+#FixedFunctionPipeline​
+#2D​
+#3D
+#Windows​
+#C++
+#Win32​​
+#game
+#gamedevelopment
+
+

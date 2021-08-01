@@ -1,0 +1,8 @@
+#include "MyWindow.h"
+MYICON ICON bdj1.ico
+
+//Image Loading code
+STONE_BITMAP BITMAP Stone.bmp
+KUNDALI_BITMAP BITMAP Vijay_Kundali.bmp
+
+
