@@ -1,0 +1,2 @@
+cl.exe /c /EHsc /I C:\glew-2.1.0-win32\glew-2.1.0\include MyWindow.cpp
+link.exe MyWindow.obj MyWindow.res user32.lib gdi32.lib /LIBPATH:C:\glew-2.1.0-win32\glew-2.1.0\lib\Release\Win32 /SUBSYSTEM:WINDOWS
