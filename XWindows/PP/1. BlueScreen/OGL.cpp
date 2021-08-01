@@ -1,0 +1,392 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<memory.h>
+
+#include<X11/Xlib.h>
+#include<X11/Xutil.h>
+#include<X11/XKBlib.h>
+#include<X11/keysym.h>
+
+#include<GL/glew.h>
+
+#include<GL/gl.h>
+#include<GL/glx.h>
+//#include<GL/glu.h>
+
+using namespace std;
+
+bool bFullScreen = false;
+Display *gpDisplay = NULL;
+XVisualInfo *gpXVisualInfo = NULL; 
+Colormap gColormap;
+Window gWindow;
+int giWindowWidth = 800;
+int giWindowHeight = 600;
+
+GLXContext gGLXContext;
+
+typedef GLXContext (*glXCreateContextAttribsARBProc) (Display* , GLXFBConfig , GLXContext , Bool , const int *);
+glXCreateContextAttribsARBProc glXCreateContextAttribsARB = NULL;
+GLXFBConfig gGLXFBConfig;
+ 
+int main(void)
+{
+	void CreateWindow(void);
+	void ToggleFullscreen(void);
+	void unInitialize(void);
+
+	void Initialize(void);
+	void Resize(int,int);
+	void Draw(void);
+	
+	int winWidth = giWindowWidth;
+	int winHeight = giWindowHeight;
+	bool bDone = false;
+
+	CreateWindow();
+
+	Initialize();
+
+	XEvent event;
+	KeySym keysym;
+
+	while(bDone == false)
+	{
+		while(XPending(gpDisplay))
+			{
+				XNextEvent(gpDisplay,&event);
+				switch(event.type)
+				{
+					case MapNotify:
+						break;
+					case KeyPress:
+						keysym = XkbKeycodeToKeysym(gpDisplay,event.xkey.keycode,0,0);
+						switch(keysym)
+						{
+							case XK_Escape:
+								bDone = true;
+								break;
+						
+							case XK_F:
+							case XK_f:
+								if(bFullScreen == false)
+								{
+									ToggleFullscreen();
+									bFullScreen = true;
+								}
+								else
+								{
+									ToggleFullscreen();
+									bFullScreen = false;
+								}
+								break;
+							
+							default:
+								break;
+
+						}
+						break;
+					case ButtonPress:
+						switch(event.xbutton.button)
+						{
+							case 1:
+								break;
+							case 2:
+								break;
+							case 3:
+								break;
+							default:
+								break;
+						}
+						break;
+					case MotionNotify:
+						break;
+					case ConfigureNotify:
+						winWidth = event.xconfigure.width;
+						winHeight = event.xconfigure.height;
+						Resize(winWidth,winHeight);
+						break;
+					case Expose:
+						break;
+					case DestroyNotify:
+						break;
+					case 33:
+						bDone = true;
+						break;
+					default:
+						break;
+				}
+			}
+		Draw();
+	}
+	unInitialize();
+	return(0);
+}
+
+void CreateWindow()
+{
+	void unInitialize(void);
+
+	XSetWindowAttributes winAttribs;
+
+	GLXFBConfig *pGLXFBConfig = NULL;
+	GLXFBConfig bestGLXFBConfig;
+	XVisualInfo *pTempXVisualInfo = NULL;
+	int numFBConfig = 0;
+
+	int defaultScreen;
+	int defaultDepth;
+	int styleMask;
+
+	static int FrameBufferAttributes[] = {
+						//GLX_RGBA,
+                                                GLX_X_RENDERABLE, True,
+						GLX_DRAWABLE_TYPE,GLX_WINDOW_BIT,
+						GLX_RENDER_TYPE,GLX_RGBA_BIT,
+						GLX_X_VISUAL_TYPE,GLX_TRUE_COLOR,
+						GLX_RED_SIZE,8,
+						GLX_GREEN_SIZE,8,
+						GLX_BLUE_SIZE,8,
+						GLX_ALPHA_SIZE,8,
+						GLX_STENCIL_SIZE,8,
+						GLX_DOUBLEBUFFER,True,
+						GLX_DEPTH_SIZE,24,
+						None
+					     };
+
+	gpDisplay = XOpenDisplay(NULL);
+	if(gpDisplay == NULL)
+	{
+		printf("ERROR : Unable To Open X Display.\nExitting Now!!!\n");
+		unInitialize();
+		exit(1);
+	}
+
+	defaultScreen = XDefaultScreen(gpDisplay);
+
+	pGLXFBConfig = glXChooseFBConfig(gpDisplay,XDefaultScreen(gpDisplay),FrameBufferAttributes,&numFBConfig);
+
+	if(pGLXFBConfig == NULL)
+	{
+		printf("We can't Found any FBConfig\n\n");
+		unInitialize();
+	}
+	else
+	{
+		printf("GLXConfig Found = %d \n\n",numFBConfig);
+	}
+
+	int bestFrameBufferConfig = -1,worstFrameBufferConfig = -1,bestNumberOfSamples = -1,worstNumberOfSamples = 999;
+
+	int i;
+
+	for(i = 0 ; i < numFBConfig ; i++)
+	{
+		pTempXVisualInfo = glXGetVisualFromFBConfig(gpDisplay,pGLXFBConfig[i]);
+
+		if(pTempXVisualInfo != NULL)
+		{
+			int sampleBuffers,samples;
+
+			glXGetFBConfigAttrib(gpDisplay,pGLXFBConfig[i],GLX_SAMPLE_BUFFERS,&sampleBuffers);
+			glXGetFBConfigAttrib(gpDisplay,pGLXFBConfig[i],GLX_SAMPLES,&samples);
+
+			if(bestFrameBufferConfig < 0 || sampleBuffers && samples > bestNumberOfSamples)
+			{
+				bestFrameBufferConfig = i;
+				bestNumberOfSamples = samples;
+			}
+
+			if(worstFrameBufferConfig < 0 || (!sampleBuffers) || samples > worstNumberOfSamples)
+			{
+				worstFrameBufferConfig = i;
+				worstNumberOfSamples = samples;
+			}
+			printf("For ith = %d\t,samples = %d\t,sampleBuffers = %d\n\n",i,samples,sampleBuffers);
+		}
+		XFree(pTempXVisualInfo);
+	}
+	
+	bestGLXFBConfig = pGLXFBConfig[bestFrameBufferConfig];
+	gGLXFBConfig = bestGLXFBConfig;
+
+	XFree(pGLXFBConfig);
+
+	gpXVisualInfo = glXGetVisualFromFBConfig(gpDisplay,gGLXFBConfig);
+
+	winAttribs.border_pixel = 0;
+	winAttribs.background_pixmap = 0;
+	winAttribs.colormap = XCreateColormap(gpDisplay,
+					      RootWindow(gpDisplay,gpXVisualInfo->screen),
+					      gpXVisualInfo->visual,
+					      AllocNone);
+	gColormap = winAttribs.colormap;
+	winAttribs.background_pixel = BlackPixel(gpDisplay,defaultScreen);
+	winAttribs.event_mask = ExposureMask | VisibilityChangeMask | ButtonPressMask | KeyPressMask | PointerMotionMask | StructureNotifyMask;
+	styleMask = CWBorderPixel | CWBackPixel | CWEventMask | CWColormap;
+
+	gWindow = XCreateWindow(gpDisplay,
+				RootWindow(gpDisplay,gpXVisualInfo->screen),
+				0,
+				0,
+				giWindowWidth,
+				giWindowHeight,
+				0,
+				gpXVisualInfo->depth,
+				InputOutput,
+				gpXVisualInfo->visual,
+				styleMask,
+				&winAttribs);
+
+	if(!gWindow)
+	{
+		printf("ERROR : Failed To Create Main Window \nExiting Now!!!\n");
+		unInitialize();
+		exit(1);
+	}
+
+	XStoreName(gpDisplay,gWindow,"Template Program for PP : Bhavesh Joshi!!");
+
+	Atom windowManagerDelete = XInternAtom(gpDisplay,"WM_DELETE_WINDOW",True);
+	XSetWMProtocols(gpDisplay,gWindow,&windowManagerDelete,1);
+	XMapWindow(gpDisplay,gWindow);
+}
+
+void ToggleFullscreen(void)
+{
+	Atom wm_state;
+	Atom fullscreen;
+	XEvent xev = {0};
+
+	wm_state = XInternAtom(gpDisplay,"_NET_WM_STATE",False);
+	memset(&xev,0,sizeof(xev));
+
+	xev.type = ClientMessage;
+	xev.xclient.window = gWindow;
+	xev.xclient.message_type = wm_state;
+	xev.xclient.format = 32;
+	xev.xclient.data.l[0] = bFullScreen ? 0 : 1;
+
+	fullscreen = XInternAtom(gpDisplay,"_NET_WM_STATE_FULLSCREEN",False);
+	xev.xclient.data.l[1] = fullscreen;
+
+	XSendEvent(gpDisplay,
+			RootWindow(gpDisplay,gpXVisualInfo->screen),
+			False,
+			StructureNotifyMask,
+			&xev);
+}
+
+void Initialize(void)
+{
+	void Resize(int,int);
+
+	glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB((GLubyte*)"glXCreateContextAttribsARB");
+
+	const int Attribs[] = 
+			{
+				GLX_CONTEXT_MAJOR_VERSION_ARB,4,
+				GLX_CONTEXT_MINOR_VERSION_ARB,5,
+				GLX_CONTEXT_PROFILE_MASK_ARB,GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+				None
+			};
+
+	gGLXContext = glXCreateContextAttribsARB(gpDisplay,gGLXFBConfig,0,True,Attribs);
+
+	if(!gGLXContext)
+	{
+		const int Attribs[] = 
+				{
+					GLX_CONTEXT_MAJOR_VERSION_ARB,1,
+					GLX_CONTEXT_MINOR_VERSION_ARB,0,
+					None
+				};
+
+		gGLXContext = glXCreateContextAttribsARB(gpDisplay,gGLXFBConfig,0,True,Attribs);
+	}
+
+	Bool bIsDirectContext = glXIsDirect(gpDisplay,gGLXContext);
+
+	if(bIsDirectContext == True)
+	{
+		printf("Rendering Context is Hardware Redering Context!!!\n\n");
+	}
+	else
+	{
+		printf("Rendering Context is Software Rendering Context!!!\n\n");
+	}
+
+	glXMakeCurrent(gpDisplay,gWindow,gGLXContext);
+
+	glShadeModel(GL_SMOOTH);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+
+	glClearColor(0.0f,0.0f,1.0f,1.0f);
+
+	Resize(giWindowWidth,giWindowHeight);
+}
+
+void Resize(int width,int height)
+{
+	if(height == 1)
+		height = 0;
+
+	glViewport(0,0,(GLsizei)width,(GLsizei)height);
+
+///	glMatrixMode(GL_PROJECTION);
+//	glLoadIdentity();
+	
+//	gluPerspective(45,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+}
+
+void Draw(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glXSwapBuffers(gpDisplay,gWindow);
+}
+
+void unInitialize(void)
+{
+
+	GLXContext CurrentGLXContext;
+
+	CurrentGLXContext = glXGetCurrentContext();
+
+	if(CurrentGLXContext == gGLXContext)
+	{
+		glXMakeCurrent(gpDisplay,0,0);
+	}	
+
+	if(gGLXContext)
+	{
+		glXDestroyContext(gpDisplay,gGLXContext);
+	}
+
+
+	if(gWindow)
+	{
+		XDestroyWindow(gpDisplay,gWindow);
+	}
+
+	if(gColormap)
+	{
+		XFreeColormap(gpDisplay,gColormap);
+	}
+
+	if(gpXVisualInfo)
+	{
+		free(gpXVisualInfo);
+		gpXVisualInfo = NULL;
+	}
+
+	if(gpDisplay)
+	{
+		XCloseDisplay(gpDisplay);
+		gpDisplay = NULL;
+	}
+}

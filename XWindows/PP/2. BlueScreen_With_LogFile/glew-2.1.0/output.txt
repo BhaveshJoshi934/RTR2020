@@ -1,0 +1,22 @@
+install -d -m 0755 "/usr/include/GL"
+install -m 0644 include/GL/wglew.h "/usr/include/GL/"
+install -m 0644 include/GL/glew.h "/usr/include/GL/"
+install -m 0644 include/GL/glxew.h "/usr/include/GL/"
+sed \
+	-e "s|@prefix@|/usr|g" \
+	-e "s|@libdir@|/usr/lib64|g" \
+	-e "s|@exec_prefix@|/usr/bin|g" \
+	-e "s|@includedir@|/usr/include/GL|g" \
+	-e "s|@version@|2.1.0|g" \
+	-e "s|@cflags@||g" \
+	-e "s|@libname@|GLEW|g" \
+	-e "s|@requireslib@|glu|g" \
+	< glew.pc.in > glew.pc
+install -d -m 0755 "/usr/lib64"
+install -m 0644 lib/libGLEW.so.2.1.0 "/usr/lib64/"
+ln -sf libGLEW.so.2.1.0 "/usr/lib64/libGLEW.so.2.1"
+ln -sf libGLEW.so.2.1.0 "/usr/lib64/libGLEW.so"
+install -m 0644 lib/libGLEW.a "/usr/lib64/"
+install -d -m 0755 "/usr/lib/pkgconfig"
+install -d -m 0755 "/usr/lib/pkgconfig"
+install -m 0644 glew.pc "/usr/lib/pkgconfig/"
