@@ -1,0 +1,12 @@
+D3D11CreateDeviceAndSwapChain() Succeeded!!!
+
+The Chosen Driver Is Of HardWare type!!
+
+The Supported Highest Feature Level Is 11.0
+
+D3D11CreateDeviceAndSwapChain() Succeeded!!!
+
+The Chosen Driver Is Of HardWare type!!
+
+The Supported Highest Feature Level Is 11.0
+

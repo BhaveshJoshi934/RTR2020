@@ -500,20 +500,14 @@ void Display()
     glUniformMatrix4fv(mvpUniform,1,GL_FALSE,modelViewProjectionMatrix);
 
     glBindVertexArray(vao_cube);
-/*
+
     glDrawArrays(GL_TRIANGLE_FAN,0,4);
     glDrawArrays(GL_TRIANGLE_FAN,4,4);
     glDrawArrays(GL_TRIANGLE_FAN,8,4);
     glDrawArrays(GL_TRIANGLE_FAN,16,4);
     glDrawArrays(GL_TRIANGLE_FAN,20,4);
     glDrawArrays(GL_TRIANGLE_FAN,24,4);
-*/
-    glDrawArrays(GL_POINTS,0,4);
-    glDrawArrays(GL_POINTS,4,4);
-    glDrawArrays(GL_POINTS,8,4);
-    glDrawArrays(GL_POINTS,16,4);
-    glDrawArrays(GL_POINTS,20,4);
-    glDrawArrays(GL_POINTS,24,4);
+
     glBindVertexArray(0);
 
     //Stop OpenGL Program
